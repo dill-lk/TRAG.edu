@@ -9,6 +9,8 @@ interface TragAIWidgetProps {
   currentContext: string;
 }
 
+import { supabase } from '../supabase';
+
 const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -20,12 +22,21 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [apiKey, setApiKey] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isOpen, isLoading]);
+
+  useEffect(() => {
+    const fetchKey = async () => {
+      const { data } = await supabase.from('system_settings').select('value').eq('key', 'GEMINI_API_KEY').single();
+      if (data?.value) setApiKey(data.value);
+    };
+    fetchKey();
+  }, []);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -44,42 +55,47 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
     const userMsg = input.trim();
     if (!userMsg && !selectedImage) return;
 
-    setMessages(prev => [...prev, { 
-      role: 'user', 
-      text: userMsg || "Analyze paper image.", 
-      image: selectedImage || undefined 
+    if (!apiKey) {
+      setMessages(prev => [...prev, { role: 'model', text: '### ⚠️ Configuration Error\nMy neural link is missing. Please ask an Admin to set the `GEMINI_API_KEY` in System Settings.', isError: true }]);
+      return;
+    }
+
+    setMessages(prev => [...prev, {
+      role: 'user',
+      text: userMsg || "Analyze paper image.",
+      image: selectedImage || undefined
     }]);
-    
+
     const currentInput = userMsg;
     const currentImg = selectedImage;
-    
+
     setInput('');
     setSelectedImage(null);
     setIsLoading(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const modelId = "gemini-3-pro-preview";
-      
-      const systemInstruction = `You are 'Trag Study Assistant', a professional educational expert for Sri Lankan students. 
+      const ai = new GoogleGenAI({ apiKey });
+      const modelId = "gemini-1.5-flash"; // Updated to stable model
+
+      const systemInstruction = `You are 'TRAG Study Assistant', a professional educational expert for Sri Lankan students. 
       CONTEXT: ${currentContext}.
       FORMAT: Always use clean Markdown for better readability. Use bold for key terms. Use LaTeX for math.
       STYLE: Professional, encouraging, and clear. 
       BILINGUAL: You are fluent in English and Sinhala. If the user asks in Sinhala, respond in Sinhala. If English, respond in English. If bilingual, use both where helpful.
       GOAL: Provide high-quality tutoring aligned with the Sri Lankan Ministry of Education syllabus.`;
 
-      const prompt = mode === 'planner' 
-        ? `Create a detailed study plan for: ${currentInput}.` 
-        : mode === 'solver' 
-        ? `Explain this question step-by-step: ${currentInput || 'attached paper image'}. Ensure clear methodology.`
-        : `Teach me this topic clearly: ${currentInput}.`;
+      const prompt = mode === 'planner'
+        ? `Create a detailed study plan for: ${currentInput}.`
+        : mode === 'solver'
+          ? `Explain this question step-by-step: ${currentInput || 'attached paper image'}. Ensure clear methodology.`
+          : `Teach me this topic clearly: ${currentInput}.`;
 
       const parts: any[] = [{ text: prompt }];
       if (currentImg) {
         parts.push({
           inlineData: {
             mimeType: "image/jpeg",
-            data: currentImg.split(',')[1] 
+            data: currentImg.split(',')[1]
           }
         });
       }
@@ -102,6 +118,7 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
         });
       }
     } catch (err) {
+      console.error(err);
       setMessages(prev => [...prev, { role: 'model', text: '### System Notice\nI am having difficulty connecting to the study hub. Please refresh and try again.', isError: true }]);
     } finally {
       setIsLoading(false);
@@ -127,8 +144,8 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
 
   return (
     <>
-      <button 
-        onClick={() => setIsOpen(true)} 
+      <button
+        onClick={() => setIsOpen(true)}
         className={`fixed bottom-8 right-8 z-[60] group transition-all duration-700 ${isOpen ? 'translate-y-24 opacity-0' : 'translate-y-0 opacity-100'}`}
       >
         <div className="relative w-20 h-20 rounded-[2.5rem] glass-card dark:bg-blue-600 flex items-center justify-center shadow-3xl border-none overflow-hidden">
@@ -144,7 +161,7 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
             ${isExpanded ? 'max-w-[1100px] h-[92vh]' : 'max-w-[480px] h-[780px]'}
             glass-card dark:bg-slate-950/95 rounded-[3.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden animate-in zoom-in-95
           `}>
-            
+
             <div className="p-8 pb-6 bg-white/10 dark:bg-slate-900/40 border-b border-white/5">
               <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-5">
@@ -176,12 +193,12 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-6`}>
                   <div className={`
                     max-w-[92%] p-8 rounded-[2.8rem] shadow-sm relative overflow-hidden
-                    ${msg.role === 'user' 
-                      ? 'bg-slate-900 dark:bg-blue-600 text-white rounded-tr-none' 
+                    ${msg.role === 'user'
+                      ? 'bg-slate-900 dark:bg-blue-600 text-white rounded-tr-none'
                       : 'glass-card dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-tl-none border-white/5'}
                   `}>
                     {msg.image && <img src={msg.image} className="w-full rounded-[2rem] mb-8 shadow-2xl border border-white/10" alt="paper scan" />}
-                    <div 
+                    <div
                       className="prose-content text-[15px] leading-relaxed font-medium"
                       dangerouslySetInnerHTML={renderMarkdown(msg.text)}
                     />
@@ -199,16 +216,16 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
             <div className="p-8 bg-white/5 dark:bg-slate-900/40 border-t border-white/5">
               {selectedImage && (
                 <div className="mb-6 flex items-center gap-5 animate-in slide-in-from-bottom-4">
-                   <div className="relative w-28 h-28">
-                      <img src={selectedImage} className="w-full h-full object-cover rounded-[2rem] border-2 border-blue-500 shadow-2xl" />
-                      <button onClick={() => setSelectedImage(null)} className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-2.5 shadow-xl transition-transform hover:scale-110"><X size={16}/></button>
-                   </div>
-                   <div className="text-[10px] font-black uppercase text-blue-500 tracking-[0.4em] animate-pulse">Paper Fragment Buffered</div>
+                  <div className="relative w-28 h-28">
+                    <img src={selectedImage} className="w-full h-full object-cover rounded-[2rem] border-2 border-blue-500 shadow-2xl" />
+                    <button onClick={() => setSelectedImage(null)} className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-2.5 shadow-xl transition-transform hover:scale-110"><X size={16} /></button>
+                  </div>
+                  <div className="text-[10px] font-black uppercase text-blue-500 tracking-[0.4em] animate-pulse">Paper Fragment Buffered</div>
                 </div>
               )}
               <div className="flex items-center gap-5">
                 <button onClick={() => fileInputRef.current?.click()} className="p-6 glass-card rounded-[2rem] text-blue-500 hover:bg-blue-600 hover:text-white transition-all shadow-xl border-none" title="Scan Paper">
-                   <Camera size={28} />
+                  <Camera size={28} />
                 </button>
                 <input type="file" ref={fileInputRef} onChange={handleImageSelect} className="hidden" accept="image/*" />
                 <div className="flex-1 relative">
