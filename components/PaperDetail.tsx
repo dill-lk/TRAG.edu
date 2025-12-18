@@ -4,9 +4,10 @@ import { Download, FileText, ChevronRight, ArrowLeft, Timer, Play, Pause, Rotate
 import { Resource } from '../types';
 
 const StudyTimer = ({ onStartFocus }: { onStartFocus: () => void }) => {
-  const [minutes, setMinutes] = useState(25);
+  const [minutes, setMinutes] = useState(120);
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
+  const [preset, setPreset] = useState(120); // Track total time for progress calc
 
   useEffect(() => {
     let interval: any = null;
@@ -30,32 +31,82 @@ const StudyTimer = ({ onStartFocus }: { onStartFocus: () => void }) => {
 
   const reset = () => {
     setIsActive(false);
-    setMinutes(25);
+    setMinutes(preset);
     setSeconds(0);
   };
 
+  const setTime = (m: number) => {
+    setIsActive(false);
+    setMinutes(m);
+    setPreset(m);
+    setSeconds(0);
+  }
+
+  // Calculate Progress
+  const totalSeconds = preset * 60;
+  const currentSecond = (minutes * 60) + seconds;
+  const progress = ((totalSeconds - currentSecond) / totalSeconds) * 283; // 283 is approx circumference of r=45
+
   return (
-    <div className="glass-card rounded-[2.5rem] p-10 text-slate-800 dark:text-white border-none shadow-lg">
-      <div className="flex items-center justify-between mb-8 border-b border-slate-100 dark:border-white/5 pb-4">
+    <div className="glass-card rounded-[2.5rem] p-10 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 shadow-2xl relative overflow-hidden">
+      <div className={`absolute -right-20 -top-20 w-64 h-64 bg-blue-500/20 rounded-full blur-[80px] transition-opacity duration-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`}></div>
+
+      <div className="flex items-center justify-between mb-8 relative z-10">
         <div className="flex items-center gap-3">
-          <Timer size={24} className="text-blue-500" />
-          <h3 className="text-sm font-bold uppercase tracking-widest">Study Timer</h3>
+          <div className={`p-2 rounded-xl transition-colors ${isActive ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 dark:bg-white/10 text-slate-400'}`}>
+            <Timer size={20} className={isActive ? 'animate-pulse' : ''} />
+          </div>
+          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Focus Timer</h3>
         </div>
-        <button onClick={onStartFocus} className="p-2.5 glass-card rounded-xl text-blue-500" title="Full Focus Mode">
+        <button onClick={onStartFocus} className="p-2.5 glass-card rounded-xl text-blue-500 hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Full Focus Mode">
           <Monitor size={18} />
         </button>
       </div>
-      <div className="text-center mb-10">
-        <div className="text-8xl font-black tabular-nums tracking-tighter text-blue-600">
-          {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+
+      <div className="relative flex items-center justify-center mb-10 py-4">
+        {/* Circular Progress */}
+        <svg className="w-64 h-64 -rotate-90">
+          <circle cx="128" cy="128" r="120" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100 dark:text-white/5" />
+          <circle
+            cx="128"
+            cy="128"
+            r="120"
+            stroke="currentColor"
+            strokeWidth="8"
+            fill="transparent"
+            strokeDasharray={754} // 2 * pi * 120
+            strokeDashoffset={754 - (754 * (currentSecond / totalSeconds))}
+            strokeLinecap="round"
+            className={`text-blue-600 transition-all duration-1000 ${isActive ? 'drop-shadow-[0_0_10px_rgba(37,99,235,0.5)]' : ''}`}
+          />
+        </svg>
+
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className={`text-6xl font-black tabular-nums tracking-tighter transition-colors ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-800 dark:text-white'}`}>
+            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-2">{isActive ? 'Session Active' : 'Ready to Start'}</span>
         </div>
       </div>
+
+      <div className="grid grid-cols-3 gap-2 mb-6">
+        {[120, 60, 25].map(t => (
+          <button
+            key={t}
+            onClick={() => setTime(t)}
+            className={`py-2 rounded-lg text-[10px] font-bold transition-all ${preset === t ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900' : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:bg-slate-200 dark:hover:bg-white/10'}`}
+          >
+            {t >= 60 ? `${t / 60}h` : `${t}m`}
+          </button>
+        ))}
+      </div>
+
       <div className="flex gap-4">
-        <button onClick={() => setIsActive(!isActive)} className={`flex-1 py-5 rounded-2xl flex items-center justify-center gap-2 font-bold text-xs uppercase transition-all ${isActive ? 'bg-amber-500 text-white' : 'bg-blue-600 text-white'}`}>
+        <button onClick={() => setIsActive(!isActive)} className={`flex-1 py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-xs uppercase tracking-widest transition-all shadow-lg hover:scale-[1.02] active:scale-95 ${isActive ? 'bg-amber-500 text-white shadow-amber-500/30' : 'bg-blue-600 text-white shadow-blue-500/30'}`}>
           {isActive ? <Pause size={18} /> : <Play size={18} />}
-          {isActive ? 'Pause' : 'Start'}
+          {isActive ? 'Pause' : 'Start Focus'}
         </button>
-        <button onClick={reset} className="w-16 h-16 glass-card rounded-2xl flex items-center justify-center text-slate-400"><RotateCcw size={20} /></button>
+        <button onClick={reset} className="w-14 h-14 glass-card rounded-2xl flex items-center justify-center text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><RotateCcw size={20} /></button>
       </div>
     </div>
   );
@@ -127,6 +178,23 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
               <div><span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Grade</span><p className="text-2xl font-black text-slate-800 dark:text-white">{grade.name}</p></div>
             </div>
 
+            <div className="bg-slate-900 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl mb-12">
+              <div className="flex items-center gap-6">
+                <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center text-white border border-white/10"><FileText size={32} /></div>
+                <div>
+                  <h3 className="text-3xl font-black text-white leading-none">Ready to Download</h3>
+                  <p className="text-blue-400 text-[10px] font-bold uppercase tracking-widest mt-2">Verified PDF Asset</p>
+                </div>
+              </div>
+              <div className="flex gap-4 w-full md:w-auto">
+                <button onClick={() => alert('Issue reported to admin team. Thank you!')} className="w-12 h-16 md:w-16 md:h-auto glass-card rounded-2xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all" title="Report Issue">
+                  <span className="sr-only">Report Issue</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" x2="4" y1="22" y2="15" /></svg>
+                </button>
+                <button onClick={() => window.open(paper.file_url, '_blank')} className="flex-1 px-8 py-6 bg-blue-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg shadow-blue-500/30 hover:scale-105 transition-all"><Download size={20} /> Download PDF</button>
+              </div>
+            </div>
+
             {/* PDF Preview Section */}
             <div className="mb-12 rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg bg-slate-50 dark:bg-slate-900/50">
               <div className="p-6 bg-slate-100 dark:bg-white/5 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
@@ -142,23 +210,6 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
                 className="w-full h-[600px] bg-slate-50 dark:bg-slate-900"
                 title="PDF Preview"
               />
-            </div>
-
-            <div className="bg-slate-900 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
-              <div className="flex items-center gap-6">
-                <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center text-white border border-white/10"><FileText size={32} /></div>
-                <div>
-                  <h3 className="text-3xl font-black text-white leading-none">Ready to Download</h3>
-                  <p className="text-blue-400 text-[10px] font-bold uppercase tracking-widest mt-2">Verified PDF Asset</p>
-                </div>
-              </div>
-              <div className="flex gap-4 w-full md:w-auto">
-                <button onClick={() => alert('Issue reported to admin team. Thank you!')} className="w-12 h-16 md:w-16 md:h-auto glass-card rounded-2xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all" title="Report Issue">
-                  <span className="sr-only">Report Issue</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" x2="4" y1="22" y2="15" /></svg>
-                </button>
-                <button onClick={() => window.open(paper.file_url, '_blank')} className="flex-1 px-8 py-6 bg-blue-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg shadow-blue-500/30 hover:scale-105 transition-all"><Download size={20} /> Download PDF</button>
-              </div>
             </div>
           </div>
 
