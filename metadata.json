@@ -1,0 +1,6 @@
+
+{
+  "name": "Trag.edu - Sri Lankan Past Paper Library",
+  "description": "A professional educational resource platform for Sri Lankan GCE A/L, O/L, and Grade 1-13 past papers, modeled after top library structures with AI study assistance.",
+  "requestFramePermissions": ["camera"]
+}
