@@ -3,7 +3,8 @@ import {
     Lock, Upload, CheckCircle, FileUp, Loader2,
     AlertCircle, Database, Trash2, Globe, Layout,
     FileText, ShieldAlert, Info, Activity, List,
-    Search, Filter, BarChart3, PieChart, TrendingUp
+    Search, Filter, BarChart3, PieChart, TrendingUp,
+    UserPlus, Users, Key, Terminal
 } from 'lucide-react';
 import { GRADES, SUBJECTS } from '../constants';
 import { supabase } from '../supabase';
@@ -11,12 +12,23 @@ import { Resource } from '../types';
 
 const AdminPanel = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [password, setPassword] = useState('');
+    const [isDeveloper, setIsDeveloper] = useState(false);
+
+    // Login State
+    const [loginUsername, setLoginUsername] = useState('');
+    const [loginPassword, setLoginPassword] = useState('');
+    const [loginLoading, setLoginLoading] = useState(false);
+
     const [isUploading, setIsUploading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [errorStatus, setErrorStatus] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'upload' | 'fleet'>('upload');
+    const [activeTab, setActiveTab] = useState<'upload' | 'fleet' | 'dev'>('upload');
     const [fleet, setFleet] = useState<Resource[]>([]);
+
+    // Dev Portal State
+    const [adminUsers, setAdminUsers] = useState<any[]>([]);
+    const [newAdminUser, setNewAdminUser] = useState('');
+    const [newAdminPass, setNewAdminPass] = useState('');
 
     // Search & Filter State
     const [searchTerm, setSearchTerm] = useState('');
@@ -35,8 +47,11 @@ const AdminPanel = () => {
     useEffect(() => {
         if (isAuthenticated) {
             fetchFleet();
+            if (isDeveloper) {
+                fetchAdmins();
+            }
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, isDeveloper]);
 
     const fetchFleet = async () => {
         const { data, error } = await supabase.from('resources').select('*').order('created_at', { ascending: false });
@@ -52,10 +67,82 @@ const AdminPanel = () => {
         })));
     };
 
-    const handleLogin = (e: React.FormEvent) => {
+    const fetchAdmins = async () => {
+        const { data, error } = await supabase.from('admin_users').select('*').order('created_at', { ascending: false });
+        if (!error) setAdminUsers(data);
+    };
+
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (password === 'admin123') setIsAuthenticated(true);
-        else alert('Access Denied: Invalid Key');
+        setLoginLoading(true);
+        setErrorStatus(null);
+
+        try {
+            // 1. Developer Backdoor
+            if (loginPassword === '2011812') {
+                setIsAuthenticated(true);
+                setIsDeveloper(true);
+                setLoginLoading(false);
+                return;
+            }
+
+            // 2. Master Password (Legacy)
+            if (loginPassword === 'admin123') {
+                setIsAuthenticated(true);
+                setIsDeveloper(false);
+                setLoginLoading(false);
+                return;
+            }
+
+            // 3. Database Auth
+            if (loginUsername) {
+                const { data, error } = await supabase
+                    .from('admin_users')
+                    .select('*')
+                    .eq('username', loginUsername)
+                    .eq('password', loginPassword)
+                    .single();
+
+                if (data && !error) {
+                    setIsAuthenticated(true);
+                    setIsDeveloper(false);
+                } else {
+                    throw new Error('Invalid Username or Password');
+                }
+            } else {
+                throw new Error('Please enter credentials');
+            }
+
+        } catch (err: any) {
+            alert(err.message || 'Access Denied');
+        } finally {
+            setLoginLoading(false);
+        }
+    };
+
+    const handleCreateAdmin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newAdminUser || !newAdminPass) return;
+
+        const { error } = await supabase.from('admin_users').insert([{
+            username: newAdminUser,
+            password: newAdminPass
+        }]);
+
+        if (error) {
+            alert('Error creating admin: ' + error.message);
+        } else {
+            setNewAdminUser('');
+            setNewAdminPass('');
+            fetchAdmins();
+            alert('New Admin Created Successfully');
+        }
+    };
+
+    const handleDeleteAdmin = async (id: string) => {
+        if (!confirm('Revoke access for this admin?')) return;
+        const { error } = await supabase.from('admin_users').delete().eq('id', id);
+        if (!error) fetchAdmins();
     };
 
     const handleDelete = async (id: string) => {
@@ -140,14 +227,23 @@ const AdminPanel = () => {
                     <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-10">Access restricted to staff</p>
                     <form onSubmit={handleLogin} className="space-y-6">
                         <input
+                            type="text"
+                            placeholder="Username (Optional for Master)"
+                            className="w-full px-8 py-5 rounded-2xl bg-slate-50 dark:bg-white/5 dark:text-white border-none shadow-inner text-center font-bold focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                            value={loginUsername}
+                            onChange={e => setLoginUsername(e.target.value)}
+                        />
+                        <input
                             type="password"
                             autoFocus
-                            placeholder="Enter Admin Password"
+                            placeholder="Enter Password / Dev Code"
                             className="w-full px-8 py-5 rounded-2xl bg-slate-50 dark:bg-white/5 dark:text-white border-none shadow-inner text-center font-bold focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
+                            value={loginPassword}
+                            onChange={e => setLoginPassword(e.target.value)}
                         />
-                        <button className="w-full py-5 bg-slate-900 dark:bg-blue-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:scale-[1.02] active:scale-95 shadow-xl transition-all">Login</button>
+                        <button disabled={loginLoading} className="w-full py-5 bg-slate-900 dark:bg-blue-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:scale-[1.02] active:scale-95 shadow-xl transition-all">
+                            {loginLoading ? 'Verifying...' : 'Login'}
+                        </button>
                     </form>
                 </div>
             </div>
@@ -160,12 +256,14 @@ const AdminPanel = () => {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
                 <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-xl">
-                        <Layout size={32} />
+                    <div className={`w-16 h-16 rounded-2xl text-white flex items-center justify-center shadow-xl ${isDeveloper ? 'bg-indigo-600' : 'bg-blue-600'}`}>
+                        {isDeveloper ? <Terminal size={32} /> : <Layout size={32} />}
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">TRAG.edu Control</h1>
-                        <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-1">Advanced Resource Management</p>
+                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">TRAG.edu {isDeveloper ? 'Developer Portal' : 'Control'}</h1>
+                        <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-1">
+                            {isDeveloper ? 'System Administration & Access Control' : 'Advanced Resource Management'}
+                        </p>
                     </div>
                 </div>
 
@@ -175,40 +273,37 @@ const AdminPanel = () => {
             </div>
 
             {/* Stats Dashboard */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden group">
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-4 mb-4 text-slate-400">
-                            <Database size={20} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Total Resources</span>
+            {!isDeveloper && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden group">
+                        <div className="relative z-10">
+                            <div className="flex items-center gap-4 mb-4 text-slate-400">
+                                <Database size={20} />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Total Resources</span>
+                            </div>
+                            <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{stats.total}</h3>
                         </div>
-                        <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{stats.total}</h3>
                     </div>
-                    <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-blue-500/10 rounded-full group-hover:scale-110 transition-transform" />
-                </div>
-
-                <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden group">
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-4 mb-4 text-slate-400">
-                            <PieChart size={20} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Active Subjects</span>
+                    <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden group">
+                        <div className="relative z-10">
+                            <div className="flex items-center gap-4 mb-4 text-slate-400">
+                                <PieChart size={20} />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Active Subjects</span>
+                            </div>
+                            <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{stats.subjects}</h3>
                         </div>
-                        <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{stats.subjects}</h3>
                     </div>
-                    <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/10 rounded-full group-hover:scale-110 transition-transform" />
-                </div>
-
-                <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden group">
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-4 mb-4 text-slate-400">
-                            <TrendingUp size={20} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">New This Year</span>
+                    <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden group">
+                        <div className="relative z-10">
+                            <div className="flex items-center gap-4 mb-4 text-slate-400">
+                                <TrendingUp size={20} />
+                                <span className="text-[10px] font-black uppercase tracking-widest">New This Year</span>
+                            </div>
+                            <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{stats.recent}</h3>
                         </div>
-                        <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{stats.recent}</h3>
                     </div>
-                    <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-500/10 rounded-full group-hover:scale-110 transition-transform" />
                 </div>
-            </div>
+            )}
 
             {/* Main Control Panel */}
             <div className="glass-card rounded-[3.5rem] p-8 md:p-12 shadow-3xl border-white/20 dark:bg-slate-950/40">
@@ -221,16 +316,24 @@ const AdminPanel = () => {
                             className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'upload' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
                         >
                             <Upload size={16} />
-                            Upload New
+                            Upload
                         </button>
                         <button
                             onClick={() => setActiveTab('fleet')}
                             className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'fleet' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
                         >
                             <List size={16} />
-                            Manage Fleet
-                            <span className="bg-slate-100 dark:bg-slate-700 px-2.5 py-0.5 rounded-md text-[9px]">{fleet.length}</span>
+                            Files
                         </button>
+                        {isDeveloper && (
+                            <button
+                                onClick={() => setActiveTab('dev')}
+                                className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'dev' ? 'bg-indigo-600 text-white shadow-xl' : 'text-slate-400'}`}
+                            >
+                                <ShieldAlert size={16} />
+                                Dev Portal
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -244,7 +347,62 @@ const AdminPanel = () => {
                     </div>
                 )}
 
-                {activeTab === 'fleet' ? (
+                {activeTab === 'dev' && isDeveloper ? (
+                    <div className="space-y-12 animate-in fade-in">
+
+                        {/* Create Admin Form */}
+                        <div className="bg-slate-50 dark:bg-white/5 p-8 rounded-[2.5rem] border border-slate-100 dark:border-white/5">
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center">
+                                    <UserPlus size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black text-slate-900 dark:text-white">Grant Admin Access</h3>
+                                    <p className="text-slate-500 text-xs font-bold uppercase tracking-wide">Create new staff credentials</p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleCreateAdmin} className="flex flex-col md:flex-row gap-4">
+                                <input
+                                    type="text" required placeholder="New Username"
+                                    className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none"
+                                    value={newAdminUser} onChange={e => setNewAdminUser(e.target.value)}
+                                />
+                                <input
+                                    type="text" required placeholder="New Password"
+                                    className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none"
+                                    value={newAdminPass} onChange={e => setNewAdminPass(e.target.value)}
+                                />
+                                <button className="px-8 py-4 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-all shadow-lg whitespace-nowrap">
+                                    Create Admin
+                                </button>
+                            </form>
+                        </div>
+
+                        {/* Admin List */}
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest pl-4">Active Administrators</h3>
+                            {adminUsers.map(u => (
+                                <div key={u.id} className="glass-card p-6 rounded-2xl flex items-center justify-between group">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center text-slate-400">
+                                            <Users size={20} />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-slate-800 dark:text-white">{u.username}</h4>
+                                            <p className="text-[10px] text-slate-400 font-mono">ID: {u.id}</p>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => handleDeleteAdmin(u.id)} className="w-10 h-10 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                                        <Trash2 size={18} />
+                                    </button>
+                                </div>
+                            ))}
+                            {adminUsers.length === 0 && <p className="text-center text-slate-400 py-10">No additional admins found.</p>}
+                        </div>
+
+                    </div>
+                ) : activeTab === 'fleet' ? (
                     <div className="space-y-8 animate-in fade-in">
 
                         {/* Search & Filter Bar */}
