@@ -3,13 +3,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Loader2, Camera, Maximize2, Minimize2, Volume2, VolumeX, Terminal, Cpu } from 'lucide-react';
 import { ChatMessage } from '../types';
 import { marked } from 'marked';
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { supabase } from '../supabase';
 
 interface TragAIWidgetProps {
   currentContext: string;
 }
-
-import { supabase } from '../supabase';
 
 const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -74,15 +73,16 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
     setIsLoading(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey });
-      const modelId = "gemini-1.5-flash"; // Updated to stable model
-
-      const systemInstruction = `You are 'TRAG Study Assistant', a professional educational expert for Sri Lankan students. 
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({
+        model: "gemini-1.5-flash",
+        systemInstruction: `You are 'TRAG Study Assistant', a professional educational expert for Sri Lankan students. 
       CONTEXT: ${currentContext}.
       FORMAT: Always use clean Markdown for better readability. Use bold for key terms. Use LaTeX for math.
       STYLE: Professional, encouraging, and clear. 
       BILINGUAL: You are fluent in English and Sinhala. If the user asks in Sinhala, respond in Sinhala. If English, respond in English. If bilingual, use both where helpful.
-      GOAL: Provide high-quality tutoring aligned with the Sri Lankan Ministry of Education syllabus.`;
+      GOAL: Provide high-quality tutoring aligned with the Sri Lankan Ministry of Education syllabus.`
+      });
 
       const prompt = mode === 'planner'
         ? `Create a detailed study plan for: ${currentInput}.`
@@ -90,27 +90,26 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
           ? `Explain this question step-by-step: ${currentInput || 'attached paper image'}. Ensure clear methodology.`
           : `Teach me this topic clearly: ${currentInput}.`;
 
-      const parts: any[] = [{ text: prompt }];
+      const parts: any[] = [prompt];
       if (currentImg) {
+        // Strip base64 prefix if present for the inlineData
+        const base64Data = currentImg.includes('base64,') ? currentImg.split('base64,')[1] : currentImg;
         parts.push({
           inlineData: {
             mimeType: "image/jpeg",
-            data: currentImg.split(',')[1]
+            data: base64Data
           }
         });
       }
 
-      const stream = await ai.models.generateContentStream({
-        model: modelId,
-        contents: { parts },
-        config: { systemInstruction, temperature: 0.3 }
-      });
+      const result = await model.generateContentStream(parts);
 
       let fullText = "";
       setMessages(prev => [...prev, { role: 'model', text: '' }]);
 
-      for await (const chunk of stream) {
-        fullText += chunk.text;
+      for await (const chunk of result.stream) {
+        const chunkText = chunk.text();
+        fullText += chunkText;
         setMessages(prev => {
           const updated = [...prev];
           updated[updated.length - 1].text = fullText;
