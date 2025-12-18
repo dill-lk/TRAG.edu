@@ -22,7 +22,7 @@ const AdminPanel = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [errorStatus, setErrorStatus] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'upload' | 'fleet' | 'dev'>('upload');
+    const [activeTab, setActiveTab] = useState<'upload' | 'fleet' | 'dev' | 'settings'>('upload');
     const [fleet, setFleet] = useState<Resource[]>([]);
 
     // Dev Portal State
@@ -333,6 +333,13 @@ const AdminPanel = () => {
                             <List size={16} />
                             Files
                         </button>
+                        <button
+                            onClick={() => setActiveTab('settings')}
+                            className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'settings' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
+                        >
+                            <Activity size={16} />
+                            Settings
+                        </button>
                         {isDeveloper && (
                             <button
                                 onClick={() => setActiveTab('dev')}
@@ -401,6 +408,52 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                             <h3 className="font-bold text-sm">Error Occurred</h3>
                         </div>
                         <p className="text-slate-700 dark:text-slate-300 font-medium">{errorStatus}</p>
+                    </div>
+                )}
+
+                {activeTab === 'settings' && (
+                    <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in">
+                        <div className="bg-slate-50 dark:bg-white/5 p-8 rounded-[2.5rem] border border-slate-100 dark:border-white/5">
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center">
+                                    <Activity size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black text-slate-900 dark:text-white">Exam Countdown Config</h3>
+                                    <p className="text-slate-500 text-xs font-bold uppercase tracking-wide">Manage Home Page Timers</p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={async (e) => {
+                                e.preventDefault();
+                                const form = e.target as HTMLFormElement;
+                                const data = new FormData(form);
+                                const updates = [
+                                    { key: 'EXAM_1_TITLE', value: data.get('ex1_title') },
+                                    { key: 'EXAM_1_DATE', value: data.get('ex1_date') },
+                                    { key: 'EXAM_2_TITLE', value: data.get('ex2_title') },
+                                    { key: 'EXAM_2_DATE', value: data.get('ex2_date') },
+                                ];
+                                
+                                const { error } = await supabase.from('system_settings').upsert(updates);
+                                if (!error) alert('Settings Saved!');
+                                else alert('Error saving settings');
+                            }} className="space-y-6">
+                                <div className="space-y-4">
+                                    <h4 className="font-bold text-slate-900 dark:text-white">Countdown 1 (Gradient: Indigo/Purple)</h4>
+                                    <input name="ex1_title" defaultValue="G.C.E. O/L Exam - 2024(2025)" placeholder="Title" className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold" />
+                                    <input name="ex1_date" type="date" defaultValue="2025-05-01" className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold" />
+                                </div>
+                                <div className="space-y-4">
+                                    <h4 className="font-bold text-slate-900 dark:text-white">Countdown 2 (Gradient: Pink/Rose)</h4>
+                                    <input name="ex2_title" defaultValue="G.C.E. A/L Exam - 2024(2025)" placeholder="Title" className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold" />
+                                    <input name="ex2_date" type="date" defaultValue="2025-01-28" className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold" />
+                                </div>
+                                <button className="w-full py-4 bg-purple-600 text-white rounded-xl font-black uppercase tracking-widest shadow-lg hover:scale-[1.02] transition-all">
+                                    Save Configurations
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 )}
 
