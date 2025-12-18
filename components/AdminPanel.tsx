@@ -587,7 +587,10 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                                 <FileText size={24} />
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-slate-800 dark:text-white">{r.title}</h4>
+                                                <a href={`#/paper/${r.id}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 group/link">
+                                                    <h4 className="font-bold text-slate-800 dark:text-white group-hover/link:text-blue-500 group-hover/link:underline transition-all">{r.title}</h4>
+                                                    <Globe size={14} className="text-slate-400 group-hover/link:text-blue-500 opacity-0 group-hover/link:opacity-100 transition-all" />
+                                                </a>
                                                 <div className="flex gap-2 mt-1">
                                                     <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/10 text-[10px] font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wide">{r.gradeId}</span>
                                                     <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/10 text-[10px] font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wide">{r.year}</span>
@@ -595,9 +598,21 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                                 </div>
                                             </div>
                                         </div>
-                                        <button onClick={() => handleDelete(r.id)} className="w-10 h-10 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
-                                            <Trash2 size={18} />
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(`${window.location.origin}/#/paper/${r.id}`);
+                                                    alert('Public Link Copied!');
+                                                }}
+                                                className="w-10 h-10 bg-blue-500/10 text-blue-500 rounded-xl flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all"
+                                                title="Copy Public Link"
+                                            >
+                                                <Globe size={18} />
+                                            </button>
+                                            <button onClick={() => handleDelete(r.id)} className="w-10 h-10 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
