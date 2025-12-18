@@ -127,6 +127,23 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
               <div><span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Grade</span><p className="text-2xl font-black text-slate-800 dark:text-white">{grade.name}</p></div>
             </div>
 
+            {/* PDF Preview Section */}
+            <div className="mb-12 rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg bg-slate-50 dark:bg-slate-900/50">
+              <div className="p-6 bg-slate-100 dark:bg-white/5 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
+                <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Document Preview</h3>
+                <div className="flex gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-500/50"></div>
+                  <div className="w-3 h-3 rounded-full bg-amber-400/20 border border-amber-500/50"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-400/20 border border-green-500/50"></div>
+                </div>
+              </div>
+              <iframe
+                src={`${paper.file_url}#toolbar=0&view=FitH`}
+                className="w-full h-[600px] bg-slate-50 dark:bg-slate-900"
+                title="PDF Preview"
+              />
+            </div>
+
             <div className="bg-slate-900 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
               <div className="flex items-center gap-6">
                 <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center text-white border border-white/10"><FileText size={32} /></div>

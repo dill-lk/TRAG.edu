@@ -4,7 +4,7 @@ import {
     AlertCircle, Database, Trash2, Globe, Layout,
     FileText, ShieldAlert, Info, Activity, List,
     Search, Filter, BarChart3, PieChart, TrendingUp,
-    UserPlus, Users, Key, Terminal
+    UserPlus, Users, Key, Terminal, Pencil, X
 } from 'lucide-react';
 import { GRADES, SUBJECTS, SUBJECTS_6_TO_9, SUBJECTS_10_TO_11, SUBJECTS_AL } from '../constants';
 import { supabase } from '../supabase';
@@ -46,6 +46,26 @@ const AdminPanel = () => {
     const [medium, setMedium] = useState('English');
     const [year, setYear] = useState(new Date().getFullYear().toString());
     const [file, setFile] = useState<File | null>(null);
+
+    // Edit State
+    const [editingResource, setEditingResource] = useState<any>(null);
+
+    useEffect(() => {
+        if (editingResource) {
+            setTitle(editingResource.title);
+            setGrade(editingResource.gradeId);
+            setSubject(editingResource.subjectId);
+            setType(editingResource.type);
+            setTerm(editingResource.term || '1st Term');
+            setMedium(editingResource.medium);
+            setYear(editingResource.year);
+        } else {
+            setTitle('');
+            setGrade('');
+            setSubject('');
+            setFile(null);
+        }
+    }, [editingResource]);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -157,6 +177,23 @@ const AdminPanel = () => {
         if (!confirm('Are you sure you want to delete this resource?')) return;
         const { error } = await supabase.from('resources').delete().eq('id', id);
         if (!error) fetchFleet();
+    };
+
+    const handleUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingResource) return;
+
+        const { error } = await supabase.from('resources').update({
+            title, grade_id: grade, subject_id: subject, type, term: term || null, medium, year: parseInt(year)
+        }).eq('id', editingResource.id);
+
+        if (!error) {
+            alert('Updated Successfully');
+            setEditingResource(null);
+            fetchFleet();
+        } else {
+            alert('Error updating: ' + error.message);
+        }
     };
 
     const handleUpload = async (e: React.FormEvent) => {
@@ -655,6 +692,13 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <button
+                                                onClick={() => setEditingResource(r)}
+                                                className="w-10 h-10 bg-indigo-500/10 text-indigo-500 rounded-xl flex items-center justify-center hover:bg-indigo-500 hover:text-white transition-all"
+                                                title="Edit Resource"
+                                            >
+                                                <Pencil size={18} />
+                                            </button>
+                                            <button
                                                 onClick={() => {
                                                     navigator.clipboard.writeText(`${window.location.origin}/#/paper/${r.id}`);
                                                     alert('Public Link Copied!');
@@ -807,6 +851,89 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                     </form>
                 )}
             </div>
+
+            {/* Edit Modal */}
+            {editingResource && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md animate-in fade-in">
+                    <div onClick={() => setEditingResource(null)} className="absolute inset-0" />
+                    <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-[3rem] p-8 shadow-3xl relative z-10 animate-in zoom-in-50 max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-6">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-500 rounded-xl flex items-center justify-center"><Pencil size={20} /></div>
+                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">Edit Details</h3>
+                            </div>
+                            <button onClick={() => setEditingResource(null)} className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleUpdate} className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Title</label>
+                                <input value={title} onChange={e => setTitle(e.target.value)} className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold text-slate-900 dark:text-white" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Grade</label>
+                                    <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={grade} onChange={e => setGrade(e.target.value)}>
+                                        {GRADES.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Subject</label>
+                                    <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={subject} onChange={e => setSubject(e.target.value)}>
+                                        {SUBJECTS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Type</label>
+                                    <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={type} onChange={e => setType(e.target.value)}>
+                                        <option value="Past Paper">Past Paper</option>
+                                        <option value="Model Paper">Model Paper</option>
+                                        <option value="Term Test">Term Test</option>
+                                        <option value="Short Note">Short Note</option>
+                                        <option value="Syllabus">Syllabus</option>
+                                        <option value="Teachers Guide">Teachers Guide</option>
+                                        <option value="G.C.E. O/L Exam">G.C.E. O/L Exam</option>
+                                        <option value="G.C.E. A/L Exam">G.C.E. A/L Exam</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Term</label>
+                                    <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={term} onChange={e => setTerm(e.target.value)}>
+                                        <option value="1st Term">1st Term</option>
+                                        <option value="2nd Term">2nd Term</option>
+                                        <option value="3rd Term">3rd Term</option>
+                                        <option value="">No Term</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Medium</label>
+                                    <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={medium} onChange={e => setMedium(e.target.value)}>
+                                        <option value="English">English</option>
+                                        <option value="Sinhala">Sinhala</option>
+                                        <option value="Tamil">Tamil</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Year</label>
+                                    <input type="number" value={year} onChange={e => setYear(e.target.value)} className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold text-slate-900 dark:text-white" />
+                                </div>
+                            </div>
+
+                            <button className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black uppercase tracking-widest hover:scale-[1.02] transition-all">
+                                Update Resource
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
