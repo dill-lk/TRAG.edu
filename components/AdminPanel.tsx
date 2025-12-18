@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Lock, Upload, CheckCircle, FileUp, Loader2,
     AlertCircle, Database, Trash2, Globe, Layout,
-    FileText, ShieldAlert, Info, Activity, List
+    FileText, ShieldAlert, Info, Activity, List,
+    Search, Filter, BarChart3, PieChart, TrendingUp
 } from 'lucide-react';
 import { GRADES, SUBJECTS } from '../constants';
 import { supabase } from '../supabase';
@@ -17,6 +18,11 @@ const AdminPanel = () => {
     const [activeTab, setActiveTab] = useState<'upload' | 'fleet'>('upload');
     const [fleet, setFleet] = useState<Resource[]>([]);
 
+    // Search & Filter State
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterGrade, setFilterGrade] = useState('');
+    const [filterSubject, setFilterSubject] = useState('');
+
     // Form State
     const [title, setTitle] = useState('');
     const [grade, setGrade] = useState('');
@@ -27,10 +33,10 @@ const AdminPanel = () => {
     const [file, setFile] = useState<File | null>(null);
 
     useEffect(() => {
-        if (isAuthenticated && activeTab === 'fleet') {
+        if (isAuthenticated) {
             fetchFleet();
         }
-    }, [isAuthenticated, activeTab]);
+    }, [isAuthenticated]);
 
     const fetchFleet = async () => {
         const { data, error } = await supabase.from('resources').select('*').order('created_at', { ascending: false });
@@ -89,6 +95,7 @@ const AdminPanel = () => {
             if (dbError) throw dbError;
 
             setShowSuccess(true);
+            fetchFleet(); // Refresh stats immediately
             setTimeout(() => {
                 setShowSuccess(false);
                 setTitle('');
@@ -102,6 +109,25 @@ const AdminPanel = () => {
             setIsUploading(false);
         }
     };
+
+    // Computed Stats
+    const stats = useMemo(() => {
+        return {
+            total: fleet.length,
+            subjects: new Set(fleet.map(f => f.subjectId)).size,
+            recent: fleet.filter(f => f.year === new Date().getFullYear().toString()).length
+        };
+    }, [fleet]);
+
+    // Filtered List
+    const filteredFleet = useMemo(() => {
+        return fleet.filter(r => {
+            const matchesSearch = r.title.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesGrade = filterGrade ? r.gradeId === filterGrade : true;
+            const matchesSubject = filterSubject ? r.subjectId === filterSubject : true;
+            return matchesSearch && matchesGrade && matchesSubject;
+        });
+    }, [fleet, searchTerm, filterGrade, filterSubject]);
 
     if (!isAuthenticated) {
         return (
@@ -129,30 +155,82 @@ const AdminPanel = () => {
     }
 
     return (
-        <div className="max-w-6xl mx-auto py-10 px-4">
+        <div className="max-w-7xl mx-auto py-10 px-4">
+
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
+                <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-xl">
+                        <Layout size={32} />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">TRAG.edu Control</h1>
+                        <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-1">Advanced Resource Management</p>
+                    </div>
+                </div>
+
+                <button onClick={() => setIsAuthenticated(false)} className="px-8 py-3 rounded-xl bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">
+                    Logout System
+                </button>
+            </div>
+
+            {/* Stats Dashboard */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden group">
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-4 mb-4 text-slate-400">
+                            <Database size={20} />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Total Resources</span>
+                        </div>
+                        <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{stats.total}</h3>
+                    </div>
+                    <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-blue-500/10 rounded-full group-hover:scale-110 transition-transform" />
+                </div>
+
+                <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden group">
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-4 mb-4 text-slate-400">
+                            <PieChart size={20} />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Active Subjects</span>
+                        </div>
+                        <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{stats.subjects}</h3>
+                    </div>
+                    <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/10 rounded-full group-hover:scale-110 transition-transform" />
+                </div>
+
+                <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden group">
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-4 mb-4 text-slate-400">
+                            <TrendingUp size={20} />
+                            <span className="text-[10px] font-black uppercase tracking-widest">New This Year</span>
+                        </div>
+                        <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{stats.recent}</h3>
+                    </div>
+                    <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-500/10 rounded-full group-hover:scale-110 transition-transform" />
+                </div>
+            </div>
+
+            {/* Main Control Panel */}
             <div className="glass-card rounded-[3.5rem] p-8 md:p-12 shadow-3xl border-white/20 dark:bg-slate-950/40">
 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12 pb-12 border-b border-slate-100 dark:border-white/5">
-                    <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-xl">
-                            <Layout size={32} />
-                        </div>
-                        <div>
-                            <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">TRAG.edu Control</h1>
-                            <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-1">Manage Library Resources</p>
-                        </div>
-                    </div>
-
+                {/* Tab Navigation */}
+                <div className="flex justify-center mb-12">
                     <div className="flex gap-2 p-1.5 bg-slate-100 dark:bg-white/5 rounded-2xl shadow-inner">
                         <button
                             onClick={() => setActiveTab('upload')}
-                            className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'upload' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
-                        >Upload</button>
+                            className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'upload' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
+                        >
+                            <Upload size={16} />
+                            Upload New
+                        </button>
                         <button
                             onClick={() => setActiveTab('fleet')}
-                            className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'fleet' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
-                        >Manage Files</button>
-                        <button onClick={() => setIsAuthenticated(false)} className="px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-500">Logout</button>
+                            className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'fleet' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
+                        >
+                            <List size={16} />
+                            Manage Fleet
+                            <span className="bg-slate-100 dark:bg-slate-700 px-2.5 py-0.5 rounded-md text-[9px]">{fleet.length}</span>
+                        </button>
                     </div>
                 </div>
 
@@ -167,26 +245,85 @@ const AdminPanel = () => {
                 )}
 
                 {activeTab === 'fleet' ? (
-                    <div className="space-y-4 animate-in fade-in">
-                        {fleet.length === 0 && <p className="text-center py-20 text-slate-400 font-bold uppercase text-xs tracking-widest">No papers uploaded yet</p>}
-                        <div className="grid grid-cols-1 gap-4">
-                            {fleet.map(r => (
-                                <div key={r.id} className="glass-card p-6 rounded-2xl flex items-center justify-between group hover:border-blue-500 transition-all">
-                                    <div className="flex items-center gap-5">
-                                        <div className="w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-xl flex items-center justify-center text-slate-400">
-                                            <FileText size={24} />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-slate-800 dark:text-white">{r.title}</h4>
-                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{r.gradeId} • {r.year} • {r.medium}</span>
-                                        </div>
-                                    </div>
-                                    <button onClick={() => handleDelete(r.id)} className="w-10 h-10 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
-                                        <Trash2 size={18} />
-                                    </button>
-                                </div>
-                            ))}
+                    <div className="space-y-8 animate-in fade-in">
+
+                        {/* Search & Filter Bar */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-white/5">
+                            <div className="relative group">
+                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} />
+                                <input
+                                    type="text"
+                                    placeholder="Search by title..."
+                                    className="w-full pl-14 pr-6 py-4 rounded-2xl bg-white dark:bg-slate-800 border-none shadow-sm font-bold text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400"
+                                    value={searchTerm}
+                                    onChange={e => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="relative">
+                                <select
+                                    className="w-full px-6 py-4 rounded-2xl bg-white dark:bg-slate-800 border-none shadow-sm font-bold text-slate-800 dark:text-white outline-none cursor-pointer appearance-none"
+                                    value={filterGrade}
+                                    onChange={e => setFilterGrade(e.target.value)}
+                                >
+                                    <option value="">All Grades</option>
+                                    {GRADES.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                                </select>
+                                <Filter className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+                            </div>
+
+                            <div className="relative">
+                                <select
+                                    className="w-full px-6 py-4 rounded-2xl bg-white dark:bg-slate-800 border-none shadow-sm font-bold text-slate-800 dark:text-white outline-none cursor-pointer appearance-none"
+                                    value={filterSubject}
+                                    onChange={e => setFilterSubject(e.target.value)}
+                                >
+                                    <option value="">All Subjects</option>
+                                    {Object.entries(SUBJECTS.reduce((acc, s) => {
+                                        if (!acc[s.group]) acc[s.group] = [];
+                                        acc[s.group].push(s);
+                                        return acc;
+                                    }, {} as Record<string, typeof SUBJECTS>)).map(([group, subs]) => (
+                                        <optgroup key={group} label={group}>
+                                            {subs.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                        </optgroup>
+                                    ))}
+                                </select>
+                                <Filter className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+                            </div>
                         </div>
+
+                        {filteredFleet.length === 0 ? (
+                            <div className="text-center py-20 bg-slate-50 dark:bg-white/5 rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-white/10">
+                                <div className="w-16 h-16 bg-slate-200 dark:bg-white/10 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Search size={32} />
+                                </div>
+                                <p className="text-slate-400 font-bold uppercase text-xs tracking-widest">No resources found matching criteria</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4">
+                                {filteredFleet.map(r => (
+                                    <div key={r.id} className="glass-card p-6 rounded-2xl flex items-center justify-between group hover:border-blue-500 transition-all">
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-colors shadow-sm">
+                                                <FileText size={24} />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-slate-800 dark:text-white">{r.title}</h4>
+                                                <div className="flex gap-2 mt-1">
+                                                    <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/10 text-[10px] font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wide">{r.gradeId}</span>
+                                                    <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/10 text-[10px] font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wide">{r.year}</span>
+                                                    <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/10 text-[10px] font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wide">{r.medium}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => handleDelete(r.id)} className="w-10 h-10 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 ) : showSuccess ? (
                     <div className="py-32 text-center animate-in zoom-in">
