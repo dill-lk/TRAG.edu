@@ -29,6 +29,7 @@ const AdminPanel = () => {
     const [adminUsers, setAdminUsers] = useState<any[]>([]);
     const [newAdminUser, setNewAdminUser] = useState('');
     const [newAdminPass, setNewAdminPass] = useState('');
+    const [showDbSetup, setShowDbSetup] = useState(false);
 
     // Search & Filter State
     const [searchTerm, setSearchTerm] = useState('');
@@ -337,7 +338,56 @@ const AdminPanel = () => {
                     </div>
                 </div>
 
-                {errorStatus && (
+                {showDbSetup && (
+                <div className="mb-10 p-8 bg-indigo-50 dark:bg-indigo-900/20 border-2 border-indigo-500/30 rounded-[2.5rem] animate-in slide-in-from-top-4">
+                    <div className="flex items-center gap-4 mb-4 text-indigo-600 dark:text-indigo-400">
+                        <Database size={28} />
+                        <div>
+                            <h3 className="font-black text-lg">Database Setup Required</h3>
+                            <p className="text-xs font-bold uppercase tracking-wide opacity-70">Run this SQL in Supabase to fix the error</p>
+                        </div>
+                    </div>
+                    
+                    <div className="bg-slate-900 rounded-xl p-4 overflow-x-auto border border-white/10 relative group">
+                        <pre className="text-[10px] font-mono text-emerald-400 leading-relaxed whitespace-pre">
+{`-- Run in Supabase SQL Editor
+CREATE TABLE IF NOT EXISTS public.admin_users (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  username text UNIQUE NOT NULL,
+  password text NOT NULL,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.system_settings (
+  key text PRIMARY KEY,
+  value text
+);
+
+CREATE TABLE IF NOT EXISTS public.audit_logs (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  action text NOT NULL,
+  details text,
+  performed_by text,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- IMPORTANT: Go to Database > Schema and click "Reload Schema Cache" if errors persist.`}
+                        </pre>
+                        <button 
+                            onClick={() => navigator.clipboard.writeText(`CREATE TABLE IF NOT EXISTS public.admin_users (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, username text UNIQUE NOT NULL, password text NOT NULL, created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL); CREATE TABLE IF NOT EXISTS public.system_settings (key text PRIMARY KEY, value text); CREATE TABLE IF NOT EXISTS public.audit_logs (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, action text NOT NULL, details text, performed_by text, created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL);`)}
+                            className="absolute top-4 right-4 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-bold transition-all"
+                        >
+                            Copy SQL
+                        </button>
+                    </div>
+                    <div className="mt-4 flex gap-4">
+                         <button onClick={() => setShowDbSetup(false)} className="text-slate-500 font-bold text-xs hover:text-indigo-500">Close Helper</button>
+                         <a href="https://supabase.com/dashboard/project/_/sql" target="_blank" className="text-indigo-500 font-bold text-xs hover:underline flex items-center gap-1">Open Supabase SQL <Globe size={12}/></a>
+                    </div>
+                </div>
+            )}
+
+            {errorStatus && !showDbSetup && (
                     <div className="mb-10 p-8 bg-red-500/10 border border-red-500/20 rounded-3xl animate-in slide-in-from-top-4">
                         <div className="flex items-center gap-3 text-red-500 mb-2">
                             <AlertCircle size={20} />
