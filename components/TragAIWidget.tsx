@@ -1,24 +1,23 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, Loader2, Camera, Maximize2, Minimize2, Volume2, VolumeX, Terminal, Cpu } from 'lucide-react';
+import { X, Send, Loader2, Camera, Maximize2, Minimize2, Volume2, VolumeX, Terminal, Cpu, AlertCircle } from 'lucide-react';
 import { ChatMessage } from '../types';
 import { marked } from 'marked';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { supabase } from '../supabase';
 
 interface TragAIWidgetProps {
   currentContext: string;
 }
 
-// Hardcoded API Key as requested by the user
-const GEMINI_API_KEY = "AIzaSyDubin-_dKhQqb7-m1S4c7JsOdaWAYJMes";
+// MAIN API KEY - HARDCODED AS REQUESTED
+const MAIN_KEY = "AIzaSyDubin-_dKhQqb7-m1S4c7JsOdaWAYJMes";
 
 const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [mode, setMode] = useState<'chat' | 'planner' | 'solver'>('chat');
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', text: '### Ayubowan! I am your TRAG Study Assistant\nHow can I help you today? I can explain GCE exam questions, help with study schedules, or teach you specific topics in **English** or **සිංහල**. \n\nYou can also upload a photo of any question from a paper!' }
+    { role: 'model', text: '### Ayubowan! I am your TRAG Study Assistant\nI am now using the **Primary Neural Link**. How can I help you today?' }
   ]);
   const [input, setInput] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -48,9 +47,10 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
     const userMsg = input.trim();
     if (!userMsg && !selectedImage) return;
 
+    // Add user message to UI
     setMessages(prev => [...prev, {
       role: 'user',
-      text: userMsg || "Analyze paper image.",
+      text: userMsg || "Analyzing image...",
       image: selectedImage || undefined
     }]);
 
@@ -62,24 +62,32 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
     setIsLoading(true);
 
     try {
-      const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+      // 1. Initialize SDK with hardcoded key
+      const genAI = new GoogleGenerativeAI(MAIN_KEY);
+
+      // 2. Setup Model
       const model = genAI.getGenerativeModel({
-        model: "gemini-1.5-flash",
-        systemInstruction: `You are 'TRAG Study Assistant', a professional educational expert for Sri Lankan students. 
-      CONTEXT: ${currentContext}.
-      FORMAT: Always use clean Markdown for better readability. Use bold for key terms. Use LaTeX for math.
-      STYLE: Professional, encouraging, and clear. 
-      BILINGUAL: You are fluent in English and Sinhala. If the user asks in Sinhala, respond in Sinhala. If English, respond in English. If bilingual, use both where helpful.
-      GOAL: Provide high-quality tutoring aligned with the Sri Lankan Ministry of Education syllabus.`
+        model: "gemini-2.5-flash",
       });
 
-      const prompt = mode === 'planner'
-        ? `Create a detailed study plan for: ${currentInput}.`
-        : mode === 'solver'
-          ? `Explain this question step-by-step: ${currentInput || 'attached paper image'}. Ensure clear methodology.`
-          : `Teach me this topic clearly: ${currentInput}.`;
+      const systemPrompt = `You are 'TRAG Study Assistant', a professional educational expert for Sri Lankan students. 
+      CONTEXT: ${currentContext}.
+      FORMAT: Always use clean Markdown. Use bold for key terms. Use LaTeX for math.
+      STYLE: Professional and clear. 
+      BILINGUAL: Fluent in English and Sinhala.
+      GOAL: Provide high-quality tutoring aligned with the Sri Lankan Ministry of Education syllabus.`;
 
-      const parts: any[] = [prompt];
+      // 3. Prepare Contents
+      const parts: any[] = [{ text: systemPrompt }];
+
+      const userContent = mode === 'planner'
+        ? `Create a study plan for: ${currentInput}.`
+        : mode === 'solver'
+          ? `Explain this question: ${currentInput || 'attached image'}.`
+          : currentInput;
+
+      parts.push({ text: userContent });
+
       if (currentImg) {
         const base64Data = currentImg.includes('base64,') ? currentImg.split('base64,')[1] : currentImg;
         parts.push({
@@ -90,7 +98,8 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
         });
       }
 
-      const result = await model.generateContentStream(parts);
+      // 4. Start Streaming
+      const result = await model.generateContentStream({ contents: [{ role: 'user', parts }] });
 
       let fullText = "";
       setMessages(prev => [...prev, { role: 'model', text: '' }]);
@@ -104,9 +113,14 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
           return updated;
         });
       }
-    } catch (err) {
-      console.error(err);
-      setMessages(prev => [...prev, { role: 'model', text: '### System Notice\nI am having difficulty connecting to the study hub. Please check your API key and try again.', isError: true }]);
+    } catch (err: any) {
+      console.error("Gemini Error:", err);
+      const errorDetail = err.message || "Unknown Connection Error";
+      setMessages(prev => [...prev, {
+        role: 'model',
+        text: `### 🔴 Connection Error\n${errorDetail}\n\n**Possible causes:**\n1. The API key is restricted or invalid.\n2. Your region might not be supported.\n3. Network/CORS issue.`,
+        isError: true
+      }]);
     } finally {
       setIsLoading(false);
     }
@@ -183,13 +197,15 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
                     ${msg.role === 'user'
                       ? 'bg-slate-900 dark:bg-blue-600 text-white rounded-tr-none'
                       : 'glass-card dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-tl-none border-white/5'}
+                    ${msg.isError ? 'border-red-500/50 bg-red-500/5' : ''}
                   `}>
                     {msg.image && <img src={msg.image} className="w-full rounded-[2rem] mb-8 shadow-2xl border border-white/10" alt="paper scan" />}
+                    {msg.isError && <AlertCircle className="text-red-500 mb-4" size={24} />}
                     <div
                       className="prose-content text-[15px] leading-relaxed font-medium"
                       dangerouslySetInnerHTML={renderMarkdown(msg.text)}
                     />
-                    {msg.role === 'model' && msg.text && (
+                    {msg.role === 'model' && msg.text && !msg.isError && (
                       <button onClick={() => toggleSpeech(msg.text)} className="absolute bottom-4 right-4 p-3 glass-card rounded-2xl text-slate-400 hover:text-blue-500 transition-all">
                         {isSpeaking ? <VolumeX size={18} /> : <Volume2 size={18} />}
                       </button>
