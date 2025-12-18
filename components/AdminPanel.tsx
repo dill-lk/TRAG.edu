@@ -184,7 +184,7 @@ const AdminPanel = () => {
             const { data: { publicUrl } } = supabase.storage.from('papers').getPublicUrl(fileName);
 
             const { error: dbError } = await supabase.from('resources').insert([{
-                title, grade_id: grade, subject_id: subject, type, term: type === 'Term Test' ? term : null, medium, year: parseInt(year), file_url: publicUrl
+                title, grade_id: grade, subject_id: subject, type, term: term || null, medium, year: parseInt(year), file_url: publicUrl
             }]);
 
             if (dbError) throw dbError;
@@ -434,7 +434,7 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                     { key: 'EXAM_2_TITLE', value: data.get('ex2_title') },
                                     { key: 'EXAM_2_DATE', value: data.get('ex2_date') },
                                 ];
-                                
+
                                 const { error } = await supabase.from('system_settings').upsert(updates);
                                 if (!error) alert('Settings Saved!');
                                 else alert('Error saving settings');
@@ -768,17 +768,16 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                             </select>
                                         </div>
 
-                                        {type === 'Term Test' && (
-                                            <div className="relative animate-in fade-in slide-in-from-left-4">
-                                                <select
-                                                    className="w-full px-6 py-5 rounded-2xl bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-500/30 shadow-sm font-bold outline-none cursor-pointer"
-                                                    value={term} onChange={e => setTerm(e.target.value)}>
-                                                    <option value="1st Term">1st Term</option>
-                                                    <option value="2nd Term">2nd Term</option>
-                                                    <option value="3rd Term">3rd Term</option>
-                                                </select>
-                                            </div>
-                                        )}
+                                        <div className="relative">
+                                            <select
+                                                className="w-full px-6 py-5 rounded-2xl bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-500/30 shadow-sm font-bold outline-none cursor-pointer"
+                                                value={term} onChange={e => setTerm(e.target.value)}>
+                                                <option value="1st Term">1st Term</option>
+                                                <option value="2nd Term">2nd Term</option>
+                                                <option value="3rd Term">3rd Term</option>
+                                                <option value="">No Term</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
