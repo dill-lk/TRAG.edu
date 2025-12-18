@@ -6,7 +6,7 @@ import {
     Search, Filter, BarChart3, PieChart, TrendingUp,
     UserPlus, Users, Key, Terminal
 } from 'lucide-react';
-import { GRADES, SUBJECTS } from '../constants';
+import { GRADES, SUBJECTS, SUBJECTS_6_TO_9, SUBJECTS_10_TO_11, SUBJECTS_AL } from '../constants';
 import { supabase } from '../supabase';
 import { Resource } from '../types';
 
@@ -42,6 +42,7 @@ const AdminPanel = () => {
     const [grade, setGrade] = useState('');
     const [subject, setSubject] = useState('');
     const [type, setType] = useState('Past Paper');
+    const [term, setTerm] = useState('1st Term');
     const [medium, setMedium] = useState('English');
     const [year, setYear] = useState(new Date().getFullYear().toString());
     const [file, setFile] = useState<File | null>(null);
@@ -65,6 +66,7 @@ const AdminPanel = () => {
             subjectId: r.subject_id,
             year: r.year,
             medium: r.medium,
+            term: r.term,
             file_url: r.file_url
         })));
     };
@@ -182,7 +184,7 @@ const AdminPanel = () => {
             const { data: { publicUrl } } = supabase.storage.from('papers').getPublicUrl(fileName);
 
             const { error: dbError } = await supabase.from('resources').insert([{
-                title, grade_id: grade, subject_id: subject, type, medium, year: parseInt(year), file_url: publicUrl
+                title, grade_id: grade, subject_id: subject, type, term: type === 'Term Test' ? term : null, medium, year: parseInt(year), file_url: publicUrl
             }]);
 
             if (dbError) throw dbError;
@@ -653,11 +655,19 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                         className="w-full px-8 py-5 rounded-2xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 shadow-sm font-bold outline-none cursor-pointer"
                                         value={subject} onChange={e => setSubject(e.target.value)}>
                                         <option value="" className="text-slate-900 dark:text-white">Choose Subject</option>
-                                        {Object.entries(SUBJECTS.reduce((acc, s) => {
-                                            if (!acc[s.group]) acc[s.group] = [];
-                                            acc[s.group].push(s);
-                                            return acc;
-                                        }, {} as Record<string, typeof SUBJECTS>)).map(([group, subs]) => (
+                                        {Object.entries((() => {
+                                            let currentSubjects = SUBJECTS;
+                                            if (['gr6', 'gr7', 'gr8', 'gr9'].includes(grade)) currentSubjects = SUBJECTS_6_TO_9;
+                                            else if (['gr10', 'gr11', 'ol'].includes(grade)) currentSubjects = SUBJECTS_10_TO_11;
+                                            else if (['al', 'gr12', 'gr13'].includes(grade)) currentSubjects = SUBJECTS_AL;
+
+                                            // Fallback if generic grade
+                                            return currentSubjects.reduce((acc, s) => {
+                                                if (!acc[s.group]) acc[s.group] = [];
+                                                acc[s.group].push(s);
+                                                return acc;
+                                            }, {} as Record<string, typeof SUBJECTS>);
+                                        })()).map(([group, subs]) => (
                                             <optgroup key={group} label={group} className="text-slate-900 dark:text-white font-bold bg-slate-100 dark:bg-slate-900">
                                                 {subs.map(s => (
                                                     <option key={s.id} value={s.id} className="text-slate-900 dark:text-white pl-4">
@@ -686,6 +696,36 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                             className="w-full px-6 py-5 rounded-2xl bg-slate-100 dark:bg-white/5 dark:text-white border-none shadow-inner font-bold text-center"
                                             value={year} onChange={e => setYear(e.target.value)}
                                         />
+                                    </div>
+
+                                    {/* Resource Type & Term Selector */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="relative">
+                                            <select
+                                                className="w-full px-6 py-5 rounded-2xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 shadow-sm font-bold outline-none cursor-pointer"
+                                                value={type} onChange={e => setType(e.target.value)}>
+                                                <option value="Past Paper">Past Paper</option>
+                                                <option value="Model Paper">Model Paper</option>
+                                                <option value="Term Test">Term Test</option>
+                                                <option value="Short Note">Short Note</option>
+                                                <option value="Syllabus">Syllabus</option>
+                                                <option value="Teachers Guide">Teachers Guide</option>
+                                                {(grade === 'gr11' || grade === 'ol') && <option value="G.C.E. O/L Exam">G.C.E. O/L Exam</option>}
+                                                {(grade === 'gr12' || grade === 'gr13' || grade === 'al') && <option value="G.C.E. A/L Exam">G.C.E. A/L Exam</option>}
+                                            </select>
+                                        </div>
+
+                                        {type === 'Term Test' && (
+                                            <div className="relative animate-in fade-in slide-in-from-left-4">
+                                                <select
+                                                    className="w-full px-6 py-5 rounded-2xl bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-500/30 shadow-sm font-bold outline-none cursor-pointer"
+                                                    value={term} onChange={e => setTerm(e.target.value)}>
+                                                    <option value="1st Term">1st Term</option>
+                                                    <option value="2nd Term">2nd Term</option>
+                                                    <option value="3rd Term">3rd Term</option>
+                                                </select>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

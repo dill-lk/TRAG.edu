@@ -127,7 +127,7 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ gradeId, subjectId, onNavigat
                                     <div key={medium} className="mb-12 animate-in fade-in slide-in-from-bottom-4">
                                         <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3">
                                             <span className="w-2 h-8 bg-blue-600 rounded-full"></span>
-                                            {medium === 'English' ? '🇬🇧' : medium === 'Sinhala' ? '🇱🇰' : '🕉️'} {medium} Medium
+                                            {medium} Medium
                                         </h2>
 
                                         <div className="space-y-8 pl-0 md:pl-4 border-l-2 border-slate-100 dark:border-white/5 ml-1">
