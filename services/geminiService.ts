@@ -3,15 +3,15 @@ import { GoogleGenAI } from "@google/genai";
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const chatWithTragAI = async (
-  message: string, 
+  message: string,
   context?: string,
   image?: string // Base64 string
 ): Promise<string> => {
   try {
     // Fix: Upgrade to 'gemini-3-pro-preview' for complex reasoning/educational tasks
-    const modelId = "gemini-3-pro-preview"; 
-    
-    const systemInstruction = `You are 'Trag AI v3.5 Platinum', a high-performance educational neural engine for Trag.edu, Sri Lanka. 
+    const modelId = "gemini-3-pro-preview";
+
+    const systemInstruction = `You are 'Trag AI v3.5 Platinum', a high-performance educational neural engine for TRAG.edu, Sri Lanka. 
     Expertise: G.C.E Advanced Level, Ordinary Level, and Ministry of Education curricula.
     
     RESPONSE FORMAT RULES:
@@ -24,12 +24,12 @@ export const chatWithTragAI = async (
     Current System Context: ${context || 'General Educational Analysis'}.`;
 
     const parts: any[] = [{ text: message }];
-    
+
     if (image) {
       parts.push({
         inlineData: {
           mimeType: "image/jpeg",
-          data: image.split(',')[1] 
+          data: image.split(',')[1]
         }
       });
     }

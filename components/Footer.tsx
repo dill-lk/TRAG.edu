@@ -7,12 +7,12 @@ const Footer = () => {
     <footer className="bg-slate-900 text-slate-300 py-12 border-t border-slate-800 mt-auto">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          
+
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
             <span className="text-xl font-bold text-white tracking-tight mb-4 block">Trag<span className="text-blue-500">.edu</span></span>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Trag.edu is Sri Lanka's largest free education library for past papers, marking schemes, and study resources.
+              TRAG.edu is Sri Lanka's largest free education library for past papers, marking schemes, and study resources.
             </p>
           </div>
 
@@ -54,11 +54,11 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-slate-800 mt-12 pt-8 text-center text-xs text-slate-500 flex flex-col items-center gap-4">
-          <p>&copy; {new Date().getFullYear()} Trag.edu. All rights reserved. Content is gathered from public sources for educational purposes.</p>
-          
+          <p>&copy; {new Date().getFullYear()} TRAG.edu. All rights reserved. Content is gathered from public sources for educational purposes.</p>
+
           {/* Subtle Pro Admin Access */}
-          <a 
-            href="#/admin" 
+          <a
+            href="#/admin"
             className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.4em] text-slate-700 hover:text-blue-500 transition-all group"
           >
             <ShieldCheck size={12} className="opacity-30 group-hover:opacity-100" />

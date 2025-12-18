@@ -24,12 +24,12 @@ const useHashLocation = () => {
 
 const CommandPalette = ({ isOpen, onClose, resources, onNavigate }: any) => {
   const [query, setQuery] = useState('');
-  
+
   const results = useMemo(() => {
     if (!query || query.length < 2) return [];
     const q = query.toLowerCase();
-    return resources.filter((r: any) => 
-      r.title.toLowerCase().includes(q) || 
+    return resources.filter((r: any) =>
+      r.title.toLowerCase().includes(q) ||
       r.year?.toString().includes(q)
     ).slice(0, 8);
   }, [query, resources]);
@@ -38,40 +38,40 @@ const CommandPalette = ({ isOpen, onClose, resources, onNavigate }: any) => {
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-start justify-center pt-[15vh] px-4 animate-in fade-in">
-       <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-md" onClick={onClose}></div>
-       <div className="relative w-full max-w-xl glass-card rounded-[2.5rem] overflow-hidden shadow-2xl border-white/20">
-          <div className="flex items-center p-6 border-b border-white/5">
-             <Search className="text-blue-500 mr-4" size={24} />
-             <input 
-                autoFocus
-                placeholder="Search for papers..."
-                className="bg-transparent border-none w-full text-lg font-bold focus:ring-0 outline-none text-white placeholder:text-slate-500"
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-             />
-             <div className="px-3 py-1 glass-card rounded-lg text-[9px] font-bold text-slate-500 uppercase">ESC</div>
-          </div>
-          <div className="max-h-[50vh] overflow-y-auto p-2 space-y-1">
-             {results.map((r: any) => (
-               <div 
-                 key={r.id} 
-                 onClick={() => { onNavigate(`#/paper/${r.id}`); onClose(); }}
-                 className="flex items-center justify-between p-4 hover:bg-blue-600 rounded-xl cursor-pointer group transition-all"
-               >
-                  <div className="flex items-center gap-4">
-                     <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-white"><Search size={20}/></div>
-                     <div className="text-left">
-                        <h4 className="text-white font-bold text-sm group-hover:text-white">{r.title}</h4>
-                        <span className="text-[10px] font-bold text-slate-500 uppercase group-hover:text-blue-200">{r.year} • {r.type}</span>
-                     </div>
-                  </div>
-               </div>
-             ))}
-             {query && results.length === 0 && (
-               <div className="p-10 text-center text-slate-500 font-bold uppercase text-[10px] tracking-widest">No matching papers</div>
-             )}
-          </div>
-       </div>
+      <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-md" onClick={onClose}></div>
+      <div className="relative w-full max-w-xl glass-card rounded-[2.5rem] overflow-hidden shadow-2xl border-white/20">
+        <div className="flex items-center p-6 border-b border-white/5">
+          <Search className="text-blue-500 mr-4" size={24} />
+          <input
+            autoFocus
+            placeholder="Search for papers..."
+            className="bg-transparent border-none w-full text-lg font-bold focus:ring-0 outline-none text-white placeholder:text-slate-500"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+          />
+          <div className="px-3 py-1 glass-card rounded-lg text-[9px] font-bold text-slate-500 uppercase">ESC</div>
+        </div>
+        <div className="max-h-[50vh] overflow-y-auto p-2 space-y-1">
+          {results.map((r: any) => (
+            <div
+              key={r.id}
+              onClick={() => { onNavigate(`#/paper/${r.id}`); onClose(); }}
+              className="flex items-center justify-between p-4 hover:bg-blue-600 rounded-xl cursor-pointer group transition-all"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-white"><Search size={20} /></div>
+                <div className="text-left">
+                  <h4 className="text-white font-bold text-sm group-hover:text-white">{r.title}</h4>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase group-hover:text-blue-200">{r.year} • {r.type}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+          {query && results.length === 0 && (
+            <div className="p-10 text-center text-slate-500 font-bold uppercase text-[10px] tracking-widest">No matching papers</div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
@@ -141,24 +141,24 @@ const App: React.FC = () => {
   };
 
   const getContext = () => {
-      if (main === 'paper') return `Helping student with paper: ${parts[1]}.`;
-      if (main === 'subject') return `Helping with subject module: ${parts[2]} for Grade: ${parts[1]}.`;
-      if (main === 'grade') return `Viewing papers for ${parts[1]}.`;
-      return 'Trag.edu Library Hub.';
+    if (main === 'paper') return `Helping student with paper: ${parts[1]}.`;
+    if (main === 'subject') return `Helping with subject module: ${parts[2]} for Grade: ${parts[1]}.`;
+    if (main === 'grade') return `Viewing papers for ${parts[1]}.`;
+    return 'TRAG.edu Library Hub.';
   };
 
   return (
     <div className="min-h-screen flex flex-col font-sans transition-colors duration-300 bg-white dark:bg-[#020617]">
       <Header activeRoute={main} theme={theme} onToggleTheme={toggleTheme} onOpenSearch={() => setIsPaletteOpen(true)} />
-      
+
       <main className="flex-grow pt-28 pb-16 px-4 md:px-6 max-w-7xl mx-auto w-full relative z-10">
         {isLoading && (
           <div className="fixed inset-0 z-[2000] flex flex-col items-center justify-center bg-white dark:bg-[#020617] transition-opacity duration-700">
-             <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-             <p className="text-[10px] font-bold uppercase tracking-widest text-blue-500 animate-pulse">Loading Library...</p>
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-blue-500 animate-pulse">Loading Library...</p>
           </div>
         )}
-        
+
         {main === 'home' && <Home onNavigate={navigate} resources={dbResources} />}
         {main === 'grade' && <GradePage gradeId={parts[1]} onNavigate={navigate} resources={dbResources} />}
         {main === 'subject' && <SubjectPage gradeId={parts[1]} subjectId={parts[2]} onNavigate={navigate} resources={dbResources} />}
@@ -167,11 +167,11 @@ const App: React.FC = () => {
       </main>
 
       <TragAIWidget currentContext={getContext()} />
-      <CommandPalette 
-        isOpen={isPaletteOpen} 
-        onClose={() => setIsPaletteOpen(false)} 
-        resources={dbResources} 
-        onNavigate={navigate} 
+      <CommandPalette
+        isOpen={isPaletteOpen}
+        onClose={() => setIsPaletteOpen(false)}
+        resources={dbResources}
+        onNavigate={navigate}
       />
       <Footer />
     </div>

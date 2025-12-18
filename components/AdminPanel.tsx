@@ -138,7 +138,7 @@ const AdminPanel = () => {
                             <Layout size={32} />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">Dashboard</h1>
+                            <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">TRAG.edu Control</h1>
                             <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-1">Manage Library Resources</p>
                         </div>
                     </div>
@@ -223,7 +223,19 @@ const AdminPanel = () => {
                                         className="w-full px-8 py-5 rounded-2xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 shadow-sm font-bold outline-none cursor-pointer"
                                         value={subject} onChange={e => setSubject(e.target.value)}>
                                         <option value="" className="text-slate-900 dark:text-white">Choose Subject</option>
-                                        {SUBJECTS.map(s => <option key={s.id} value={s.id} className="text-slate-900 dark:text-white">{s.name}</option>)}
+                                        {Object.entries(SUBJECTS.reduce((acc, s) => {
+                                            if (!acc[s.group]) acc[s.group] = [];
+                                            acc[s.group].push(s);
+                                            return acc;
+                                        }, {} as Record<string, typeof SUBJECTS>)).map(([group, subs]) => (
+                                            <optgroup key={group} label={group} className="text-slate-900 dark:text-white font-bold bg-slate-100 dark:bg-slate-900">
+                                                {subs.map(s => (
+                                                    <option key={s.id} value={s.id} className="text-slate-900 dark:text-white pl-4">
+                                                        {s.name}
+                                                    </option>
+                                                ))}
+                                            </optgroup>
+                                        ))}
                                     </select>
                                 </div>
                             </div>
