@@ -1,6 +1,16 @@
 import { GoogleGenAI } from "@google/genai";
+import { supabase } from '../supabase';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const getAiClient = async () => {
+  try {
+    const { data } = await supabase.from('system_settings').select('value').eq('key', 'GEMINI_API_KEY').single();
+    const apiKey = data?.value || process.env.API_KEY; // Fallback to env
+    if (!apiKey) console.warn("TRAG AI: No API Key found in DB or Env!");
+    return new GoogleGenAI({ apiKey: apiKey || '' });
+  } catch (e) {
+    return new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  }
+};
 
 export const chatWithTragAI = async (
   message: string,
@@ -8,6 +18,7 @@ export const chatWithTragAI = async (
   image?: string // Base64 string
 ): Promise<string> => {
   try {
+    const ai = await getAiClient();
     // Fix: Upgrade to 'gemini-3-pro-preview' for complex reasoning/educational tasks
     const modelId = "gemini-3-pro-preview";
 
@@ -55,6 +66,7 @@ export const chatWithTragAI = async (
 
 export const fetchExamNews = async (): Promise<{ text: string; sources: any[] }> => {
   try {
+    const ai = await getAiClient();
     const modelId = "gemini-3-flash-preview";
     const response = await ai.models.generateContent({
       model: modelId,

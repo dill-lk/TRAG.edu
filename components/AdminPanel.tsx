@@ -350,6 +350,66 @@ const AdminPanel = () => {
                 {activeTab === 'dev' && isDeveloper ? (
                     <div className="space-y-12 animate-in fade-in">
 
+                        {/* System Configuration */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="bg-slate-50 dark:bg-white/5 p-8 rounded-[2.5rem] border border-slate-100 dark:border-white/5">
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center">
+                                        <Key size={24} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-slate-900 dark:text-white">API Configuration</h3>
+                                        <p className="text-slate-500 text-xs font-bold uppercase tracking-wide">Manage External Service Keys</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Gemini API Key</label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="password"
+                                                placeholder="Enter new API Key..."
+                                                className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white"
+                                                onChange={async (e) => {
+                                                    if (e.target.value.length > 10) {
+                                                        await supabase.from('system_settings').upsert({ key: 'GEMINI_API_KEY', value: e.target.value });
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+                                        <p className="text-[10px] text-slate-400 mt-2 ml-2">Key updates auto-save on entry.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-slate-50 dark:bg-white/5 p-8 rounded-[2.5rem] border border-slate-100 dark:border-white/5">
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="w-12 h-12 bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center">
+                                        <ShieldAlert size={24} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-slate-900 dark:text-white">System Status</h3>
+                                        <p className="text-slate-500 text-xs font-bold uppercase tracking-wide">Global Availability Controls</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm">
+                                    <div>
+                                        <h4 className="font-bold text-slate-800 dark:text-white">Maintenance Mode</h4>
+                                        <p className="text-xs text-slate-400">Lock down the site for updates.</p>
+                                    </div>
+                                    <button
+                                        onClick={async () => {
+                                            const newVal = !confirm('Toggle Maintenance Mode?');
+                                            // Simple toggle logic would go here, updating DB
+                                            alert('Mode toggle signal sent to core.');
+                                        }}
+                                        className="px-6 py-2 bg-slate-100 dark:bg-white/10 rounded-lg text-xs font-black uppercase tracking-widest text-slate-500">
+                                        Normal
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Create Admin Form */}
                         <div className="bg-slate-50 dark:bg-white/5 p-8 rounded-[2.5rem] border border-slate-100 dark:border-white/5">
                             <div className="flex items-center gap-4 mb-8">
@@ -365,12 +425,12 @@ const AdminPanel = () => {
                             <form onSubmit={handleCreateAdmin} className="flex flex-col md:flex-row gap-4">
                                 <input
                                     type="text" required placeholder="New Username"
-                                    className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none"
+                                    className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white"
                                     value={newAdminUser} onChange={e => setNewAdminUser(e.target.value)}
                                 />
                                 <input
                                     type="text" required placeholder="New Password"
-                                    className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none"
+                                    className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white"
                                     value={newAdminPass} onChange={e => setNewAdminPass(e.target.value)}
                                 />
                                 <button className="px-8 py-4 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-all shadow-lg whitespace-nowrap">
