@@ -20,9 +20,9 @@ export const EXAM_CATEGORIES = [
 ];
 
 const mkSub = (id: string, name: string, sinhala: string, tamil: string, group: string, prefix: string): Subject => ({
-  id: `${prefix}-${id}`, 
-  name, 
-  sinhalaName: sinhala, 
+  id: `${prefix}-${id}`,
+  name,
+  sinhalaName: sinhala,
   tamilName: tamil,
   group
 });
@@ -33,30 +33,30 @@ export const SUBJECTS_6_TO_9: Subject[] = [
   mkSub('sci', 'Science', 'විද්‍යාව', 'அறிவியல்', '📘 Main Subjects', 'jnr'),
   mkSub('hist', 'History', 'ඉතිහාසය', 'வரலாறு', '📘 Main Subjects', 'jnr'),
   mkSub('eng', 'English Language', 'ඉංග්‍රීසි භාෂාව', 'ஆங்கில மொழி', '📘 Main Subjects', 'jnr'),
-  
+
   // 🙏 Religion
   mkSub('bud', 'Buddhism', 'බුද්ධ ධර්මය', 'பௌத்தம்', '🙏 Religion', 'jnr'),
   mkSub('cath', 'Catholicism', 'කතෝලික ධර්මය', 'கத்தோலிக்கம்', '🙏 Religion', 'jnr'),
   mkSub('chri', 'Christianity', 'ක්‍රිස්තියානි ධර්මය', 'கிறிஸ்தவம்', '🙏 Religion', 'jnr'),
   mkSub('isla', 'Islam', 'ඉස්ලාම්', 'இஸ்லாம்', '🙏 Religion', 'jnr'),
-  
+
   // 📙 Language & Literature
   mkSub('sinh-lit', 'Sinhala Language & Literature', 'සිංහල භාෂාව හා සාහිත්‍ය‍ය', '', '📙 Language & Literature', 'jnr'),
   mkSub('tam-lit', 'Tamil Language & Literature', 'දෙමළ භාෂාව හා සාහිත්‍ය‍ය', '', '📙 Language & Literature', 'jnr'),
-  
+
   // 📝 Category I
   mkSub('geo', 'Geography', 'භූගෝල විද්‍යාව', 'புவியியல்', '📝 Category I', 'jnr'),
   mkSub('civic', 'Civic Education', 'පුරවැසි අධ්‍යාපනය', 'குடிமை கல்வி', '📝 Category I', 'jnr'),
   mkSub('sl-sinh', 'Second Language (Sinhala)', 'දෙවන භාෂාව (සිංහල)', '', '📝 Category I', 'jnr'),
   mkSub('sl-tam', 'Second Language (Tamil)', 'දෙවන භාෂාව (දෙමළ)', '', '📝 Category I', 'jnr'),
-  
+
   // 📝 Category II
   mkSub('mus-ori', 'Music(Oriental)', 'සංගීතය(පෙරදිග)', '', '📝 Category II', 'jnr'),
   mkSub('mus-wes', 'Music(Western)', 'සංගීතය(අපරදිග)', '', '📝 Category II', 'jnr'),
   mkSub('art', 'Art', 'චිත්‍ර', 'கலை', '📝 Category II', 'jnr'),
   mkSub('dan-ori', 'Dancing(Oriental)', 'නැටුම්(දේශීය)', '', '📝 Category II', 'jnr'),
   mkSub('drama', 'Drama', 'නාට්‍ය හා රංග කලාව', '', '📝 Category II', 'jnr'),
-  
+
   // 📝 Category III
   mkSub('ict', 'ICT', 'තොරතුරු හා සන්නිවේදන තාක්ෂණය', '', '📝 Category III', 'jnr'),
   mkSub('health', 'Health', 'සෞඛ්‍ය', 'ஆரோக்கியம்', '📝 Category III', 'jnr'),
@@ -69,17 +69,17 @@ export const SUBJECTS_10_TO_11: Subject[] = [
   mkSub('sci', 'Science', 'විද්‍යාව', 'அறிவியல்', '📘 Main Subjects', 'snr'),
   mkSub('hist', 'History', 'ඉතිහාසය', 'வரலாறு', '📘 Main Subjects', 'snr'),
   mkSub('eng', 'English Language', 'ඉංග්‍රීසි භාෂාව', 'ஆங்கில மொழி', '📘 Main Subjects', 'snr'),
-  
+
   // 🙏 Religion
   mkSub('bud', 'Buddhism', 'බුද්ධ ධර්මය', 'பௌத்தம்', '🙏 Religion', 'snr'),
   mkSub('cath', 'Catholicism', 'කතෝලික ධර්මය', 'கத்தோலிக்கம்', '🙏 Religion', 'snr'),
   mkSub('chri', 'Christianity', 'ක්‍රිස්තියානි ධර්මය', 'கிறிஸ்தவம்', '🙏 Religion', 'snr'),
   mkSub('isla', 'Islam', 'ඉස්ලාම්', 'இஸ்லாம்', '🙏 Religion', 'snr'),
-  
+
   // 📙 Language & Literature
   mkSub('sinh-lit', 'Sinhala Language & Literature', 'සිංහල භාෂාව හා සාහිත්‍ය‍ය', '', '📙 Language & Literature', 'snr'),
   mkSub('tam-lit', 'Tamil Language & Literature', 'දෙමළ භාෂාව හා සාහිත්‍ය‍ය', '', '📙 Language & Literature', 'snr'),
-  
+
   // 📝 Category I
   mkSub('bus', 'Business Studies', 'ව්‍යාපාර අධ්‍යයනය', 'வணிக ஆய்வுகள்', '📝 Category I', 'snr'),
   mkSub('geo', 'Geography', 'භූගෝල විද්‍යාව', 'புவியியல்', '📝 Category I', 'snr'),
@@ -87,7 +87,7 @@ export const SUBJECTS_10_TO_11: Subject[] = [
   mkSub('entre', 'Entrepreneurship Studies', 'ව්‍යවසායකත්ව අධ්‍යයනය', '', '📝 Category I', 'snr'),
   mkSub('sl-sinh', 'Second Language (Sinhala)', 'දෙවන භාෂාව (සිංහල)', '', '📝 Category I', 'snr'),
   mkSub('sl-tam', 'Second Language (Tamil)', 'දෙවන භාෂාව (දෙමළ)', '', '📝 Category I', 'snr'),
-  
+
   // 📝 Category II
   mkSub('mus-ori', 'Music(Oriental)', 'සංගීතය(පෙරදිග)', '', '📝 Category II', 'snr'),
   mkSub('mus-wes', 'Music(Western)', 'සංගීතය(අපරදිග)', '', '📝 Category II', 'snr'),
@@ -97,7 +97,7 @@ export const SUBJECTS_10_TO_11: Subject[] = [
   mkSub('lit-eng', 'English Literature', 'ඉංග්‍රීසි සාහිත්‍ය', '', '📝 Category II', 'snr'),
   mkSub('lit-sinh', 'Sinhala Literature', 'සිංහල සාහිත්‍ය', '', '📝 Category II', 'snr'),
   mkSub('lit-tam', 'Tamil Literature', 'දෙමළ සාහිත්‍ය', '', '📝 Category II', 'snr'),
-  
+
   // 📝 Category III
   mkSub('ict', 'ICT', 'තොරතුරු හා සන්නිවේදන තාක්ෂණය', '', '📝 Category III', 'snr'),
   mkSub('agri', 'Agriculture', 'කෘෂිකර්මය', 'வேளாண்மை', '📝 Category III', 'snr'),
@@ -117,9 +117,12 @@ export const SUBJECTS_AL: Subject[] = [
   mkSub('chem', 'Chemistry', 'රසායන විද්‍යාව', 'රසායන විද්‍යාව', '🧪 Physical Science', 'al'),
   mkSub('bio', 'Biology', 'ජීව විද්‍යාව', 'ජීව විද්‍යාව', '🧬 Biological Science', 'al'),
   mkSub('ict', 'ICT', 'තොරතුරු තාක්ෂණය', 'තොරතුරු තාක්ෂණය', '💻 Technology', 'al'),
+  mkSub('sft', 'Science for Technology', 'තාක්ෂණවේදය සඳහා විද්‍යාව', '', '💻 Technology', 'al'),
+  mkSub('et', 'Engineering Technology', 'ඉංජිනේරු තාක්ෂණවේදය', '', '💻 Technology', 'al'),
   mkSub('econ', 'Economics', 'ආර්ථික විද්‍යාව', '', '📈 Commerce', 'al'),
   mkSub('acc', 'Accounting', 'ගිණුම්කරණය', '', '📈 Commerce', 'al'),
   mkSub('bs', 'Business Studies', 'ව්‍යාපාර අධ්‍යයනය', '', '📈 Commerce', 'al'),
+  mkSub('stat', 'Statistics', 'සංඛ්‍යානය', '', '📈 Commerce', 'al'),
 ];
 
 export const SUBJECTS: Subject[] = [...SUBJECTS_6_TO_9, ...SUBJECTS_10_TO_11, ...SUBJECTS_AL];
