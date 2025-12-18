@@ -86,8 +86,15 @@ const App: React.FC = () => {
   const [dbResources, setDbResources] = useState<Resource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [isMaintenance, setIsMaintenance] = useState(false);
 
   useEffect(() => {
+    const checkSystem = async () => {
+      const { data } = await supabase.from('system_settings').select('value').eq('key', 'MAINTENANCE_MODE').single();
+      if (data?.value === 'true') setIsMaintenance(true);
+    };
+    checkSystem();
+
     const fetchResources = async () => {
       try {
         const { data, error } = await supabase.from('resources').select('*').order('created_at', { ascending: false });
@@ -100,12 +107,15 @@ const App: React.FC = () => {
         setDbResources([...mapped, ...LOCAL_RESOURCES]);
       } catch (err) {
         setDbResources(LOCAL_RESOURCES);
+        // Dont throw in prod, just fallback
       } finally {
         setTimeout(() => setIsLoading(false), 800);
       }
     };
     fetchResources();
   }, []);
+
+  // ... (Key handlers & Theme effects) ...
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -146,6 +156,24 @@ const App: React.FC = () => {
     if (main === 'grade') return `Viewing papers for ${parts[1]}.`;
     return 'TRAG.edu Library Hub.';
   };
+
+  // Maintenance Lockdown View
+  if (isMaintenance && main !== 'admin') {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#020617] flex items-center justify-center p-6 text-center animate-in fade-in">
+        <div className="max-w-md">
+          <div className="w-24 h-24 bg-amber-500/10 text-amber-500 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl">
+            <Search size={48} className="animate-pulse" />
+          </div>
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tighter">System Offline</h1>
+          <p className="text-slate-500 text-lg mb-8">TRAG.edu is currently undergoing scheduled maintenance to upgrade our neural archives. Please check back shortly.</p>
+          <div className="inline-block px-6 py-2 bg-slate-200 dark:bg-white/5 rounded-full text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            Error Code: 503 SERVICE_UNAVAILABLE
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col font-sans transition-colors duration-300 bg-white dark:bg-[#020617]">
