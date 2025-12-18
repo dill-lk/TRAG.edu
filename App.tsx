@@ -167,8 +167,17 @@ const App: React.FC = () => {
           </div>
           <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tighter">System Offline</h1>
           <p className="text-slate-500 text-lg mb-8">TRAG.edu is currently undergoing scheduled maintenance to upgrade our neural archives. Please check back shortly.</p>
-          <div className="inline-block px-6 py-2 bg-slate-200 dark:bg-white/5 rounded-full text-[10px] font-bold uppercase tracking-widest text-slate-400">
+          <div className="inline-block px-6 py-2 bg-slate-200 dark:bg-white/5 rounded-full text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-8">
             Error Code: 503 SERVICE_UNAVAILABLE
+          </div>
+
+          <div>
+            <button
+              onClick={() => window.location.hash = '#/admin'}
+              className="text-slate-400 hover:text-blue-500 text-[10px] font-bold uppercase tracking-widest transition-colors"
+            >
+              Wait, are you an Admin? Click here to login
+            </button>
           </div>
         </div>
       </div>
