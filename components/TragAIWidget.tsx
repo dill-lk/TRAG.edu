@@ -10,32 +10,26 @@ interface TragAIWidgetProps {
   currentContext: string;
 }
 
+// Hardcoded API Key as requested by the user
+const GEMINI_API_KEY = "AIzaSyDubin-_dKhQqb7-m1S4c7JsOdaWAYJMes";
+
 const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [mode, setMode] = useState<'chat' | 'planner' | 'solver'>('chat');
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', text: '### Ayubowan! I am your Study Assistant\nHow can I help you today? I can explain GCE exam questions, help with study schedules, or teach you specific topics in **English** or **සිංහල**. \n\nYou can also upload a photo of any question from a paper!' }
+    { role: 'model', text: '### Ayubowan! I am your TRAG Study Assistant\nHow can I help you today? I can explain GCE exam questions, help with study schedules, or teach you specific topics in **English** or **සිංහල**. \n\nYou can also upload a photo of any question from a paper!' }
   ]);
   const [input, setInput] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [apiKey, setApiKey] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isOpen, isLoading]);
-
-  useEffect(() => {
-    const fetchKey = async () => {
-      const { data } = await supabase.from('system_settings').select('value').eq('key', 'GEMINI_API_KEY').single();
-      if (data?.value) setApiKey(data.value);
-    };
-    fetchKey();
-  }, []);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -54,11 +48,6 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
     const userMsg = input.trim();
     if (!userMsg && !selectedImage) return;
 
-    if (!apiKey) {
-      setMessages(prev => [...prev, { role: 'model', text: '### ⚠️ Configuration Error\nMy neural link is missing. Please ask an Admin to set the `GEMINI_API_KEY` in System Settings.', isError: true }]);
-      return;
-    }
-
     setMessages(prev => [...prev, {
       role: 'user',
       text: userMsg || "Analyze paper image.",
@@ -73,7 +62,7 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
     setIsLoading(true);
 
     try {
-      const genAI = new GoogleGenerativeAI(apiKey);
+      const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({
         model: "gemini-1.5-flash",
         systemInstruction: `You are 'TRAG Study Assistant', a professional educational expert for Sri Lankan students. 
@@ -92,7 +81,6 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
 
       const parts: any[] = [prompt];
       if (currentImg) {
-        // Strip base64 prefix if present for the inlineData
         const base64Data = currentImg.includes('base64,') ? currentImg.split('base64,')[1] : currentImg;
         parts.push({
           inlineData: {
@@ -118,7 +106,7 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
       }
     } catch (err) {
       console.error(err);
-      setMessages(prev => [...prev, { role: 'model', text: '### System Notice\nI am having difficulty connecting to the study hub. Please refresh and try again.', isError: true }]);
+      setMessages(prev => [...prev, { role: 'model', text: '### System Notice\nI am having difficulty connecting to the study hub. Please check your API key and try again.', isError: true }]);
     } finally {
       setIsLoading(false);
     }
