@@ -112,7 +112,8 @@ export const SUBJECTS_10_TO_11: Subject[] = [
 ];
 
 export const SUBJECTS_AL: Subject[] = [
-  mkSub('com-maths', 'Combined Mathematics', 'සංයුක්ත ගණිතය', 'සංයුක්ත ගණිතය', '🧪 Physical Science', 'al'),
+  mkSub('pure-maths', 'Pure Mathematics', 'ශුද්ධ ගණිතය', 'தூய கணிதம்', '🧪 Physical Science', 'al'),
+  mkSub('applied-maths', 'Applied Mathematics', 'ව්‍යවහාරික ගණිතය', 'பயன்பாட்டு கணிதம்', '🧪 Physical Science', 'al'),
   mkSub('physics', 'Physics', 'භෞතික විද්‍යාව', 'භෞතික විද්‍යාව', '🧪 Physical Science', 'al'),
   mkSub('chem', 'Chemistry', 'රසායන විද්‍යාව', 'රසායන විද්‍යාව', '🧪 Physical Science', 'al'),
   mkSub('bio', 'Biology', 'ජීව විද්‍යාව', 'ජීව විද්‍යාව', '🧬 Biological Science', 'al'),
