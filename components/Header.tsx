@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Menu, X, Sun, Moon, Command } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
+import logo from './logo.png';
 
 interface HeaderProps {
   activeRoute: string;
@@ -30,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ activeRoute, theme, onToggleTheme, onOp
 
           <a href="#/" className="flex items-center gap-3 group">
             <div className="w-20 h-20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden p-1">
-              <img src="/components/logo.png" className="w-full h-full object-contain" alt="Logo" />
+              <img src={logo} className="w-full h-full object-contain" alt="Logo" />
             </div>
             <span className="font-black text-2xl text-slate-900 dark:text-white hidden sm:block tracking-tighter">
               TRAG<span className="text-blue-500 font-medium">.edu</span>
