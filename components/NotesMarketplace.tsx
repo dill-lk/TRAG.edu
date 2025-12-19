@@ -245,16 +245,16 @@ const NotesMarketplace: React.FC = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Grade</label>
-                                    <select required className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-white/5 dark:text-white border-none font-bold outline-none" value={newGrade} onChange={e => setNewGrade(e.target.value)}>
-                                        <option value="">Select Grade</option>
-                                        {GRADES.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                                    <select required className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 font-bold outline-none cursor-pointer" value={newGrade} onChange={e => setNewGrade(e.target.value)}>
+                                        <option value="" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Select Grade</option>
+                                        {GRADES.map(g => <option key={g.id} value={g.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">{g.name}</option>)}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Subject</label>
-                                    <select required className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-white/5 dark:text-white border-none font-bold outline-none" value={newSubject} onChange={e => setNewSubject(e.target.value)}>
-                                        <option value="">Select Subject</option>
-                                        {SUBJECTS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                    <select required className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 font-bold outline-none cursor-pointer" value={newSubject} onChange={e => setNewSubject(e.target.value)}>
+                                        <option value="" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Select Subject</option>
+                                        {SUBJECTS.map(s => <option key={s.id} value={s.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">{s.name}</option>)}
                                     </select>
                                 </div>
                             </div>
