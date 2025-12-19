@@ -68,8 +68,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ paperId }) => {
     };
 
     return (
-    return (
-        <div className="glass-card rounded-3xl md:rounded-[3rem] p-4 md:p-10 mt-6 md:mt-12 border-none shadow-xl bg-white/40 dark:bg-slate-900/40">
+        <div className="glass-card rounded-none md:rounded-[3rem] p-4 md:p-10 mt-6 md:mt-12 border-none shadow-xl bg-white/40 dark:bg-slate-900/40 mx-0">
             <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-10">
                 <div className="w-9 h-9 md:w-12 md:h-12 bg-blue-600/10 text-blue-600 rounded-lg md:rounded-2xl flex items-center justify-center shrink-0">
                     <MessageSquare size={18} className="md:w-6 md:h-6" />

@@ -83,7 +83,7 @@ const StudyTimer = ({
         <svg className="w-32 h-32 md:w-64 md:h-64 -rotate-90">
           <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-slate-100 dark:text-white/5 md:hidden" />
           <circle cx="128" cy="128" r="120" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100 dark:text-white/5 hidden md:block" />
-          
+
           {/* Mobile Arc */}
           <circle
             cx="64"
@@ -106,7 +106,7 @@ const StudyTimer = ({
             stroke="currentColor"
             strokeWidth="8"
             fill="transparent"
-            strokeDasharray={754} 
+            strokeDasharray={754}
             strokeDashoffset={754 - (754 * (currentSecond / totalSeconds))}
             strokeLinecap="round"
             className={`text-blue-600 transition-all duration-1000 hidden md:block ${isActive ? 'drop-shadow-[0_0_10px_rgba(37,99,235,0.5)]' : ''}`}
@@ -178,23 +178,23 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
   if (isFocusMode) {
     return (
       <div className="focus-overlay">
-        <button onClick={() => setIsFocusMode(false)} className="absolute top-10 right-10 p-4 bg-white/10 hover:bg-red-500 text-white rounded-full transition-all">
+        <button onClick={() => setIsFocusMode(false)} className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-red-500 text-white rounded-full transition-all">
           <X size={28} />
         </button>
-        <div className="max-w-4xl w-full p-8 text-center space-y-16">
+        <div className="w-full p-4 md:p-8 text-center space-y-12 md:space-y-16">
           <div className="space-y-4">
-            <span className="text-blue-500 font-bold uppercase tracking-widest text-xs">Study Mode Active</span>
-            <h2 className="text-3xl md:text-7xl font-black text-white tracking-tighter leading-none">{paper.title}</h2>
+            <span className="text-blue-500 font-bold uppercase tracking-widest text-[10px]">Study Mode Active</span>
+            <h2 className="text-2xl md:text-7xl font-black text-white tracking-tighter leading-tight">{paper.title}</h2>
           </div>
-          <div className="scale-110">
+          <div className="scale-100 md:scale-110">
             <StudyTimer onStartFocus={() => { }} {...timerProps} />
           </div>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button onClick={() => window.open(paper.file_url, '_blank')} className="px-12 py-6 bg-white text-slate-900 rounded-[2rem] font-bold uppercase text-xs tracking-widest flex items-center justify-center gap-3">
-              <FileText size={20} /> Open PDF
+          <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
+            <button onClick={() => window.open(paper.file_url, '_blank')} className="px-10 py-5 bg-white text-slate-900 rounded-2xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3">
+              <FileText size={18} /> Open PDF
             </button>
-            <button onClick={() => (document.querySelector('button[aria-label="Ask Trag AI"]') as HTMLElement)?.click()} className="px-12 py-6 bg-blue-600 text-white rounded-[2rem] font-bold uppercase text-xs tracking-widest flex items-center justify-center gap-3">
-              <Book size={20} /> Ask AI Helper
+            <button onClick={() => (document.querySelector('button[aria-label="Ask AI Helper"]') as HTMLElement)?.click()} className="px-10 py-5 bg-blue-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3">
+              <Book size={18} /> Ask Helper
             </button>
           </div>
         </div>
@@ -203,71 +203,73 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
   }
 
   return (
-    <div className="max-w-6xl mx-auto pb-20 md:pb-32 pt-6 md:pt-10 animate-in fade-in duration-700">
-      <div className="flex items-center justify-between mb-8 md:mb-12 px-5 md:px-4">
+    <div className="w-full max-w-6xl mx-auto pb-20 md:pb-32 pt-4 md:pt-10 animate-in fade-in duration-700 overflow-x-hidden">
+      <div className="flex items-center justify-between mb-8 md:mb-12 px-4">
         <button onClick={() => onNavigate(`#/subject/${grade.id}/${subject.id}`)} className="flex items-center gap-2 text-slate-400 hover:text-blue-500 font-bold text-[10px] uppercase tracking-widest transition-all">
           <ArrowLeft size={14} /> <span className="hidden md:inline">Back to List</span><span className="md:hidden">Back</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-12 px-4 md:px-6">
-        <div className="lg:col-span-8 space-y-6 md:space-y-12">
-          <div className="glass-card rounded-[2rem] md:rounded-[3rem] p-6 md:p-16 relative overflow-hidden shadow-xl border-white/10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 md:gap-12 px-0 md:px-6">
+        <div className="lg:col-span-8 space-y-4 md:space-y-12">
+          <div className="glass-card rounded-none md:rounded-[3rem] p-6 md:p-16 relative overflow-hidden shadow-xl border-none md:border-white/10">
             <div className="flex items-center gap-2 mb-6 md:mb-10">
               <span className="px-3 py-1 bg-blue-600 text-white rounded-lg text-[8px] md:text-[10px] font-bold uppercase tracking-widest">{paper.type}</span>
               <span className="px-3 py-1 glass-card rounded-lg text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-400 border-none">Verified</span>
             </div>
 
-            <h1 className="text-3xl md:text-5xl lg:text-7xl font-black text-slate-900 dark:text-white mb-8 md:mb-12 tracking-tighter leading-tight">{paper.title}</h1>
+            <h1 className="text-3xl md:text-5xl lg:text-7xl font-black text-slate-900 dark:text-white mb-6 md:mb-12 tracking-tighter leading-tight">{paper.title}</h1>
 
-            <div className="grid grid-cols-3 gap-4 md:gap-10 mb-8 md:mb-16 border-y border-slate-100 dark:border-white/5 py-6 md:py-12">
-              <div><span className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Medium</span><p className="text-sm md:text-2xl font-black text-slate-800 dark:text-white">{paper.medium}</p></div>
-              <div><span className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Year</span><p className="text-sm md:text-2xl font-black text-slate-800 dark:text-white">{paper.year || 'N/A'}</p></div>
-              <div><span className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Grade</span><p className="text-sm md:text-2xl font-black text-slate-800 dark:text-white">{grade.name}</p></div>
+            <div className="grid grid-cols-3 gap-2 md:gap-10 mb-8 md:mb-16 border-y border-slate-100 dark:border-white/5 py-4 md:py-12">
+              <div><span className="text-[7px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Medium</span><p className="text-[11px] md:text-2xl font-black text-slate-800 dark:text-white">{paper.medium}</p></div>
+              <div><span className="text-[7px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Year</span><p className="text-[11px] md:text-2xl font-black text-slate-800 dark:text-white">{paper.year || 'N/A'}</p></div>
+              <div><span className="text-[7px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Grade</span><p className="text-[11px] md:text-2xl font-black text-slate-800 dark:text-white">{grade.name}</p></div>
             </div>
 
-            <div className="bg-slate-900 rounded-3xl md:rounded-[2.5rem] p-5 md:p-10 flex flex-col md:flex-row items-center justify-between gap-5 md:gap-8 shadow-xl mb-10 md:mb-12">
+            <div className="bg-slate-900 rounded-none md:rounded-[2.5rem] -mx-6 md:mx-0 p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 shadow-xl mb-8 md:mb-12">
               <div className="flex items-center gap-4 md:gap-6 w-full md:w-auto">
                 <div className="w-12 h-12 md:w-20 md:h-20 bg-white/5 rounded-xl md:rounded-2xl flex items-center justify-center text-white border border-white/10 shrink-0"><FileText size={20} className="md:w-8 md:h-8" /></div>
                 <div className="text-left">
-                  <h3 className="text-lg md:text-3xl font-black text-white leading-none">Download PDF</h3>
-                  <p className="text-blue-400 text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1 md:mt-2">Official Archive File</p>
+                  <h3 className="text-lg md:text-3xl font-black text-white leading-none">Ready to Download</h3>
+                  <p className="text-blue-400 text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1 md:mt-2">Official Verified Asset</p>
                 </div>
               </div>
               <div className="flex gap-2 w-full md:w-auto">
-                <button onClick={() => window.open(paper.file_url, '_blank')} className="flex-1 px-6 md:px-10 py-5 md:py-6 bg-blue-600 text-white rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 shadow-lg shadow-blue-500/30 hover:scale-[1.02] transition-all"><Download size={18} /> Get Document</button>
+                <button onClick={() => window.open(paper.file_url, '_blank')} className="flex-1 px-8 md:px-10 py-5 md:py-6 bg-blue-600 text-white rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 shadow-lg shadow-blue-500/30 hover:scale-[1.02] transition-all"><Download size={18} /> Download PDF</button>
               </div>
             </div>
 
             {/* PDF Preview Section */}
-            <div className="mb-0 rounded-2xl md:rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg bg-slate-50 dark:bg-slate-900/50">
+            <div className="mb-0 rounded-none md:rounded-[2.5rem] -mx-6 md:mx-0 overflow-hidden border-y md:border border-slate-200 dark:border-white/10 shadow-lg bg-slate-50 dark:bg-slate-900/50">
               <div className="p-4 md:p-6 bg-slate-100 dark:bg-white/5 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Preview</h3>
+                <h3 className="text-[9px] font-black uppercase tracking-widest text-slate-500">Document Preview</h3>
                 <div className="flex gap-4">
                   <button
                     onClick={() => setIsPdfFullScreen(true)}
-                    className="p-2 md:p-2.5 glass-card rounded-xl text-slate-500 hover:text-blue-500 transition-all border-none"
+                    className="p-1.5 md:p-2.5 glass-card rounded-lg md:rounded-xl text-slate-500 hover:text-blue-500 transition-all border-none"
                     title="Full Screen Preview"
                   >
-                    <Maximize2 size={16} />
+                    <Maximize2 size={14} className="md:w-4 md:h-4" />
                   </button>
                 </div>
               </div>
               <iframe
                 src={`${paper.file_url}#toolbar=0&view=FitH`}
-                className="w-full h-[400px] md:h-[600px] bg-slate-50 dark:bg-slate-900"
+                className="w-full h-[500px] md:h-[600px] bg-slate-50 dark:bg-slate-900"
                 title="PDF Preview"
               />
             </div>
           </div>
 
-          <CommentSection paperId={paper.id} />
+          <div className="px-4 md:px-0">
+            <CommentSection paperId={paper.id} />
+          </div>
         </div>
 
-        <div className="lg:col-span-4 space-y-6 md:space-y-8">
+        <div className="lg:col-span-4 space-y-4 md:space-y-8 px-4 md:px-0 mt-8 md:mt-0 pb-12 md:pb-0">
           <StudyTimer onStartFocus={() => setIsFocusMode(true)} {...timerProps} />
 
-          <div className="glass-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 space-y-6 md:space-y-8 border-none shadow-sm">
+          <div className="glass-card rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 space-y-6 md:space-y-8 border-none shadow-sm">
             <h3 className="text-lg md:text-xl font-bold tracking-tight text-slate-800 dark:text-white pb-3 md:pb-4 border-b border-slate-100 dark:border-white/5">More for you</h3>
             <div className="space-y-4 md:space-y-6">
               {resources.filter(r => r.subjectId === subject.id && r.id !== paper.id).slice(0, 4).map(r => (

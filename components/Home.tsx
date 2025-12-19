@@ -182,8 +182,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
       </section>
 
       {/* Grade Selector Section */}
-      <section className="px-4 max-w-[1500px] mx-auto space-y-16">
-        <div className="flex flex-col md:flex-row items-end justify-between px-6 gap-6">
+      <section className="px-0 md:px-4 max-w-[1500px] mx-auto space-y-16">
+        <div className="flex flex-col md:flex-row items-end justify-between px-4 md:px-6 gap-6">
           <div className="text-left">
             <span className="text-[11px] font-black text-blue-600 uppercase tracking-[0.5em] block mb-4">Archives by Level</span>
             <h2 className="font-display text-6xl md:text-8xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">Library Grade Catalog</h2>
@@ -228,7 +228,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
       </section>
 
       {/* Exam Countdown Section */}
-      <section className="px-4 max-w-6xl mx-auto mb-20 animate-in fade-in slide-in-from-bottom-8">
+      <section className="px-0 md:px-4 max-w-6xl mx-auto mb-20 animate-in fade-in slide-in-from-bottom-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="glass-card p-10 rounded-[3rem] relative overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-2xl group">
             <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:rotate-0 transition-all duration-700">
@@ -277,17 +277,22 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
       </section>
 
       {/* Recently Added Section */}
-      <section className="px-4 max-w-6xl mx-auto mb-20 animate-in fade-in slide-in-from-bottom-8">
-        <div className="flex items-center justify-between px-6 mb-8">
-          <h3 className="text-xl font-black uppercase tracking-widest text-slate-400">Recently Added</h3>
-          <span className="text-blue-500 font-bold text-[10px] uppercase tracking-widest bg-blue-500/10 px-4 py-2 rounded-full">New Arrivals</span>
+      <section className="px-0 md:px-4 pb-20 max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-12">
+        <div className="flex items-center justify-between mb-8 px-4 md:px-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-600/10 text-blue-600 rounded-xl flex items-center justify-center">
+              <Calendar size={20} />
+            </div>
+            <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tighter">Recently Added</h3>
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {resources.slice(0, 4).map(res => (
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+          {resources.slice(0, 6).map((res) => (
             <div
               key={res.id}
               onClick={() => onNavigate(`#/paper/${res.id}`)}
-              className="flex items-center justify-between p-6 bg-white dark:bg-white/5 hover:bg-blue-600 hover:text-white rounded-[2.5rem] cursor-pointer transition-all group border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-xl"
+              className="cursor-pointer glass-card rounded-none md:rounded-[2.5rem] p-6 md:p-8 hover:bg-white/60 dark:hover:bg-white/10 transition-all border-none md:border-white/5 shadow-sm group relative overflow-hidden"
             >
               <div className="flex items-center gap-6">
                 <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-500 group-hover:text-white shadow-inner">

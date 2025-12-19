@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { GRADES, SUBJECTS } from '../constants';
 import {
     ArrowLeft, FileText, ChevronRight, Layers, Bookmark,
-    Sparkles, Target, Loader2
+    Book, Target, Loader2
 } from 'lucide-react';
 import { Resource } from '../types';
 
@@ -36,18 +36,18 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ gradeId, subjectId, onNavigat
     }
 
     return (
-        <div className="max-w-6xl mx-auto pt-10 animate-in fade-in duration-700 pb-32">
+        <div className="max-w-6xl mx-auto pt-4 md:pt-10 animate-in fade-in duration-700 pb-32 px-0 md:px-6">
 
             {/* Simple Header */}
-            <div className="mb-12">
+            <div className="mb-8 md:mb-12 px-4 md:px-0">
                 <button
                     onClick={() => onNavigate(`#/grade/${gradeId}`)}
-                    className="flex items-center gap-2 text-slate-400 hover:text-blue-500 transition-all mb-8 font-bold text-[10px] uppercase tracking-widest"
+                    className="flex items-center gap-2 text-slate-400 hover:text-blue-500 transition-all mb-6 md:mb-8 font-bold text-[10px] uppercase tracking-widest"
                 >
                     <ArrowLeft size={16} /> Back
                 </button>
 
-                <div className="light-gradient-card p-10 md:p-14 rounded-[3rem] relative overflow-hidden shadow-xl border-none">
+                <div className="light-gradient-card p-8 md:p-14 rounded-none md:rounded-[3rem] relative overflow-hidden shadow-xl border-none">
                     <div className="absolute top-0 right-0 p-12 text-blue-500/5 pointer-events-none">
                         <Target size={200} />
                     </div>
@@ -88,26 +88,26 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ gradeId, subjectId, onNavigat
                     onClick={() => setActiveTab('help')}
                     className={`flex items-center gap-2 px-8 py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'help' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400'}`}
                 >
-                    <Sparkles size={16} /> Help
+                    <Book size={16} /> Helper
                 </button>
             </div>
 
             {/* List Content */}
             <div className="space-y-4">
                 {activeTab === 'help' ? (
-                    <div className="glass-card rounded-[3rem] p-12 text-center space-y-6 animate-in zoom-in-95 duration-500 border-blue-500/10">
-                        <div className="w-20 h-20 bg-blue-500/10 text-blue-600 rounded-[1.5rem] flex items-center justify-center mx-auto">
-                            <Sparkles size={36} />
+                    <div className="glass-card rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-12 text-center space-y-6 animate-in zoom-in-95 duration-500 border-none mx-4 md:mx-0 bg-white/40 dark:bg-slate-900/40">
+                        <div className="w-16 h-16 md:w-20 md:h-20 bg-blue-500/10 text-blue-600 rounded-2xl flex items-center justify-center mx-auto">
+                            <Book size={32} className="md:w-9 md:h-9" />
                         </div>
-                        <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Need a Study Plan?</h3>
-                        <p className="text-slate-500 max-w-lg mx-auto text-lg font-medium">
-                            Ask our AI Assistant to create a clear study schedule or explain difficult topics for <span className="text-blue-600 font-bold">{subject.name}</span>.
+                        <h3 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tighter">Academic Helper</h3>
+                        <p className="text-slate-500 max-w-lg mx-auto text-base md:text-lg font-medium tracking-tight">
+                            Consult our Library Helper to create a clear study schedule or explain difficult topics for <span className="text-blue-600 font-bold">{subject.name}</span>.
                         </p>
                         <button
-                            onClick={() => (document.querySelector('button[aria-label="Ask Trag AI"]') as HTMLElement)?.click()}
-                            className="px-10 py-5 bg-slate-900 dark:bg-blue-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:scale-105 transition-all"
+                            onClick={() => (document.querySelector('button[aria-label="Ask AI Helper"]') as HTMLElement)?.click()}
+                            className="w-full md:w-auto px-10 py-5 bg-slate-900 dark:bg-blue-600 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:scale-105 transition-all"
                         >
-                            Talk to AI Assistant
+                            Talk to Helper
                         </button>
                     </div>
                 ) : (
@@ -184,7 +184,7 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ gradeId, subjectId, onNavigat
 const ResourceCard = ({ item, idx, onClick, isNote = false }: any) => (
     <div
         onClick={onClick}
-        className="group light-gradient-card rounded-[2rem] p-6 cursor-pointer flex items-center gap-6 relative overflow-hidden hover:-translate-y-2 transition-all duration-500"
+        className="group light-gradient-card rounded-none md:rounded-[2rem] p-5 md:p-6 cursor-pointer flex items-center gap-4 md:gap-6 relative overflow-hidden hover:-translate-y-2 transition-all duration-500"
         style={{ animationDelay: `${idx * 80}ms` }}
     >
         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all ${!isNote ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 group-hover:bg-blue-600 group-hover:text-white' : 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white'}`}>
