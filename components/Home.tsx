@@ -224,6 +224,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
               </div>
             </div>
           ))}
+        </div>
       </section>
 
       {/* Community Marketplace Highlight */}
