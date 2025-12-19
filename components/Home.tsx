@@ -386,7 +386,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
         <div className="max-w-6xl mx-auto px-6 mb-12 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden p-1">
-              <img src="/dist/assets/logo.png" className="w-full h-full object-contain" alt="Logo" />
+              <img src="/components/logo.png" className="w-full h-full object-contain" alt="Logo" />
             </div>
             <span className="font-display font-black text-2xl tracking-tighter text-slate-900 dark:text-white">TRAG.edu</span>
           </div>
