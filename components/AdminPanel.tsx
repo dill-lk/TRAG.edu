@@ -4,7 +4,7 @@ import {
     AlertCircle, Database, Trash2, Globe, Layout,
     FileText, ShieldAlert, Info, Activity, List,
     Search, Filter, BarChart3, PieChart, TrendingUp,
-    UserPlus, Users, Key, Terminal, Pencil, X, Shield
+    UserPlus, Users, Key, Terminal, Pencil, X, Shield, Send
 } from 'lucide-react';
 import { GRADES, SUBJECTS, SUBJECTS_6_TO_9, SUBJECTS_10_TO_11, SUBJECTS_AL } from '../constants';
 import { supabase } from '../supabase';
@@ -25,6 +25,8 @@ const AdminPanel = () => {
     const [activeTab, setActiveTab] = useState<'upload' | 'fleet' | 'dev' | 'settings' | 'help'>('upload');
     const [fleet, setFleet] = useState<Resource[]>([]);
     const [helpRequests, setHelpRequests] = useState<any[]>([]);
+    const [replyText, setReplyText] = useState<{ [key: string]: string }>({});
+    const [isReplying, setIsReplying] = useState<string | null>(null);
 
     // Dev Portal State
     const [adminUsers, setAdminUsers] = useState<any[]>([]);
@@ -112,6 +114,28 @@ const AdminPanel = () => {
         if (!error) {
             fetchHelpRequests();
         }
+    };
+
+    const handleSendReply = async (id: string) => {
+        const text = replyText[id];
+        if (!text?.trim()) return;
+
+        setIsReplying(id);
+        const { error } = await supabase
+            .from('comments')
+            .update({
+                admin_reply: text,
+                status: 'resolved'
+            })
+            .eq('id', id);
+
+        if (!error) {
+            setReplyText(prev => ({ ...prev, [id]: '' }));
+            fetchHelpRequests();
+        } else {
+            alert('Error sending reply: ' + error.message);
+        }
+        setIsReplying(null);
     };
 
     const fetchAdmins = async () => {
@@ -532,6 +556,36 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                         </div>
                                         <div className="p-6 bg-slate-50 dark:bg-white/5 rounded-2xl">
                                             <p className="text-slate-700 dark:text-white font-bold leading-relaxed">{req.content}</p>
+                                        </div>
+
+                                        {/* Reply UI */}
+                                        <div className="mt-6 flex flex-col gap-4">
+                                            {req.admin_reply ? (
+                                                <div className="p-6 bg-blue-600/5 border border-blue-500/20 rounded-2xl">
+                                                    <div className="flex items-center gap-2 mb-2 text-blue-500 text-[10px] font-black uppercase tracking-widest">
+                                                        <Shield size={12} /> Admin Response
+                                                    </div>
+                                                    <p className="text-slate-700 dark:text-slate-300 font-bold italic">"{req.admin_reply}"</p>
+                                                </div>
+                                            ) : (
+                                                <div className="flex gap-4">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Type your response here..."
+                                                        className="flex-grow px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/20 shadow-inner"
+                                                        value={replyText[req.id] || ''}
+                                                        onChange={e => setReplyText(prev => ({ ...prev, [req.id]: e.target.value }))}
+                                                    />
+                                                    <button
+                                                        onClick={() => handleSendReply(req.id)}
+                                                        disabled={isReplying === req.id}
+                                                        className="px-8 py-4 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-lg flex items-center gap-2"
+                                                    >
+                                                        {isReplying === req.id ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                                                        Reply
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

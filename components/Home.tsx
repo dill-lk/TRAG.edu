@@ -224,6 +224,30 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
               </div>
             </div>
           ))}
+      </section>
+
+      {/* Community Marketplace Highlight */}
+      <section className="px-4 max-w-6xl mx-auto mb-20 animate-in fade-in slide-in-from-bottom-8">
+        <div
+          onClick={() => onNavigate('#/notes')}
+          className="glass-card p-10 md:p-16 rounded-[4rem] relative overflow-hidden bg-slate-900 text-white shadow-2xl group cursor-pointer border-none"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/40 to-purple-600/40 group-hover:scale-105 transition-transform duration-1000"></div>
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-10">
+            <div className="text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 rounded-full text-blue-300 text-[10px] font-black uppercase tracking-widest mb-6 border border-blue-500/20">
+                <BookOpen size={14} /> Peer Learning
+              </div>
+              <h3 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter">Support the Community</h3>
+              <p className="text-slate-300 text-lg md:text-xl max-w-xl font-medium leading-relaxed mb-8">Got great short notes? Share them with thousands of students across Sri Lanka.</p>
+              <div className="flex items-center gap-4 text-white font-black text-xs uppercase tracking-widest group-hover:translate-x-3 transition-transform">
+                Upload Your Notes Now <ArrowRight size={20} className="text-blue-500" />
+              </div>
+            </div>
+            <div className="w-32 h-32 md:w-48 md:h-48 bg-white/5 rounded-[3rem] flex items-center justify-center text-white/20 group-hover:text-blue-500/40 transition-colors duration-700">
+              <Upload size={80} />
+            </div>
+          </div>
         </div>
       </section>
 

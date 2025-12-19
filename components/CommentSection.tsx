@@ -9,6 +9,7 @@ interface Comment {
     content: string;
     is_help_request: boolean;
     status: string;
+    admin_reply: string | null;
     created_at: string;
 }
 
@@ -109,7 +110,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ paperId }) => {
                         disabled={isSubmitting}
                         className="absolute bottom-6 right-6 p-4 bg-blue-600 text-white rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
                     >
-                        {isSubmitting ? <span className="animate-spin block">...</span> : <Send size={24} />}
+                        {isSubmitting ? <span className="animate-spin block text-xs">...</span> : <Send size={24} />}
                     </button>
                 </div>
             </form>
@@ -152,6 +153,17 @@ const CommentSection: React.FC<CommentSectionProps> = ({ paperId }) => {
                             <p className="text-slate-700 dark:text-slate-300 font-semibold leading-relaxed">
                                 {comment.content}
                             </p>
+
+                            {comment.admin_reply && (
+                                <div className="mt-6 p-6 bg-blue-600/5 dark:bg-blue-600/10 border-l-4 border-l-blue-500 rounded-xl animate-in slide-in-from-left-4">
+                                    <div className="flex items-center gap-2 mb-2 text-blue-600 dark:text-blue-400 text-[9px] font-black uppercase tracking-widest">
+                                        <Shield size={12} /> Resource Admin Response
+                                    </div>
+                                    <p className="text-slate-800 dark:text-blue-100 font-bold italic leading-relaxed">
+                                        "{comment.admin_reply}"
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     ))
                 )}
