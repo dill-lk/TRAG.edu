@@ -21,23 +21,23 @@ const Header: React.FC<HeaderProps> = ({ activeRoute, theme, onToggleTheme, onOp
 
   return (
     <>
-      <header className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl transition-all duration-700 ease-out ${isScrolled ? 'top-2' : 'top-6'}`}>
+      <header className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-[75%] transition-all duration-700 ease-out ${isScrolled ? 'top-2' : 'top-6'}`}>
         <div className={`
-          flex items-center justify-between px-8 py-3 rounded-[3rem]
-          glass-card border-white/40 dark:border-white/10 shadow-3xl
-          ${isScrolled ? 'py-2.5 scale-[0.98]' : 'py-4'}
+          flex items-center justify-between px-8 py-1 rounded-[3rem]
+          glass-card light-gradient-card border-white/40 dark:border-white/10 shadow-3xl
+          ${isScrolled ? 'py-1 scale-[0.98]' : 'py-2'}
         `}>
 
           <a href="#/" className="flex items-center gap-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform">
-              <span className="font-black text-2xl">T</span>
+            <div className="w-20 h-20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden p-1">
+              <img src="/dist/assets/logo.png" className="w-full h-full object-contain" alt="Logo" />
             </div>
             <span className="font-black text-2xl text-slate-900 dark:text-white hidden sm:block tracking-tighter">
               TRAG<span className="text-blue-500 font-medium">.edu</span>
             </span>
           </a>
 
-          <nav className="hidden lg:flex items-center gap-2 bg-slate-900/5 dark:bg-white/5 p-1.5 rounded-full">
+          <nav className="hidden lg:flex items-center gap-2 bg-blue-900/10 dark:bg-white/5 p-1.5 rounded-full">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.name}
@@ -45,8 +45,8 @@ const Header: React.FC<HeaderProps> = ({ activeRoute, theme, onToggleTheme, onOp
                 className={`
                   px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all
                   ${(link.href === '#/' && activeRoute === 'home') || (link.href !== '#/' && activeRoute.includes(link.href.split('/')[2]))
-                    ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-xl'
-                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}
+                    ? 'bg-blue-600 text-white shadow-xl'
+                    : 'text-slate-700 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white'}
                 `}
               >
                 {link.name}
@@ -57,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({ activeRoute, theme, onToggleTheme, onOp
           <div className="flex items-center gap-3">
             <button
               onClick={onOpenSearch}
-              className="hidden md:flex items-center gap-4 px-6 py-3 glass-card bg-slate-100 dark:bg-white/5 rounded-2xl text-slate-500 hover:text-blue-500 transition-all border-none group"
+              className="hidden md:flex items-center gap-4 px-6 py-3 light-gradient-card bg-white/40 dark:bg-white/5 rounded-2xl text-slate-700 hover:text-blue-600 transition-all border-none group shadow-sm"
             >
               <Search size={18} className="group-hover:scale-110 transition-transform" />
               <div className="flex items-center gap-1.5">
@@ -68,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({ activeRoute, theme, onToggleTheme, onOp
 
             <button
               onClick={onToggleTheme}
-              className="p-3.5 glass-card bg-slate-100 dark:bg-white/5 hover:bg-blue-600 hover:text-white rounded-2xl text-slate-600 dark:text-slate-300 transition-all border-none shadow-sm"
+              className="p-3.5 light-gradient-card bg-white/40 dark:bg-white/5 hover:bg-blue-600 hover:text-white rounded-2xl text-slate-900 dark:text-slate-300 transition-all border-none shadow-md"
               aria-label="Toggle Theme"
             >
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}

@@ -1,13 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { GRADES, SUBJECTS } from '../constants';
-import { Download, FileText, ChevronRight, ArrowLeft, Timer, Play, Pause, RotateCcw, Monitor, X, Book } from 'lucide-react';
+import { Download, FileText, ChevronRight, ArrowLeft, Timer, Play, Pause, RotateCcw, Monitor, X, Book, Maximize2, Minimize2, Plus, Minus, RotateCw, Zap } from 'lucide-react';
 import { Resource } from '../types';
 
-const StudyTimer = ({ onStartFocus }: { onStartFocus: () => void }) => {
-  const [minutes, setMinutes] = useState(120);
-  const [seconds, setSeconds] = useState(0);
-  const [isActive, setIsActive] = useState(false);
-  const [preset, setPreset] = useState(120); // Track total time for progress calc
+interface StudyTimerProps {
+  onStartFocus: () => void;
+  minutes: number;
+  setMinutes: (m: number) => void;
+  seconds: number;
+  setSeconds: (s: number) => void;
+  isActive: boolean;
+  setIsActive: (a: boolean) => void;
+  preset: number;
+  setPreset: (p: number) => void;
+}
+
+const StudyTimer = ({
+  onStartFocus,
+  minutes, setMinutes,
+  seconds, setSeconds,
+  isActive, setIsActive,
+  preset, setPreset
+}: StudyTimerProps) => {
 
   useEffect(() => {
     let interval: any = null;
@@ -43,9 +57,9 @@ const StudyTimer = ({ onStartFocus }: { onStartFocus: () => void }) => {
   }
 
   // Calculate Progress
-  const totalSeconds = preset * 60;
+  const totalSeconds = (preset || 120) * 60;
   const currentSecond = (minutes * 60) + seconds;
-  const progress = ((totalSeconds - currentSecond) / totalSeconds) * 283; // 283 is approx circumference of r=45
+  const progress = totalSeconds > 0 ? ((totalSeconds - currentSecond) / totalSeconds) * 283 : 0;
 
   return (
     <div className="glass-card rounded-[2.5rem] p-10 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 shadow-2xl relative overflow-hidden">
@@ -120,6 +134,22 @@ interface PaperDetailProps {
 
 const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resources }) => {
   const [isFocusMode, setIsFocusMode] = useState(false);
+  const [isPdfFullScreen, setIsPdfFullScreen] = useState(false);
+  const [rotation, setRotation] = useState(0);
+  const [zoom, setZoom] = useState(100);
+
+  // Timer State
+  const [minutes, setMinutes] = useState(120);
+  const [seconds, setSeconds] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const [preset, setPreset] = useState(120);
+
+  const timerProps = {
+    minutes, setMinutes,
+    seconds, setSeconds,
+    isActive, setIsActive,
+    preset, setPreset
+  };
 
   const paper = resources.find(p => p.id === paperId);
   const grade = paper ? GRADES.find(g => g.id === paper.gradeId) : null;
@@ -139,7 +169,7 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
             <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none">{paper.title}</h2>
           </div>
           <div className="scale-110">
-            <StudyTimer onStartFocus={() => { }} />
+            <StudyTimer onStartFocus={() => { }} {...timerProps} />
           </div>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button onClick={() => window.open(paper.file_url, '_blank')} className="px-12 py-6 bg-white text-slate-900 rounded-[2rem] font-bold uppercase text-xs tracking-widest flex items-center justify-center gap-3">
@@ -199,10 +229,19 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
             <div className="mb-12 rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg bg-slate-50 dark:bg-slate-900/50">
               <div className="p-6 bg-slate-100 dark:bg-white/5 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
                 <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Document Preview</h3>
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-500/50"></div>
-                  <div className="w-3 h-3 rounded-full bg-amber-400/20 border border-amber-500/50"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-400/20 border border-green-500/50"></div>
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => setIsPdfFullScreen(true)}
+                    className="p-2.5 glass-card rounded-xl text-slate-500 hover:text-blue-500 transition-all border-none"
+                    title="Full Screen Preview"
+                  >
+                    <Maximize2 size={16} />
+                  </button>
+                  <div className="flex gap-2 items-center">
+                    <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-500/50"></div>
+                    <div className="w-3 h-3 rounded-full bg-amber-400/20 border border-amber-500/50"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-400/20 border border-green-500/50"></div>
+                  </div>
                 </div>
               </div>
               <iframe
@@ -226,7 +265,7 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
         </div>
 
         <div className="lg:col-span-4 space-y-8">
-          <StudyTimer onStartFocus={() => setIsFocusMode(true)} />
+          <StudyTimer onStartFocus={() => setIsFocusMode(true)} {...timerProps} />
           <div className="glass-card rounded-[2.5rem] p-10 space-y-8 border-none shadow-sm">
             <h3 className="text-xl font-bold tracking-tight text-slate-800 dark:text-white pb-4 border-b border-slate-100 dark:border-white/5">More Resources</h3>
             <div className="space-y-6">
@@ -240,6 +279,104 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
           </div>
         </div>
       </div>
+      {/* Neural View PDF 2.0 Overlay */}
+      {isPdfFullScreen && (
+        <div className="fixed inset-0 z-[100] bg-[#0f172a] flex flex-col animate-in fade-in zoom-in-95 duration-700 overflow-hidden">
+          {/* Neural Texture Overlays */}
+          <div className="absolute inset-0 pointer-events-none opacity-20 z-0">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-950 to-slate-950"></div>
+            <div className="absolute inset-0 shadow-[inset_0_0_200px_rgba(0,0,0,0.8)]"></div>
+          </div>
+
+          {/* Top Control Bar */}
+          <div className="relative z-50 flex items-center justify-between px-8 py-6 backdrop-blur-md border-b border-white/5 bg-slate-950/40">
+            <div className="flex items-center gap-6">
+              <div className="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                <FileText size={24} />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-white uppercase tracking-widest leading-none">{paper.title}</h3>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest px-2 py-0.5 bg-blue-500/10 rounded-md">Neural View 2.0</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setIsPdfFullScreen(false)}
+              className="p-4 bg-white/5 hover:bg-red-500/20 hover:text-red-500 text-slate-400 rounded-2xl transition-all group border border-white/5"
+            >
+              <X size={24} className="group-hover:rotate-90 transition-transform duration-500" />
+            </button>
+          </div>
+
+          <div className="flex-1 relative z-10 flex flex-row overflow-hidden">
+            {/* Main Document Viewport */}
+            <div className="flex-[3] relative flex items-center justify-center p-8 bg-slate-950/20">
+              <div
+                className="relative w-full h-full max-w-5xl transition-all duration-700 ease-out preserve-3d"
+                style={{
+                  transform: `rotate(${rotation}deg) scale(${zoom / 100})`,
+                  transformOrigin: 'center center'
+                }}
+              >
+                {/* Neural Ink Filter Over the PDF */}
+                <div className="absolute inset-0 pointer-events-none z-10 bg-blue-900/5 mix-blend-multiply opacity-50 rounded-sm"></div>
+                <div className="absolute inset-0 pointer-events-none z-10 bg-orange-900/5 mix-blend-screen opacity-20 rounded-sm"></div>
+
+                <iframe
+                  src={`${paper.file_url}#toolbar=0&view=FitH`}
+                  className="w-full h-full bg-white shadow-[0_40px_100px_rgba(0,0,0,0.6)] rounded-sm grayscale-[0.1] contrast-[1.05]"
+                  title="Neural PDF Stream"
+                />
+              </div>
+
+              {/* Arc Controls Hub (Bottom Center) */}
+              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-slate-900/80 backdrop-blur-3xl border border-white/10 p-2 rounded-full shadow-3xl">
+                <div className="flex items-center px-4 gap-4 border-r border-white/10">
+                  <button onClick={() => setZoom(prev => Math.max(50, prev - 20))} className="p-3 text-slate-400 hover:text-white rounded-full hover:bg-white/5 transition-all"><Minus size={18} /></button>
+                  <span className="text-[10px] font-black text-white w-10 text-center">{zoom}%</span>
+                  <button onClick={() => setZoom(prev => Math.min(300, prev + 20))} className="p-3 text-slate-400 hover:text-white rounded-full hover:bg-white/5 transition-all"><Plus size={18} /></button>
+                </div>
+                <button onClick={() => setRotation(prev => (prev + 90) % 360)} className="p-4 text-slate-400 hover:text-blue-400 rounded-full hover:bg-blue-500/10 transition-all"><RotateCw size={22} /></button>
+              </div>
+            </div>
+
+            {/* Neural AI Context Side-Panel */}
+            <div className="flex-1 flex flex-col bg-slate-950/40 backdrop-blur-xl border-l border-white/5 p-8 max-w-sm hidden xl:flex">
+              <div className="flex items-center gap-3 mb-10 pb-6 border-b border-white/5">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white"><Zap size={20} className="fill-current" /></div>
+                <h4 className="text-xs font-black text-white uppercase tracking-widest">Neural Context</h4>
+              </div>
+
+              <div className="space-y-8 overflow-y-auto pr-2 custom-scrollbar">
+                <div className="space-y-3">
+                  <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Paper Analysis</span>
+                  <div className="p-6 light-gradient-card bg-white/5 rounded-3xl border-none">
+                    <p className="text-xs font-bold text-slate-300 leading-relaxed italic">"Trag AI is analyzing the document structure and key concept markers in real-time..."</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Global Focus Hub</span>
+                  <div className="scale-75 origin-top-left -ml-2">
+                    <StudyTimer {...timerProps} onStartFocus={() => { }} />
+                  </div>
+                </div>
+
+                <div className="mt-12">
+                  <button
+                    onClick={() => (document.querySelector('button[aria-label="Ask Trag AI"]') as HTMLElement)?.click()}
+                    className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20"
+                  >
+                    Initialize AI Dialogue
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

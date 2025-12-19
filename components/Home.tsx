@@ -97,13 +97,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
   return (
     <div className="space-y-32 animate-in fade-in duration-1000 pb-24 relative">
 
-      {/* Floating Theme Toggle */}
-      <button
-        onClick={toggleTheme}
-        className="fixed bottom-8 right-8 z-50 w-16 h-16 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-2xl flex items-center justify-center hover:scale-110 transition-transform duration-300"
-      >
-        {isDark ? <Sun size={24} /> : <Moon size={24} />}
-      </button>
+
 
       {/* Announcement Banner */}
       {showAnnouncement && announcement && (
@@ -201,27 +195,31 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
             <div
               key={grade.id}
               onClick={() => onNavigate(`#/grade/${grade.id}`)}
-              className="group glass-card card-hover rounded-[3.5rem] p-12 h-[500px] relative overflow-hidden cursor-pointer flex flex-col items-center justify-between border-white/5 bg-white/40 dark:bg-slate-900/60 transition-all duration-700 hover:bg-slate-900 hover:dark:bg-blue-600 shadow-2xl"
+              className="group light-gradient-card rounded-[3.5rem] p-12 h-[500px] relative overflow-hidden cursor-pointer flex flex-col items-center justify-between transition-all duration-700 hover:-translate-y-4 hover:shadow-3xl"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-pink-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
-              <div className="w-24 h-24 rounded-full bg-slate-100/50 dark:bg-slate-800/50 flex items-center justify-center text-slate-400 group-hover:bg-white/20 group-hover:text-white transition-all duration-700 shadow-inner relative z-10">
+              <div className={`w-24 h-24 rounded-full flex items-center justify-center text-white transition-all duration-700 shadow-2xl relative z-10
+                ${grade.id === 'al' ? 'bg-gradient-to-br from-pink-500 to-rose-600' :
+                  grade.id === 'ol' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' :
+                    'bg-gradient-to-br from-cyan-500 to-blue-600'}
+              `}>
                 <GraduationCap size={44} />
               </div>
 
               <div className="relative z-10 text-center space-y-4 w-full">
-                <span className="text-[11px] font-black text-blue-600 dark:text-blue-400 group-hover:text-white/80 uppercase tracking-[0.4em] block">{grade.id.toUpperCase()} MODULE</span>
-                <p className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white group-hover:text-white transition-colors leading-tight tracking-tighter">
+                <span className="text-[11px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-[0.4em] block">{grade.id.toUpperCase()} MODULE</span>
+                <p className="text-4xl md:text-5xl font-black text-slate-950 dark:text-white transition-colors leading-tight tracking-tighter">
                   {grade.name}
                 </p>
-                <p className="text-xl font-bold text-slate-400 group-hover:text-white/70 transition-colors">
+                <p className="text-xl font-bold text-slate-700 dark:text-white/70 transition-colors">
                   {grade.sinhalaName}
                 </p>
               </div>
 
-              <div className="relative z-10 w-full pt-8 flex items-center justify-center gap-3 text-slate-400 group-hover:text-white transition-all border-t border-slate-200 dark:border-white/5 group-hover:border-white/10">
-                <span className="text-[10px] font-black uppercase tracking-[0.4em]">Browse Archive</span>
-                <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-500" />
+              <div className="relative z-10 w-full pt-8 flex items-center justify-center gap-3 text-slate-700 dark:text-white/70 transition-all border-t border-blue-900/10 dark:border-white/5">
+                <span className="text-[10px] font-black uppercase tracking-[0.4em]">Examine Archive</span>
+                <ArrowRight size={20} className="group-hover:translate-x-3 transition-transform duration-700" />
               </div>
             </div>
           ))}
@@ -387,8 +385,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
       <footer className="border-t border-slate-200 dark:border-white/5 pt-20">
         <div className="max-w-6xl mx-auto px-6 mb-12 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
-              <Flame size={20} />
+            <div className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden p-1">
+              <img src="/dist/assets/logo.png" className="w-full h-full object-contain" alt="Logo" />
             </div>
             <span className="font-display font-black text-2xl tracking-tighter text-slate-900 dark:text-white">TRAG.edu</span>
           </div>

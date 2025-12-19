@@ -47,7 +47,7 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ gradeId, subjectId, onNavigat
                     <ArrowLeft size={16} /> Back
                 </button>
 
-                <div className="glass-card p-10 md:p-14 rounded-[3rem] relative overflow-hidden bg-white/40 dark:bg-white/5 shadow-xl border-white/20">
+                <div className="light-gradient-card p-10 md:p-14 rounded-[3rem] relative overflow-hidden shadow-xl border-none">
                     <div className="absolute top-0 right-0 p-12 text-blue-500/5 pointer-events-none">
                         <Target size={200} />
                     </div>
@@ -71,16 +71,16 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ gradeId, subjectId, onNavigat
             </div>
 
             {/* Tab Switcher */}
-            <div className="flex p-1.5 bg-slate-100 dark:bg-white/5 rounded-2xl mb-10 w-fit mx-auto md:mx-0 shadow-inner">
+            <div className="flex p-1.5 bg-blue-900/10 dark:bg-white/5 rounded-2xl mb-10 w-fit mx-auto md:mx-0 shadow-inner">
                 <button
                     onClick={() => setActiveTab('papers')}
-                    className={`flex items-center gap-2 px-8 py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'papers' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
+                    className={`flex items-center gap-2 px-8 py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'papers' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-950'}`}
                 >
                     <Layers size={16} /> Papers
                 </button>
                 <button
                     onClick={() => setActiveTab('notes')}
-                    className={`flex items-center gap-2 px-8 py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'notes' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
+                    className={`flex items-center gap-2 px-8 py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'notes' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-950'}`}
                 >
                     <Bookmark size={16} /> Study Assets
                 </button>
@@ -184,7 +184,7 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ gradeId, subjectId, onNavigat
 const ResourceCard = ({ item, idx, onClick, isNote = false }: any) => (
     <div
         onClick={onClick}
-        className="group glass-card rounded-[2rem] p-6 cursor-pointer flex items-center gap-6 relative overflow-hidden card-hover"
+        className="group light-gradient-card rounded-[2rem] p-6 cursor-pointer flex items-center gap-6 relative overflow-hidden hover:-translate-y-2 transition-all duration-500"
         style={{ animationDelay: `${idx * 80}ms` }}
     >
         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all ${!isNote ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 group-hover:bg-blue-600 group-hover:text-white' : 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white'}`}>

@@ -5,6 +5,21 @@ import { ChatMessage } from '../types';
 import { marked } from 'marked';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+const PikaIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg
+    fill="currentColor"
+    fillRule="evenodd"
+    height={size}
+    width={size}
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+  >
+    <title>Pika</title>
+    <path d="M.661 19.889h8.666c-.14-1.41-1.145-2.955-3.601-4.007v-.104c2.863.88 3.893 2.386 4.312 4.11H20.73l-1.72-1.476C20.017 15.244 24 13.747 24 13.747c-.141-2.541-1.441-4.909-5.787-6.827L8.326 3c.331 4.179 1.811 6.575 5.523 7.163v.102c-2.579-.064-4.368-1.216-5.275-3.588C.698 8.123-1.201 14.156.66 19.889z"></path>
+  </svg>
+);
+
 interface TragAIWidgetProps {
   currentContext: string;
 }
@@ -149,9 +164,9 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
         onClick={() => setIsOpen(true)}
         className={`fixed bottom-8 right-8 z-[60] group transition-all duration-700 ${isOpen ? 'translate-y-24 opacity-0' : 'translate-y-0 opacity-100'}`}
       >
-        <div className="relative w-20 h-20 rounded-[2.5rem] glass-card dark:bg-blue-600 flex items-center justify-center shadow-3xl border-none overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse"></div>
-          <Cpu size={36} className="relative z-10 text-slate-900 dark:text-white group-hover:text-white transition-colors" />
+        <div className="relative w-20 h-20 rounded-[2.5rem] bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-3xl border-none overflow-hidden">
+          <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse"></div>
+          <PikaIcon size={36} className="relative z-10 text-white shadow-sm" />
         </div>
       </button>
 
@@ -191,9 +206,14 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
 
             <div className="flex-1 overflow-y-auto p-8 md:p-10 space-y-10 scroll-smooth custom-scrollbar">
               {messages.map((msg, idx) => (
-                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-6`}>
+                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} gap-4 animate-in slide-in-from-bottom-6`}>
+                  {msg.role === 'model' && (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shrink-0 shadow-lg animate-float">
+                      <PikaIcon size={20} className="text-white" />
+                    </div>
+                  )}
                   <div className={`
-                    max-w-[92%] p-8 rounded-[2.8rem] shadow-sm relative overflow-hidden
+                    max-w-[85%] p-6 rounded-[2.2rem] shadow-sm relative overflow-hidden
                     ${msg.role === 'user'
                       ? 'bg-slate-900 dark:bg-blue-600 text-white rounded-tr-none'
                       : 'glass-card dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-tl-none border-white/5'}

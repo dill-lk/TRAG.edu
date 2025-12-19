@@ -42,11 +42,11 @@ const GradePage: React.FC<GradePageProps> = ({ gradeId, onNavigate, resources })
 
   return (
     <div className="max-w-7xl mx-auto space-y-24 md:space-y-32 animate-in fade-in slide-in-from-bottom-12 duration-1000 pb-32 px-4">
-      
+
       {/* Premium Header */}
       <div className="text-center pt-16 md:pt-24 relative">
         <div className="inline-flex items-center gap-3 px-6 md:px-8 py-2 md:py-3 rounded-full glass-card border-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] md:text-[11px] font-black uppercase tracking-[0.5em] mb-8 md:mb-12 shadow-xl">
-            <GraduationCap size={20} /> Professional Academic Archive
+          <GraduationCap size={20} /> Professional Academic Archive
         </div>
         <h1 className="text-6xl md:text-[8rem] font-black text-slate-900 dark:text-white tracking-tighter mb-4 leading-none">{grade.name}</h1>
         <p className="text-3xl md:text-5xl text-blue-600 dark:text-blue-500 font-bold tracking-tight opacity-90">{grade.sinhalaName}</p>
@@ -60,62 +60,62 @@ const GradePage: React.FC<GradePageProps> = ({ gradeId, onNavigate, resources })
 
           return (
             <div key={group} className="space-y-12 md:space-y-20">
-                <div className="flex flex-col md:flex-row items-center md:items-baseline gap-4 md:gap-6 px-2">
-                    <div className="flex items-center gap-4 md:gap-6">
-                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl md:rounded-[1.8rem] bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center shadow-2xl">
-                            <LayoutGrid size={28} className="md:w-8 md:h-8" />
-                        </div>
-                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none">{group}</h2>
-                    </div>
-                    <div className="h-1 flex-grow bg-slate-100 dark:bg-white/5 rounded-full hidden md:block"></div>
+              <div className="flex flex-col md:flex-row items-center md:items-baseline gap-4 md:gap-6 px-2">
+                <div className="flex items-center gap-4 md:gap-6">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl md:rounded-[1.8rem] bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center shadow-2xl">
+                    <LayoutGrid size={28} className="md:w-8 md:h-8" />
+                  </div>
+                  <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none">{group}</h2>
                 </div>
+                <div className="h-1 flex-grow bg-slate-100 dark:bg-white/5 rounded-full hidden md:block"></div>
+              </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
-                    {subjects.map(subject => {
-                      const count = resources.filter(r => r.gradeId === gradeId && r.subjectId === subject.id).length;
-                      return (
-                        <div
-                            key={subject.id}
-                            onClick={() => onNavigate(`#/subject/${gradeId}/${subject.id}`)}
-                            className="
-                                group glass-card card-hover p-8 md:p-12
-                                rounded-[3.5rem] md:rounded-[4.5rem] cursor-pointer flex flex-col justify-between min-h-[380px] md:min-h-[440px] relative overflow-hidden border-white/5 bg-white/40 dark:bg-slate-900/40
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+                {subjects.map(subject => {
+                  const count = resources.filter(r => r.gradeId === gradeId && r.subjectId === subject.id).length;
+                  return (
+                    <div
+                      key={subject.id}
+                      onClick={() => onNavigate(`#/subject/${gradeId}/${subject.id}`)}
+                      className="
+                                group light-gradient-card p-8 md:p-12
+                                rounded-[3.5rem] md:rounded-[4.5rem] cursor-pointer flex flex-col justify-between min-h-[380px] md:min-h-[440px] relative overflow-hidden border-none
                             "
-                        >
-                            <div className="absolute top-0 right-0 p-10 md:p-12 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
-                               <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-[1.8rem] bg-blue-600 text-white flex items-center justify-center shadow-2xl">
-                                  <ArrowRight size={24} className="md:w-7 md:h-7" />
-                               </div>
-                            </div>
-
-                            <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-[2rem] bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-300 group-hover:bg-blue-600 group-hover:text-white transition-all duration-700 shadow-inner mb-8 md:mb-12">
-                                <BookOpen size={28} className="md:w-9 md:h-9" />
-                            </div>
-                            
-                            <div className="space-y-4 md:space-y-6">
-                                <div className="space-y-2 md:space-y-3">
-                                  <h3 className="font-black text-slate-900 dark:text-white text-3xl md:text-4xl leading-tight group-hover:text-blue-600 transition-colors tracking-tight">
-                                      {subject.name}
-                                  </h3>
-                                  <h3 className="font-bold text-slate-700 dark:text-slate-300 text-3xl md:text-4xl leading-tight group-hover:text-blue-500 transition-colors tracking-tight">
-                                      {subject.sinhalaName}
-                                  </h3>
-                                  {subject.tamilName && (
-                                    <h3 className="font-medium text-slate-400 dark:text-slate-500 text-2xl md:text-3xl leading-tight group-hover:text-blue-400 transition-colors tracking-tight">
-                                        {subject.tamilName}
-                                    </h3>
-                                  )}
-                                </div>
-                                
-                                <div className="flex items-center justify-between pt-4 md:pt-6 border-t border-slate-100 dark:border-white/5">
-                                    <p className="text-[10px] md:text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">{count} Documents</p>
-                                    <span className="text-[9px] md:text-[10px] font-black text-blue-500 uppercase tracking-widest group-hover:underline">Explore</span>
-                                </div>
-                            </div>
+                    >
+                      <div className="absolute top-0 right-0 p-10 md:p-12 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
+                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-[1.8rem] bg-blue-600 text-white flex items-center justify-center shadow-2xl">
+                          <ArrowRight size={24} className="md:w-7 md:h-7" />
                         </div>
-                      );
-                    })}
-                </div>
+                      </div>
+
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-[2rem] bg-blue-900/10 dark:bg-slate-800 flex items-center justify-center text-blue-600/40 group-hover:bg-blue-600 group-hover:text-white transition-all duration-700 shadow-inner mb-8 md:mb-12">
+                        <BookOpen size={28} className="md:w-9 md:h-9" />
+                      </div>
+
+                      <div className="space-y-4 md:space-y-6">
+                        <div className="space-y-2 md:space-y-3">
+                          <h3 className="font-black text-slate-900 dark:text-white text-3xl md:text-4xl leading-tight group-hover:text-blue-600 transition-colors tracking-tight">
+                            {subject.name}
+                          </h3>
+                          <h3 className="font-bold text-slate-700 dark:text-slate-300 text-3xl md:text-4xl leading-tight group-hover:text-blue-500 transition-colors tracking-tight">
+                            {subject.sinhalaName}
+                          </h3>
+                          {subject.tamilName && (
+                            <h3 className="font-medium text-slate-400 dark:text-slate-500 text-2xl md:text-3xl leading-tight group-hover:text-blue-400 transition-colors tracking-tight">
+                              {subject.tamilName}
+                            </h3>
+                          )}
+                        </div>
+
+                        <div className="flex items-center justify-between pt-4 md:pt-6 border-t border-slate-100 dark:border-white/5">
+                          <p className="text-[10px] md:text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">{count} Documents</p>
+                          <span className="text-[9px] md:text-[10px] font-black text-blue-500 uppercase tracking-widest group-hover:underline">Explore</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           );
         })}
@@ -123,12 +123,12 @@ const GradePage: React.FC<GradePageProps> = ({ gradeId, onNavigate, resources })
 
       {/* Navigation Hub */}
       <div className="pt-20 flex flex-col items-center gap-8">
-        <button 
-            onClick={() => onNavigate('#/')}
-            className="flex items-center gap-4 md:gap-6 px-12 md:px-20 py-6 md:py-10 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[2.5rem] md:rounded-[3rem] font-black text-xs md:text-sm uppercase tracking-[0.4em] hover:scale-105 active:scale-95 transition-all shadow-3xl border-none"
+        <button
+          onClick={() => onNavigate('#/')}
+          className="flex items-center gap-4 md:gap-6 px-12 md:px-20 py-6 md:py-10 bg-blue-600 text-white rounded-[2.5rem] md:rounded-[3rem] font-black text-xs md:text-sm uppercase tracking-[0.4em] hover:scale-105 active:scale-95 transition-all shadow-3xl shadow-blue-500/30 border-none"
         >
-            <HomeIcon size={24} className="md:w-7 md:h-7" />
-            🏠 BACK TO HOME
+          <HomeIcon size={24} className="md:w-7 md:h-7" />
+          🏠 BACK TO HOME
         </button>
       </div>
     </div>
