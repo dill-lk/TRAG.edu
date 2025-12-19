@@ -68,48 +68,49 @@ const CommentSection: React.FC<CommentSectionProps> = ({ paperId }) => {
     };
 
     return (
-        <div className="glass-card rounded-[3rem] p-10 mt-12 border-none shadow-xl bg-white/40 dark:bg-slate-900/40">
-            <div className="flex items-center gap-4 mb-10">
-                <div className="w-12 h-12 bg-blue-600/10 text-blue-600 rounded-2xl flex items-center justify-center">
-                    <MessageSquare size={24} />
+    return (
+        <div className="glass-card rounded-[2.5rem] md:rounded-[3rem] p-6 md:p-10 mt-8 md:mt-12 border-none shadow-xl bg-white/40 dark:bg-slate-900/40">
+            <div className="flex items-center gap-3 md:gap-4 mb-8 md:mb-10">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600/10 text-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center">
+                    <MessageSquare size={20} className="md:w-6 md:h-6" />
                 </div>
                 <div>
-                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">Student Discussion</h3>
-                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Share insights or ask for help</p>
+                    <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tighter">Student Discussion</h3>
+                    <p className="text-slate-500 text-[9px] md:text-[10px] font-bold uppercase tracking-widest">Insights & Help</p>
                 </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6 mb-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div className="relative">
-                        <User className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                        <User className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         <input
                             type="text"
-                            placeholder="Display Name (Optional)"
-                            className="w-full pl-14 pr-6 py-4 rounded-2xl bg-white dark:bg-slate-800 border-none shadow-sm font-bold placeholder:text-slate-400 text-slate-900 dark:text-white outline-none"
+                            placeholder="Name (Optional)"
+                            className="w-full pl-12 pr-4 md:pl-14 md:pr-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-white dark:bg-slate-800 border-none shadow-sm font-bold placeholder:text-slate-400 text-slate-900 dark:text-white outline-none text-xs md:text-sm"
                             value={authorName}
                             onChange={(e) => setAuthorName(e.target.value)}
                         />
                     </div>
-                    <div className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-blue-500/5 text-blue-600 text-[10px] font-bold uppercase tracking-widest border border-blue-500/10">
-                        <AlertCircle size={14} />
-                        <span>Type <strong>@admin</strong> to flag as Help Request</span>
+                    <div className="flex items-center gap-2 md:gap-3 px-5 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-blue-500/5 text-blue-600 text-[8px] md:text-[10px] font-bold uppercase tracking-widest border border-blue-500/10">
+                        <AlertCircle size={12} />
+                        <span>Type <strong>@admin</strong> for Help</span>
                     </div>
                 </div>
 
                 <div className="relative">
                     <textarea
                         required
-                        placeholder="Write your thoughts here..."
-                        className="w-full p-8 rounded-[2rem] bg-white dark:bg-slate-800 border-none shadow-sm font-bold min-h-[150px] placeholder:text-slate-400 text-slate-900 dark:text-white outline-none focus:ring-4 focus:ring-blue-500/10 transition-all"
+                        placeholder="Write your thoughts..."
+                        className="w-full p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] bg-white dark:bg-slate-800 border-none shadow-sm font-bold min-h-[120px] md:min-h-[150px] placeholder:text-slate-400 text-slate-900 dark:text-white outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-xs md:text-sm"
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                     />
                     <button
                         disabled={isSubmitting}
-                        className="absolute bottom-6 right-6 p-4 bg-blue-600 text-white rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
+                        className="absolute bottom-4 right-4 md:bottom-6 md:right-6 p-3 md:p-4 bg-blue-600 text-white rounded-xl md:rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
                     >
-                        {isSubmitting ? <span className="animate-spin block">...</span> : <Send size={24} />}
+                        {isSubmitting ? <span className="animate-spin block">...</span> : <Send size={20} className="md:w-6 md:h-6" />}
                     </button>
                 </div>
             </form>
@@ -123,8 +124,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ paperId }) => {
                     </div>
                 ) : (
                     comments.map((comment) => (
-                        <div key={comment.id} className={`p-8 rounded-[2.5rem] relative overflow-hidden transition-all ${comment.is_help_request ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-white dark:bg-white/5 shadow-sm'}`}>
-                            <div className="flex justify-between items-start mb-4">
+                        <div key={comment.id} className={`p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden transition-all ${comment.is_help_request ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-white dark:bg-white/5 shadow-sm'}`}>
+                            <div className="flex justify-between items-start mb-3 md:mb-4">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-400 font-black text-xs">
                                         {comment.author_name ? comment.author_name.charAt(0).toUpperCase() : '?'}
