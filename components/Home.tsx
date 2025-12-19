@@ -113,38 +113,38 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
       )}
 
       {/* Hero Section */}
-      <section className="text-center pt-12 pb-12 relative overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4 relative z-10">
-          <div className="inline-flex items-center gap-3 px-8 py-3 rounded-full glass-card mb-12 border-blue-500/10 text-blue-600 dark:text-blue-400 text-[11px] font-black uppercase tracking-[0.4em] shadow-lg">
-            <Flame size={16} />
-            <span>Sri Lanka's Professional Paper Repository</span>
+      <section className="text-center pt-8 md:pt-12 pb-8 md:pb-12 relative overflow-hidden">
+        <div className="max-w-6xl mx-auto px-5 md:px-4 relative z-10">
+          <div className="inline-flex items-center gap-2 md:gap-3 px-6 md:px-8 py-2 md:py-3 rounded-full glass-card mb-8 md:mb-12 border-blue-500/10 text-blue-600 dark:text-blue-400 text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em] shadow-lg">
+            <Flame size={14} className="md:w-4 md:h-4" />
+            <span>Sri Lanka's Digital Archive</span>
           </div>
 
-          <h1 className="font-display text-7xl md:text-[10rem] font-black tracking-tighter leading-[0.8] mb-12 text-slate-900 dark:text-white">
+          <h1 className="font-display text-5xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.8] mb-8 md:mb-12 text-slate-900 dark:text-white">
             Digital <br />
             <span className="text-shimmer">Archives.</span>
           </h1>
 
-          <div className="flex flex-col items-center gap-4 mb-20">
-            <p className="text-2xl md:text-3xl text-slate-600 dark:text-slate-300 max-w-4xl mx-auto leading-relaxed font-bold tracking-tight">
-              High-quality past papers and marking schemes for all examination cycles.
+          <div className="flex flex-col items-center gap-3 md:gap-4 mb-12 md:mb-20">
+            <p className="text-xl md:text-3xl text-slate-600 dark:text-slate-300 max-w-4xl mx-auto leading-relaxed font-bold tracking-tight">
+              High-quality past papers for all exam cycles.
             </p>
-            <p className="text-lg md:text-xl text-blue-600 dark:text-blue-500 font-medium tracking-wide">
-              සියලුම විභාග ප්‍රශ්න පත්‍ර සහ පිළිතුරු පත්‍ර මෙතැනින් ලබාගන්න.
+            <p className="text-base md:text-xl text-blue-600 dark:text-blue-500 font-medium tracking-wide">
+              විභාග ප්‍රශ්න පත්‍ර මෙතැනින් ලබාගන්න.
             </p>
           </div>
 
           {/* Search Box */}
-          <div className="relative max-w-4xl mx-auto group">
+          <div className="relative max-w-4xl mx-auto group px-2 md:px-0">
             <div className="absolute -inset-4 bg-blue-600/10 rounded-[4rem] blur-[100px] opacity-0 group-hover:opacity-100 transition duration-1000"></div>
-            <div className="relative glass-card rounded-[3.5rem] p-4 shadow-3xl overflow-visible border-white/40 dark:border-white/5">
+            <div className="relative glass-card rounded-3xl md:rounded-[3.5rem] p-2 md:p-4 shadow-3xl overflow-visible border-white/40 dark:border-white/5">
               <div className="flex items-center">
-                <div className="flex-1 flex items-center pl-10">
-                  <Search className="text-blue-600 mr-8" size={36} />
+                <div className="flex-1 flex items-center pl-6 md:pl-10">
+                  <Search className="text-blue-600 mr-4 md:mr-8 shrink-0 size-6 md:size-9" />
                   <input
                     type="text"
-                    placeholder="Search Year, Grade, or Subject / වසර හෝ විෂය සොයන්න..."
-                    className="bg-transparent border-none w-full py-8 text-2xl font-bold focus:ring-0 outline-none placeholder:text-slate-300 text-slate-900 dark:text-white tracking-tight"
+                    placeholder="Search Year or Subject..."
+                    className="bg-transparent border-none w-full py-5 md:py-8 text-lg md:text-2xl font-bold focus:ring-0 outline-none placeholder:text-slate-300 text-slate-900 dark:text-white tracking-tight"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -152,25 +152,25 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
               </div>
 
               {searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-8 glass-card rounded-[3.5rem] p-8 shadow-3xl z-[100] animate-in slide-in-from-top-6 duration-500">
-                  <div className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 mb-6 px-6 border-b border-white/5 pb-4">Direct Archive Access</div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="absolute top-full left-0 right-0 mt-4 md:mt-8 glass-card rounded-3xl md:rounded-[3.5rem] p-4 md:p-8 shadow-3xl z-[100] animate-in slide-in-from-top-6 duration-500">
+                  <div className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4 md:mb-6 px-4 md:px-6 border-b border-white/5 pb-2 md:pb-4">Direct Archive Access</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 overflow-y-auto max-h-[40vh]">
                     {searchResults.map(res => (
                       <div
                         key={res.id}
                         onClick={() => onNavigate(`#/paper/${res.id}`)}
-                        className="flex items-center justify-between p-6 hover:bg-blue-600 hover:text-white rounded-[2.5rem] cursor-pointer transition-all group"
+                        className="flex items-center justify-between p-4 md:p-6 hover:bg-blue-600 hover:text-white rounded-2xl md:rounded-[2.5rem] cursor-pointer transition-all group"
                       >
-                        <div className="flex items-center gap-6">
-                          <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-500 group-hover:text-white shadow-inner">
-                            <FileText size={24} />
+                        <div className="flex items-center gap-4 md:gap-6">
+                          <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-500 group-hover:text-white shadow-inner shrink-0">
+                            <FileText size={18} className="md:w-6 md:h-6" />
                           </div>
-                          <div className="text-left">
-                            <h4 className="font-black text-lg group-hover:text-white leading-none mb-1">{res.title}</h4>
-                            <span className="text-[10px] font-black uppercase tracking-widest opacity-50">{res.type} • {res.year}</span>
+                          <div className="text-left min-w-0">
+                            <h4 className="font-black text-sm md:text-lg group-hover:text-white leading-none mb-1 truncate">{res.title}</h4>
+                            <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-50">{res.type} • {res.year}</span>
                           </div>
                         </div>
-                        <ArrowRight size={20} className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all" />
+                        <ArrowRight size={16} className="md:w-5 md:h-5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all shrink-0" />
                       </div>
                     ))}
                   </div>
@@ -191,36 +191,36 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
           <p className="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-500 text-right opacity-80">ශ්‍රේණිය අනුව ප්‍රශ්න පත්‍ර තෝරන්න.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 px-2 md:px-0">
           {GRADES.map((grade) => (
             <div
               key={grade.id}
               onClick={() => onNavigate(`#/grade/${grade.id}`)}
-              className="group light-gradient-card rounded-[3.5rem] p-12 h-[500px] relative overflow-hidden cursor-pointer flex flex-col items-center justify-between transition-all duration-700 hover:-translate-y-4 hover:shadow-3xl"
+              className="group light-gradient-card rounded-[2.5rem] md:rounded-[3.5rem] p-10 md:p-12 h-[400px] md:h-[500px] relative overflow-hidden cursor-pointer flex flex-col items-center justify-between transition-all duration-700 hover:-translate-y-4 hover:shadow-3xl"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-pink-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
-              <div className={`w-24 h-24 rounded-full flex items-center justify-center text-white transition-all duration-700 shadow-2xl relative z-10
+              <div className={`w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center text-white transition-all duration-700 shadow-2xl relative z-10
                 ${grade.id === 'al' ? 'bg-gradient-to-br from-pink-500 to-rose-600' :
                   grade.id === 'ol' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' :
                     'bg-gradient-to-br from-cyan-500 to-blue-600'}
               `}>
-                <GraduationCap size={44} />
+                <GraduationCap size={32} className="md:w-11 md:h-11" />
               </div>
 
-              <div className="relative z-10 text-center space-y-4 w-full">
-                <span className="text-[11px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-[0.4em] block">{grade.id.toUpperCase()} MODULE</span>
-                <p className="text-4xl md:text-5xl font-black text-slate-950 dark:text-white transition-colors leading-tight tracking-tighter">
+              <div className="relative z-10 text-center space-y-3 md:space-y-4 w-full">
+                <span className="text-[10px] md:text-[11px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-[0.3em] md:tracking-[0.4em] block">{grade.id.toUpperCase()} MODULE</span>
+                <p className="text-3xl md:text-5xl font-black text-slate-950 dark:text-white transition-colors leading-tight tracking-tighter">
                   {grade.name}
                 </p>
-                <p className="text-xl font-bold text-slate-700 dark:text-white/70 transition-colors">
+                <p className="text-lg md:text-xl font-bold text-slate-700 dark:text-white/70 transition-colors">
                   {grade.sinhalaName}
                 </p>
               </div>
 
-              <div className="relative z-10 w-full pt-8 flex items-center justify-center gap-3 text-slate-700 dark:text-white/70 transition-all border-t border-blue-900/10 dark:border-white/5">
-                <span className="text-[10px] font-black uppercase tracking-[0.4em]">Examine Archive</span>
-                <ArrowRight size={20} className="group-hover:translate-x-3 transition-transform duration-700" />
+              <div className="relative z-10 w-full pt-6 md:pt-8 flex items-center justify-center gap-2 md:gap-3 text-slate-700 dark:text-white/70 transition-all border-t border-blue-900/10 dark:border-white/5">
+                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em]">Examine Archive</span>
+                <ArrowRight size={18} className="md:w-5 md:h-5 group-hover:translate-x-3 transition-transform duration-700" />
               </div>
             </div>
           ))}

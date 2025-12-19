@@ -63,39 +63,39 @@ const StudyTimer = ({
   const progress = totalSeconds > 0 ? ((totalSeconds - currentSecond) / totalSeconds) * 283 : 0;
 
   return (
-    <div className="glass-card rounded-[2.5rem] p-6 md:p-10 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 shadow-2xl relative overflow-hidden">
-      <div className={`absolute -right-20 -top-20 w-64 h-64 bg-blue-500/20 rounded-full blur-[80px] transition-opacity duration-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`}></div>
+    <div className="glass-card rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-10 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 shadow-2xl relative overflow-hidden">
+      <div className={`absolute -right-20 -top-20 w-48 md:w-64 h-48 md:h-64 bg-blue-500/20 rounded-full blur-[60px] md:blur-[80px] transition-opacity duration-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`}></div>
 
-      <div className="flex items-center justify-between mb-8 relative z-10">
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-xl transition-colors ${isActive ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 dark:bg-white/10 text-slate-400'}`}>
-            <Timer size={20} className={isActive ? 'animate-pulse' : ''} />
+      <div className="flex items-center justify-between mb-6 md:mb-8 relative z-10">
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className={`p-1.5 md:p-2 rounded-lg md:rounded-xl transition-colors ${isActive ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 dark:bg-white/10 text-slate-400'}`}>
+            <Timer size={16} className={isActive ? 'animate-pulse' : ''} />
           </div>
-          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Focus Timer</h3>
+          <h3 className="text-[10px] md:text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Focus Timer</h3>
         </div>
-        <button onClick={onStartFocus} className="p-2.5 glass-card rounded-xl text-blue-500 hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Full Focus Mode">
-          <Monitor size={18} />
+        <button onClick={onStartFocus} className="p-2 md:p-2.5 glass-card rounded-lg md:rounded-xl text-blue-500 hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Full Focus Mode">
+          <Monitor size={16} />
         </button>
       </div>
 
-      <div className="relative flex items-center justify-center mb-10 py-4">
+      <div className="relative flex items-center justify-center mb-6 md:mb-10 py-2 md:py-4">
         {/* Circular Progress */}
-        <svg className="w-48 h-48 md:w-64 md:h-64 -rotate-90">
-          <circle cx="96" cy="96" r="88" stroke="currentColor" strokeWidth="6" fill="transparent" className="text-slate-100 dark:text-white/5 md:hidden" />
+        <svg className="w-32 h-32 md:w-64 md:h-64 -rotate-90">
+          <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-slate-100 dark:text-white/5 md:hidden" />
           <circle cx="128" cy="128" r="120" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100 dark:text-white/5 hidden md:block" />
-
+          
           {/* Mobile Arc */}
           <circle
-            cx="96"
-            cy="96"
-            r="88"
+            cx="64"
+            cy="64"
+            r="58"
             stroke="currentColor"
-            strokeWidth="6"
+            strokeWidth="4"
             fill="transparent"
-            strokeDasharray={552}
-            strokeDashoffset={552 - (552 * (currentSecond / totalSeconds))}
+            strokeDasharray={364}
+            strokeDashoffset={364 - (364 * (currentSecond / totalSeconds))}
             strokeLinecap="round"
-            className={`text-blue-600 transition-all duration-1000 md:hidden ${isActive ? 'drop-shadow-[0_0_10px_rgba(37,99,235,0.5)]' : ''}`}
+            className={`text-blue-600 transition-all duration-1000 md:hidden ${isActive ? 'drop-shadow-[0_0_8px_rgba(37,99,235,0.4)]' : ''}`}
           />
 
           {/* Desktop Arc */}
@@ -106,7 +106,7 @@ const StudyTimer = ({
             stroke="currentColor"
             strokeWidth="8"
             fill="transparent"
-            strokeDasharray={754}
+            strokeDasharray={754} 
             strokeDashoffset={754 - (754 * (currentSecond / totalSeconds))}
             strokeLinecap="round"
             className={`text-blue-600 transition-all duration-1000 hidden md:block ${isActive ? 'drop-shadow-[0_0_10px_rgba(37,99,235,0.5)]' : ''}`}
@@ -114,31 +114,31 @@ const StudyTimer = ({
         </svg>
 
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className={`text-4xl md:text-6xl font-black tabular-nums tracking-tighter transition-colors ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-800 dark:text-white'}`}>
+          <span className={`text-2xl md:text-6xl font-black tabular-nums tracking-tighter transition-colors ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-800 dark:text-white'}`}>
             {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
           </span>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-2">{isActive ? 'Session Active' : 'Ready to Start'}</span>
+          <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">{isActive ? 'Focusing' : 'Ready'}</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 mb-6">
+      <div className="grid grid-cols-3 gap-2 mb-4 md:mb-6">
         {[120, 60, 25].map(t => (
           <button
             key={t}
             onClick={() => setTime(t)}
-            className={`py-2 rounded-lg text-[10px] font-bold transition-all ${preset === t ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900' : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:bg-slate-200 dark:hover:bg-white/10'}`}
+            className={`py-1.5 md:py-2 rounded-lg text-[9px] md:text-[10px] font-bold transition-all ${preset === t ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900' : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:bg-slate-200 dark:hover:bg-white/10'}`}
           >
             {t >= 60 ? `${t / 60}h` : `${t}m`}
           </button>
         ))}
       </div>
 
-      <div className="flex gap-4">
-        <button onClick={() => setIsActive(!isActive)} className={`flex-1 py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-xs uppercase tracking-widest transition-all shadow-lg hover:scale-[1.02] active:scale-95 ${isActive ? 'bg-amber-500 text-white shadow-amber-500/30' : 'bg-blue-600 text-white shadow-blue-500/30'}`}>
-          {isActive ? <Pause size={18} /> : <Play size={18} />}
-          {isActive ? 'Pause' : 'Start Focus'}
+      <div className="flex gap-2 md:gap-4">
+        <button onClick={() => setIsActive(!isActive)} className={`flex-1 py-3 md:py-4 rounded-xl md:rounded-2xl flex items-center justify-center gap-2 font-black text-[10px] md:text-xs uppercase tracking-widest transition-all shadow-lg hover:scale-[1.02] active:scale-95 ${isActive ? 'bg-amber-500 text-white shadow-amber-500/30' : 'bg-blue-600 text-white shadow-blue-500/30'}`}>
+          {isActive ? <Pause size={14} /> : <Play size={14} />}
+          {isActive ? 'Pause' : 'Start'}
         </button>
-        <button onClick={reset} className="w-14 h-14 glass-card rounded-2xl flex items-center justify-center text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><RotateCcw size={20} /></button>
+        <button onClick={reset} className="w-10 h-10 md:w-14 md:h-14 glass-card rounded-xl md:rounded-2xl flex items-center justify-center text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><RotateCcw size={16} /></button>
       </div>
     </div>
   );
@@ -203,68 +203,59 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
   }
 
   return (
-    <div className="max-w-6xl mx-auto pb-32 pt-10 animate-in fade-in duration-700">
-      <div className="flex items-center justify-between mb-12 px-4">
-        <button onClick={() => onNavigate(`#/subject/${grade.id}/${subject.id}`)} className="flex items-center gap-3 text-slate-400 hover:text-blue-500 font-bold text-[10px] uppercase tracking-widest transition-all">
-          <ArrowLeft size={16} /> Back to List
+    <div className="max-w-6xl mx-auto pb-20 md:pb-32 pt-6 md:pt-10 animate-in fade-in duration-700">
+      <div className="flex items-center justify-between mb-8 md:mb-12 px-5 md:px-4">
+        <button onClick={() => onNavigate(`#/subject/${grade.id}/${subject.id}`)} className="flex items-center gap-2 text-slate-400 hover:text-blue-500 font-bold text-[10px] uppercase tracking-widest transition-all">
+          <ArrowLeft size={14} /> <span className="hidden md:inline">Back to List</span><span className="md:hidden">Back</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 px-4">
-        <div className="lg:col-span-8 space-y-8 md:space-y-12">
-          <div className="glass-card rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-16 relative overflow-hidden shadow-xl border-white/10">
-            <div className="flex items-center gap-3 mb-8 md:mb-10">
-              <span className="px-4 py-2 bg-blue-600 text-white rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest">{paper.type}</span>
-              <span className="px-4 py-2 glass-card rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-slate-400 border-none">Public Resource</span>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-12 px-4 md:px-6">
+        <div className="lg:col-span-8 space-y-6 md:space-y-12">
+          <div className="glass-card rounded-[2rem] md:rounded-[3rem] p-6 md:p-16 relative overflow-hidden shadow-xl border-white/10">
+            <div className="flex items-center gap-2 mb-6 md:mb-10">
+              <span className="px-3 py-1 bg-blue-600 text-white rounded-lg text-[8px] md:text-[10px] font-bold uppercase tracking-widest">{paper.type}</span>
+              <span className="px-3 py-1 glass-card rounded-lg text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-400 border-none">Verified</span>
             </div>
 
-            <h1 className="text-3xl md:text-7xl font-black text-slate-900 dark:text-white mb-8 md:mb-12 tracking-tighter leading-tight">{paper.title}</h1>
+            <h1 className="text-3xl md:text-5xl lg:text-7xl font-black text-slate-900 dark:text-white mb-8 md:mb-12 tracking-tighter leading-tight">{paper.title}</h1>
 
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 mb-12 md:mb-16 border-y border-slate-100 dark:border-white/5 py-8 md:py-12">
-              <div><span className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Medium</span><p className="text-lg md:text-2xl font-black text-slate-800 dark:text-white">{paper.medium}</p></div>
-              <div><span className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Year</span><p className="text-lg md:text-2xl font-black text-slate-800 dark:text-white">{paper.year || 'N/A'}</p></div>
-              <div className="col-span-2 md:col-span-1 border-t border-slate-50 md:border-none pt-4 md:pt-0"><span className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Grade</span><p className="text-lg md:text-2xl font-black text-slate-800 dark:text-white">{grade.name}</p></div>
+            <div className="grid grid-cols-3 gap-4 md:gap-10 mb-8 md:mb-16 border-y border-slate-100 dark:border-white/5 py-6 md:py-12">
+              <div><span className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Medium</span><p className="text-sm md:text-2xl font-black text-slate-800 dark:text-white">{paper.medium}</p></div>
+              <div><span className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Year</span><p className="text-sm md:text-2xl font-black text-slate-800 dark:text-white">{paper.year || 'N/A'}</p></div>
+              <div><span className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Grade</span><p className="text-sm md:text-2xl font-black text-slate-800 dark:text-white">{grade.name}</p></div>
             </div>
 
-            <div className="bg-slate-900 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 shadow-xl mb-12">
+            <div className="bg-slate-900 rounded-3xl md:rounded-[2.5rem] p-5 md:p-10 flex flex-col md:flex-row items-center justify-between gap-5 md:gap-8 shadow-xl mb-10 md:mb-12">
               <div className="flex items-center gap-4 md:gap-6 w-full md:w-auto">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-white/5 rounded-2xl flex items-center justify-center text-white border border-white/10 shrink-0"><FileText size={28} /></div>
-                <div>
-                  <h3 className="text-xl md:text-3xl font-black text-white leading-none">Download Now</h3>
-                  <p className="text-blue-400 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mt-2">{paper.medium} Medium PDF</p>
+                <div className="w-12 h-12 md:w-20 md:h-20 bg-white/5 rounded-xl md:rounded-2xl flex items-center justify-center text-white border border-white/10 shrink-0"><FileText size={20} className="md:w-8 md:h-8" /></div>
+                <div className="text-left">
+                  <h3 className="text-lg md:text-3xl font-black text-white leading-none">Download PDF</h3>
+                  <p className="text-blue-400 text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1 md:mt-2">Official Archive File</p>
                 </div>
               </div>
-              <div className="flex gap-3 w-full md:w-auto">
-                <button onClick={() => alert('Issue reported to admin team. Thank you!')} className="p-4 md:p-6 glass-card rounded-2xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all" title="Report Issue">
-                  <span className="sr-only">Report Issue</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" x2="4" y1="22" y2="15" /></svg>
-                </button>
-                <button onClick={() => window.open(paper.file_url, '_blank')} className="flex-1 px-6 md:px-8 py-4 md:py-6 bg-blue-600 text-white rounded-2xl font-bold text-[10px] md:text-xs uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 shadow-lg shadow-blue-500/30 hover:scale-[1.02] transition-all"><Download size={18} /> Download</button>
+              <div className="flex gap-2 w-full md:w-auto">
+                <button onClick={() => window.open(paper.file_url, '_blank')} className="flex-1 px-6 md:px-10 py-5 md:py-6 bg-blue-600 text-white rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 shadow-lg shadow-blue-500/30 hover:scale-[1.02] transition-all"><Download size={18} /> Get Document</button>
               </div>
             </div>
 
             {/* PDF Preview Section */}
-            <div className="mb-12 rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg bg-slate-50 dark:bg-slate-900/50">
-              <div className="p-6 bg-slate-100 dark:bg-white/5 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
-                <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Document Preview</h3>
+            <div className="mb-0 rounded-2xl md:rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg bg-slate-50 dark:bg-slate-900/50">
+              <div className="p-4 md:p-6 bg-slate-100 dark:bg-white/5 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Preview</h3>
                 <div className="flex gap-4">
                   <button
                     onClick={() => setIsPdfFullScreen(true)}
-                    className="p-2.5 glass-card rounded-xl text-slate-500 hover:text-blue-500 transition-all border-none"
+                    className="p-2 md:p-2.5 glass-card rounded-xl text-slate-500 hover:text-blue-500 transition-all border-none"
                     title="Full Screen Preview"
                   >
                     <Maximize2 size={16} />
                   </button>
-                  <div className="flex gap-2 items-center">
-                    <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-500/50"></div>
-                    <div className="w-3 h-3 rounded-full bg-amber-400/20 border border-amber-500/50"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-400/20 border border-green-500/50"></div>
-                  </div>
                 </div>
               </div>
               <iframe
                 src={`${paper.file_url}#toolbar=0&view=FitH`}
-                className="w-full h-[600px] bg-slate-50 dark:bg-slate-900"
+                className="w-full h-[400px] md:h-[600px] bg-slate-50 dark:bg-slate-900"
                 title="PDF Preview"
               />
             </div>
@@ -273,15 +264,19 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
           <CommentSection paperId={paper.id} />
         </div>
 
-        <div className="lg:col-span-4 space-y-8">
+        <div className="lg:col-span-4 space-y-6 md:space-y-8">
           <StudyTimer onStartFocus={() => setIsFocusMode(true)} {...timerProps} />
-          <div className="glass-card rounded-[2.5rem] p-10 space-y-8 border-none shadow-sm">
-            <h3 className="text-xl font-bold tracking-tight text-slate-800 dark:text-white pb-4 border-b border-slate-100 dark:border-white/5">More Resources</h3>
-            <div className="space-y-6">
+
+          <div className="glass-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 space-y-6 md:space-y-8 border-none shadow-sm">
+            <h3 className="text-lg md:text-xl font-bold tracking-tight text-slate-800 dark:text-white pb-3 md:pb-4 border-b border-slate-100 dark:border-white/5">More for you</h3>
+            <div className="space-y-4 md:space-y-6">
               {resources.filter(r => r.subjectId === subject.id && r.id !== paper.id).slice(0, 4).map(r => (
-                <div key={r.id} className="cursor-pointer flex items-center gap-5 group" onClick={() => onNavigate(`#/paper/${r.id}`)}>
-                  <div className="w-10 h-10 rounded-xl glass-card flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all"><ChevronRight size={16} /></div>
-                  <div><h4 className="text-sm font-bold text-slate-700 dark:text-slate-200 line-clamp-1 group-hover:text-blue-500 transition-colors">{r.title}</h4><span className="text-[9px] font-bold text-slate-400">{r.year}</span></div>
+                <div key={r.id} className="cursor-pointer flex items-center gap-4 md:gap-5 group" onClick={() => onNavigate(`#/paper/${r.id}`)}>
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl glass-card flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all shrink-0"><ChevronRight size={14} /></div>
+                  <div className="min-w-0">
+                    <h4 className="text-xs md:text-sm font-bold text-slate-700 dark:text-slate-200 truncate group-hover:text-blue-500 transition-colors">{r.title}</h4>
+                    <span className="text-[8px] md:text-[9px] font-bold text-slate-400">{r.year}</span>
+                  </div>
                 </div>
               ))}
             </div>

@@ -22,18 +22,18 @@ const Header: React.FC<HeaderProps> = ({ activeRoute, theme, onToggleTheme, onOp
 
   return (
     <>
-      <header className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-[75%] transition-all duration-700 ease-out ${isScrolled ? 'top-2' : 'top-6'}`}>
+      <header className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[95%] lg:max-w-[75%] transition-all duration-700 ease-out ${isScrolled ? 'top-2' : 'top-4 md:top-6'}`}>
         <div className={`
-          flex items-center justify-between px-8 py-1 rounded-[3rem]
+          flex items-center justify-between px-4 md:px-8 py-1 rounded-2xl md:rounded-[3rem]
           glass-card light-gradient-card border-white/40 dark:border-white/10 shadow-3xl
-          ${isScrolled ? 'py-1 scale-[0.98]' : 'py-2'}
+          ${isScrolled ? 'py-1 scale-[0.98]' : 'py-1.5 md:py-2'}
         `}>
 
-          <a href="#/" className="flex items-center gap-3 group">
-            <div className="w-20 h-20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden p-1">
+          <a href="#/" className="flex items-center gap-2 md:gap-3 group shrink-0">
+            <div className="w-12 h-12 md:w-20 md:h-20 rounded-xl md:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden p-1">
               <img src={logo} className="w-full h-full object-contain" alt="Logo" />
             </div>
-            <span className="font-black text-2xl text-slate-900 dark:text-white hidden sm:block tracking-tighter">
+            <span className="font-black text-lg md:text-2xl text-slate-900 dark:text-white hidden sm:block tracking-tighter">
               TRAG<span className="text-blue-500 font-medium">.edu</span>
             </span>
           </a>
@@ -69,17 +69,17 @@ const Header: React.FC<HeaderProps> = ({ activeRoute, theme, onToggleTheme, onOp
 
             <button
               onClick={onToggleTheme}
-              className="p-3.5 light-gradient-card bg-white/40 dark:bg-white/5 hover:bg-blue-600 hover:text-white rounded-2xl text-slate-900 dark:text-slate-300 transition-all border-none shadow-md"
+              className="p-2.5 md:p-3.5 light-gradient-card bg-white/40 dark:bg-white/5 hover:bg-blue-600 hover:text-white rounded-xl md:rounded-2xl text-slate-900 dark:text-slate-300 transition-all border-none shadow-md"
               aria-label="Toggle Theme"
             >
-              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+              {theme === 'light' ? <Moon size={18} className="md:w-5 md:h-5" /> : <Sun size={18} className="md:w-5 md:h-5" />}
             </button>
 
             <button
-              className="lg:hidden p-3.5 glass-card bg-slate-100 dark:bg-white/5 rounded-2xl text-slate-600 dark:text-slate-300 border-none"
+              className="lg:hidden p-2.5 glass-card bg-slate-100 dark:bg-white/5 rounded-xl md:rounded-2xl text-slate-600 dark:text-slate-300 border-none"
               onClick={() => setIsMenuOpen(true)}
             >
-              <Menu size={20} />
+              <Menu size={18} className="md:w-5 md:h-5" />
             </button>
           </div>
         </div>
@@ -90,13 +90,13 @@ const Header: React.FC<HeaderProps> = ({ activeRoute, theme, onToggleTheme, onOp
         <button onClick={() => setIsMenuOpen(false)} className="absolute top-10 right-10 p-5 glass-card dark:text-white rounded-full">
           <X size={32} />
         </button>
-        <div className="flex flex-col items-center justify-center h-full gap-12 p-8 text-center">
+        <div className="flex flex-col items-center justify-center h-full gap-8 md:gap-12 p-8 text-center">
           {NAV_LINKS.map((link, idx) => (
             <a
               key={link.name}
               href={link.href}
               onClick={() => setIsMenuOpen(false)}
-              className="text-5xl font-black text-slate-900 dark:text-white hover:text-blue-500 transition-all tracking-tighter animate-in slide-in-from-right-20"
+              className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white hover:text-blue-500 transition-all tracking-tighter animate-in slide-in-from-right-20"
               style={{ animationDelay: `${idx * 100}ms` }}
             >
               {link.name}
@@ -104,7 +104,7 @@ const Header: React.FC<HeaderProps> = ({ activeRoute, theme, onToggleTheme, onOp
           ))}
           <button
             onClick={() => { onOpenSearch(); setIsMenuOpen(false); }}
-            className="mt-12 px-16 py-8 bg-blue-600 text-white rounded-[2rem] font-black text-xl uppercase tracking-widest shadow-3xl"
+            className="mt-8 px-10 py-6 md:px-16 md:py-8 bg-blue-600 text-white rounded-2xl md:rounded-[2rem] font-black text-base md:text-xl uppercase tracking-widest shadow-3xl"
           >
             Global Search
           </button>

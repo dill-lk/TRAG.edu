@@ -69,32 +69,32 @@ const CommentSection: React.FC<CommentSectionProps> = ({ paperId }) => {
 
     return (
     return (
-        <div className="glass-card rounded-[2.5rem] md:rounded-[3rem] p-6 md:p-10 mt-8 md:mt-12 border-none shadow-xl bg-white/40 dark:bg-slate-900/40">
-            <div className="flex items-center gap-3 md:gap-4 mb-8 md:mb-10">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600/10 text-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center">
-                    <MessageSquare size={20} className="md:w-6 md:h-6" />
+        <div className="glass-card rounded-3xl md:rounded-[3rem] p-4 md:p-10 mt-6 md:mt-12 border-none shadow-xl bg-white/40 dark:bg-slate-900/40">
+            <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-10">
+                <div className="w-9 h-9 md:w-12 md:h-12 bg-blue-600/10 text-blue-600 rounded-lg md:rounded-2xl flex items-center justify-center shrink-0">
+                    <MessageSquare size={18} className="md:w-6 md:h-6" />
                 </div>
                 <div>
-                    <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tighter">Student Discussion</h3>
-                    <p className="text-slate-500 text-[9px] md:text-[10px] font-bold uppercase tracking-widest">Insights & Help</p>
+                    <h3 className="text-lg md:text-2xl font-black text-slate-900 dark:text-white tracking-tighter">Student Discussion</h3>
+                    <p className="text-slate-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest leading-none">Insights & Help</p>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6 mb-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6 mb-8 md:mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                     <div className="relative">
-                        <User className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                         <input
                             type="text"
                             placeholder="Name (Optional)"
-                            className="w-full pl-12 pr-4 md:pl-14 md:pr-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-white dark:bg-slate-800 border-none shadow-sm font-bold placeholder:text-slate-400 text-slate-900 dark:text-white outline-none text-xs md:text-sm"
+                            className="w-full pl-10 md:pl-14 pr-4 py-3 md:py-4 rounded-xl md:rounded-2xl bg-white dark:bg-slate-800 border-none shadow-sm font-bold placeholder:text-slate-400 text-slate-900 dark:text-white outline-none text-[11px] md:text-sm"
                             value={authorName}
                             onChange={(e) => setAuthorName(e.target.value)}
                         />
                     </div>
-                    <div className="flex items-center gap-2 md:gap-3 px-5 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-blue-500/5 text-blue-600 text-[8px] md:text-[10px] font-bold uppercase tracking-widest border border-blue-500/10">
-                        <AlertCircle size={12} />
-                        <span>Type <strong>@admin</strong> for Help</span>
+                    <div className="flex items-center gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-blue-500/5 text-blue-600 text-[8px] md:text-[10px] font-bold uppercase tracking-widest border border-blue-500/10">
+                        <AlertCircle size={10} />
+                        <span className="truncate">Type <strong>@admin</strong> for Help</span>
                     </div>
                 </div>
 
@@ -102,15 +102,15 @@ const CommentSection: React.FC<CommentSectionProps> = ({ paperId }) => {
                     <textarea
                         required
                         placeholder="Write your thoughts..."
-                        className="w-full p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] bg-white dark:bg-slate-800 border-none shadow-sm font-bold min-h-[120px] md:min-h-[150px] placeholder:text-slate-400 text-slate-900 dark:text-white outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-xs md:text-sm"
+                        className="w-full p-4 md:p-8 rounded-2xl md:rounded-[2rem] bg-white dark:bg-slate-800 border-none shadow-sm font-bold min-h-[100px] md:min-h-[150px] placeholder:text-slate-400 text-slate-900 dark:text-white outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-xs md:text-sm"
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                     />
                     <button
                         disabled={isSubmitting}
-                        className="absolute bottom-4 right-4 md:bottom-6 md:right-6 p-3 md:p-4 bg-blue-600 text-white rounded-xl md:rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
+                        className="absolute bottom-3 right-3 md:bottom-6 md:right-6 p-2.5 md:p-4 bg-blue-600 text-white rounded-lg md:rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
                     >
-                        {isSubmitting ? <span className="animate-spin block">...</span> : <Send size={20} className="md:w-6 md:h-6" />}
+                        {isSubmitting ? <span className="animate-spin block px-1 text-[10px]">...</span> : <Send size={18} className="md:w-6 md:h-6" />}
                     </button>
                 </div>
             </form>
@@ -124,23 +124,23 @@ const CommentSection: React.FC<CommentSectionProps> = ({ paperId }) => {
                     </div>
                 ) : (
                     comments.map((comment) => (
-                        <div key={comment.id} className={`p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden transition-all ${comment.is_help_request ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-white dark:bg-white/5 shadow-sm'}`}>
-                            <div className="flex justify-between items-start mb-3 md:mb-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-400 font-black text-xs">
+                        <div key={comment.id} className={`p-4 md:p-8 rounded-2xl md:rounded-[2.5rem] relative overflow-hidden transition-all ${comment.is_help_request ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-white dark:bg-white/5 shadow-sm'}`}>
+                            <div className="flex justify-between items-start mb-2 md:mb-4">
+                                <div className="flex items-center gap-2 md:gap-3">
+                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-400 font-extrabold text-[10px] shrink-0">
                                         {comment.author_name ? comment.author_name.charAt(0).toUpperCase() : '?'}
                                     </div>
-                                    <div>
-                                        <h4 className="font-black text-slate-900 dark:text-white text-sm">
+                                    <div className="min-w-0">
+                                        <h4 className="font-black text-slate-900 dark:text-white text-xs md:text-sm truncate pr-2">
                                             {comment.author_name || 'Anonymous Student'}
                                             {comment.is_help_request && (
-                                                <span className="ml-3 px-3 py-1 bg-amber-500 text-white rounded-full text-[8px] uppercase tracking-widest inline-flex items-center gap-1">
-                                                    <Shield size={10} /> Help Request
+                                                <span className="ml-2 px-2 py-0.5 bg-amber-500 text-white rounded-full text-[7px] uppercase tracking-widest inline-flex items-center gap-1">
+                                                    <Shield size={8} /> HELP
                                                 </span>
                                             )}
                                         </h4>
-                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-                                            {new Date(comment.created_at).toLocaleDateString()} • {new Date(comment.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                                            {new Date(comment.created_at).toLocaleDateString()}
                                         </p>
                                     </div>
                                 </div>
@@ -150,17 +150,17 @@ const CommentSection: React.FC<CommentSectionProps> = ({ paperId }) => {
                                     </div>
                                 )}
                             </div>
-                            <p className="text-slate-700 dark:text-slate-300 font-semibold leading-relaxed">
+                            <p className="text-slate-700 dark:text-slate-300 font-semibold leading-relaxed text-xs md:text-base">
                                 {comment.content}
                             </p>
 
                             {comment.admin_reply && (
-                                <div className="mt-6 p-6 bg-blue-600/5 border-l-4 border-blue-500 rounded-2xl animate-in slide-in-from-left-4">
-                                    <div className="flex items-center gap-2 mb-2 text-blue-600 dark:text-blue-400">
-                                        <Shield size={14} />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Admin Response</span>
+                                <div className="mt-4 md:mt-6 p-4 md:p-6 bg-blue-600/5 border-l-4 border-blue-500 rounded-xl md:rounded-2xl animate-in slide-in-from-left-4">
+                                    <div className="flex items-center gap-2 mb-1.5 md:mb-2 text-blue-600 dark:text-blue-400">
+                                        <Shield size={12} />
+                                        <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest">Admin Response</span>
                                     </div>
-                                    <p className="text-slate-800 dark:text-slate-200 font-bold italic leading-relaxed">
+                                    <p className="text-slate-800 dark:text-slate-200 font-bold italic leading-relaxed text-[11px] md:text-sm">
                                         {comment.admin_reply}
                                     </p>
                                 </div>
