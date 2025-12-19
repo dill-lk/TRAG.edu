@@ -13,9 +13,9 @@
 
   <style>
     :root {
-      --glass-bg: rgba(240, 249, 255, 0.85);
-      /* Frosted Ink Tint */
-      --glass-border: rgba(37, 99, 235, 0.2);
+      --glass-bg: rgba(253, 252, 240, 0.9);
+      /* Warm Matte Tint */
+      --glass-border: rgba(30, 41, 59, 0.1);
       --accent: #2563eb;
     }
 
@@ -29,16 +29,16 @@
       transition: background-color 0.4s ease;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
-      background: #f1f5f9;
-      /* Base slate background */
+      background: #fdfcf0;
+      /* Warm Paper base */
     }
 
-    /* Luxury Texture Overlays */
+    /* Soft Matte Overlays */
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      opacity: 0.035;
+      opacity: 0.02;
       pointer-events: none;
       z-index: 1000;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3BaseFilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
@@ -48,12 +48,12 @@
       content: "";
       position: fixed;
       inset: 0;
-      opacity: 0.2;
+      opacity: 0.05;
       pointer-events: none;
       z-index: -5;
-      background-image: radial-gradient(circle at 1px 1px, rgba(37, 99, 235, 0.1) 1px, transparent 0);
-      background-size: 40px 40px;
-      /* Luxury Grid */
+      background-image: radial-gradient(circle at 1px 1px, rgba(30, 41, 59, 0.05) 1px, transparent 0);
+      background-size: 32px 32px;
+      /* Very Soft Grid */
     }
 
     @keyframes rotate {
@@ -85,12 +85,12 @@
     }
 
     .light-gradient-card {
-      background: linear-gradient(135deg, rgba(240, 249, 255, 0.95), rgba(241, 245, 249, 0.9));
-      border: 1px solid rgba(37, 99, 235, 0.15);
-      backdrop-filter: blur(20px);
+      background: linear-gradient(135deg, rgba(253, 252, 240, 0.95), rgba(248, 250, 252, 0.9));
+      border: 1px solid rgba(30, 41, 59, 0.08);
+      backdrop-filter: blur(12px);
       box-shadow:
-        0 10px 30px -5px rgba(0, 0, 0, 0.05),
-        0 0 20px rgba(37, 99, 235, 0.03);
+        0 8px 32px rgba(0, 0, 0, 0.02),
+        0 1px 2px rgba(0, 0, 0, 0.01);
       position: relative;
     }
 
@@ -99,8 +99,8 @@
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      padding: 1.5px;
-      background: linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(236, 72, 153, 0.2), transparent);
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(236, 72, 153, 0.05), transparent);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor;
@@ -121,7 +121,8 @@
       position: fixed;
       inset: 0;
       z-index: -10;
-      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+      background: #fdfcf0;
+      /* Warm Paper */
       overflow: hidden;
     }
 
@@ -132,10 +133,10 @@
     .aurora-blob {
       position: absolute;
       filter: blur(140px);
-      opacity: 0.85;
-      /* Saturated Intensity */
+      opacity: 0.45;
+      /* Muted Softness */
       border-radius: 50%;
-      animation: rotate 40s infinite linear;
+      animation: rotate 60s infinite linear;
     }
 
     .blob-1 {
@@ -143,7 +144,7 @@
       left: -20%;
       width: 80vw;
       height: 80vw;
-      background: radial-gradient(circle, rgba(236, 72, 153, 0.7), rgba(139, 92, 246, 0.6), transparent);
+      background: radial-gradient(circle, rgba(147, 197, 253, 0.5), rgba(167, 139, 250, 0.4), transparent);
     }
 
     .blob-2 {
@@ -151,8 +152,8 @@
       right: -20%;
       width: 70vw;
       height: 70vw;
-      background: radial-gradient(circle, rgba(6, 182, 212, 0.7), rgba(59, 130, 246, 0.6), transparent);
-      animation-delay: -8s;
+      background: radial-gradient(circle, rgba(165, 243, 252, 0.5), rgba(191, 219, 254, 0.4), transparent);
+      animation-delay: -10s;
     }
 
     @keyframes rotate {

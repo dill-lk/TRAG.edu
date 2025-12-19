@@ -279,99 +279,108 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
           </div>
         </div>
       </div>
-      {/* Neural View PDF 2.0 Overlay */}
+      {/* Advanced Full Screen PDF Overlay */}
       {isPdfFullScreen && (
-        <div className="fixed inset-0 z-[100] bg-[#0f172a] flex flex-col animate-in fade-in zoom-in-95 duration-700 overflow-hidden">
-          {/* Neural Texture Overlays */}
-          <div className="absolute inset-0 pointer-events-none opacity-20 z-0">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-950 to-slate-950"></div>
-            <div className="absolute inset-0 shadow-[inset_0_0_200px_rgba(0,0,0,0.8)]"></div>
-          </div>
+        <div className="fixed inset-0 z-[100] bg-[#020617] flex flex-col animate-in fade-in zoom-in-95 duration-500">
+          {/* Subtle Vignette */}
+          <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.8)] z-10"></div>
 
-          {/* Top Control Bar */}
-          <div className="relative z-50 flex items-center justify-between px-8 py-6 backdrop-blur-md border-b border-white/5 bg-slate-950/40">
-            <div className="flex items-center gap-6">
-              <div className="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
-                <FileText size={24} />
-              </div>
-              <div>
-                <h3 className="text-sm font-black text-white uppercase tracking-widest leading-none">{paper.title}</h3>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest px-2 py-0.5 bg-blue-500/10 rounded-md">Neural View 2.0</span>
+          {/* Premium Floating Header */}
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-5xl">
+            <div className="glass-card bg-slate-900/40 backdrop-blur-2xl border-white/5 rounded-[2.5rem] p-4 flex items-center justify-between shadow-3xl">
+              <div className="flex items-center gap-6 pl-4">
+                <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg">
+                  <FileText size={24} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-white uppercase tracking-widest">{paper.title}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Premium Reader Active</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <button
-              onClick={() => setIsPdfFullScreen(false)}
-              className="p-4 bg-white/5 hover:bg-red-500/20 hover:text-red-500 text-slate-400 rounded-2xl transition-all group border border-white/5"
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsPdfFullScreen(false)}
+                  className="p-4 bg-white/5 hover:bg-red-500/20 hover:text-red-500 text-slate-400 rounded-2xl transition-all group"
+                  title="Close Reader"
+                >
+                  <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Document Container */}
+          <div className="flex-1 relative overflow-hidden flex items-center justify-center p-4 pt-28 pb-32">
+            <div
+              className="relative w-full h-full max-w-5xl bg-white shadow-3xl rounded-sm transition-all duration-500 ease-out"
+              style={{
+                transform: `rotate(${rotation}deg) scale(${zoom / 100})`,
+                transformOrigin: 'center center'
+              }}
             >
-              <X size={24} className="group-hover:rotate-90 transition-transform duration-500" />
-            </button>
+              <iframe
+                src={`${paper.file_url}#toolbar=0&view=FitH`}
+                className="w-full h-full border-none"
+                title="Full Screen PDF"
+              />
+            </div>
           </div>
 
-          <div className="flex-1 relative z-10 flex flex-row overflow-hidden">
-            {/* Main Document Viewport */}
-            <div className="flex-[3] relative flex items-center justify-center p-8 bg-slate-950/20">
-              <div
-                className="relative w-full h-full max-w-5xl transition-all duration-700 ease-out preserve-3d"
-                style={{
-                  transform: `rotate(${rotation}deg) scale(${zoom / 100})`,
-                  transformOrigin: 'center center'
-                }}
-              >
-                {/* Neural Ink Filter Over the PDF */}
-                <div className="absolute inset-0 pointer-events-none z-10 bg-blue-900/5 mix-blend-multiply opacity-50 rounded-sm"></div>
-                <div className="absolute inset-0 pointer-events-none z-10 bg-orange-900/5 mix-blend-screen opacity-20 rounded-sm"></div>
-
-                <iframe
-                  src={`${paper.file_url}#toolbar=0&view=FitH`}
-                  className="w-full h-full bg-white shadow-[0_40px_100px_rgba(0,0,0,0.6)] rounded-sm grayscale-[0.1] contrast-[1.05]"
-                  title="Neural PDF Stream"
-                />
+          {/* Premium Floating Control Dashboard (Bottom) */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40">
+            <div className="glass-card bg-slate-900/60 backdrop-blur-3xl border-white/10 rounded-full p-3 flex items-center gap-2 shadow-3xl border-t border-white/20">
+              <div className="flex items-center px-4 border-r border-white/10 gap-4">
+                <button
+                  onClick={() => setZoom(prev => Math.max(50, prev - 20))}
+                  className="p-3 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
+                  title="Zoom Out"
+                >
+                  <Minus size={20} />
+                </button>
+                <div className="min-w-[60px] text-center">
+                  <span className="text-xs font-black text-white">{zoom}%</span>
+                </div>
+                <button
+                  onClick={() => setZoom(prev => Math.min(300, prev + 20))}
+                  className="p-3 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
+                  title="Zoom In"
+                >
+                  <Plus size={20} />
+                </button>
               </div>
 
-              {/* Arc Controls Hub (Bottom Center) */}
-              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-slate-900/80 backdrop-blur-3xl border border-white/10 p-2 rounded-full shadow-3xl">
-                <div className="flex items-center px-4 gap-4 border-r border-white/10">
-                  <button onClick={() => setZoom(prev => Math.max(50, prev - 20))} className="p-3 text-slate-400 hover:text-white rounded-full hover:bg-white/5 transition-all"><Minus size={18} /></button>
-                  <span className="text-[10px] font-black text-white w-10 text-center">{zoom}%</span>
-                  <button onClick={() => setZoom(prev => Math.min(300, prev + 20))} className="p-3 text-slate-400 hover:text-white rounded-full hover:bg-white/5 transition-all"><Plus size={18} /></button>
-                </div>
-                <button onClick={() => setRotation(prev => (prev + 90) % 360)} className="p-4 text-slate-400 hover:text-blue-400 rounded-full hover:bg-blue-500/10 transition-all"><RotateCw size={22} /></button>
+              <div className="flex items-center gap-2 px-2">
+                <button
+                  onClick={() => setRotation(prev => (prev + 90) % 360)}
+                  className="p-4 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-full transition-all"
+                  title="Rotate Document"
+                >
+                  <RotateCw size={22} />
+                </button>
+
+                <div className="h-8 w-px bg-white/10 mx-2"></div>
+
+                <button
+                  onClick={() => (document.querySelector('button[aria-label="Ask Trag AI"]') as HTMLElement)?.click()}
+                  className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-blue-500 hover:scale-105 transition-all shadow-lg shadow-blue-500/40"
+                >
+                  <Zap size={18} className="fill-current" />
+                  Smart AI Context
+                </button>
               </div>
             </div>
+          </div>
 
-            {/* Neural AI Context Side-Panel */}
-            <div className="flex-1 flex flex-col bg-slate-950/40 backdrop-blur-xl border-l border-white/5 p-8 max-w-sm hidden xl:flex">
-              <div className="flex items-center gap-3 mb-10 pb-6 border-b border-white/5">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white"><Zap size={20} className="fill-current" /></div>
-                <h4 className="text-xs font-black text-white uppercase tracking-widest">Neural Context</h4>
-              </div>
-
-              <div className="space-y-8 overflow-y-auto pr-2 custom-scrollbar">
-                <div className="space-y-3">
-                  <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Paper Analysis</span>
-                  <div className="p-6 light-gradient-card bg-white/5 rounded-3xl border-none">
-                    <p className="text-xs font-bold text-slate-300 leading-relaxed italic">"Trag AI is analyzing the document structure and key concept markers in real-time..."</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Global Focus Hub</span>
-                  <div className="scale-75 origin-top-left -ml-2">
-                    <StudyTimer {...timerProps} onStartFocus={() => { }} />
-                  </div>
-                </div>
-
-                <div className="mt-12">
-                  <button
-                    onClick={() => (document.querySelector('button[aria-label="Ask Trag AI"]') as HTMLElement)?.click()}
-                    className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20"
-                  >
-                    Initialize AI Dialogue
-                  </button>
-                </div>
+          {/* Advanced Focus Hub (Bottom Left) */}
+          <div className="absolute bottom-10 left-10 z-50">
+            <div className="group relative">
+              <div className="absolute inset-0 bg-blue-600/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="relative scale-[0.65] origin-bottom-left hover:scale-[0.8] transition-transform duration-500">
+                <StudyTimer {...timerProps} onStartFocus={() => { }} />
               </div>
             </div>
           </div>

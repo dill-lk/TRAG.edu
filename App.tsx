@@ -185,12 +185,12 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col font-sans transition-colors duration-300 bg-[#f1f5f9] dark:bg-[#020617]">
+    <div className="min-h-screen flex flex-col font-sans transition-colors duration-300 bg-[#fdfcf0] dark:bg-[#020617]">
       <Header activeRoute={main} theme={theme} onToggleTheme={toggleTheme} onOpenSearch={() => setIsPaletteOpen(true)} />
 
       <main className="flex-grow pt-28 pb-16 px-4 md:px-6 max-w-[75%] mx-auto w-full relative z-10">
         {isLoading && (
-          <div className="fixed inset-0 z-[2000] flex flex-col items-center justify-center bg-[#f1f5f9] dark:bg-[#020617] transition-opacity duration-700">
+          <div className="fixed inset-0 z-[2000] flex flex-col items-center justify-center bg-[#fdfcf0] dark:bg-[#020617] transition-opacity duration-700">
             <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-blue-500 animate-pulse">Loading Library...</p>
           </div>
