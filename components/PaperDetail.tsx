@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GRADES, SUBJECTS } from '../constants';
 import { Download, FileText, ChevronRight, ArrowLeft, Timer, Play, Pause, RotateCcw, Monitor, X, Book, Maximize2, Minimize2, Plus, Minus, RotateCw, Zap } from 'lucide-react';
 import { Resource } from '../types';
+import CommentSection from './CommentSection';
 
 interface StudyTimerProps {
   onStartFocus: () => void;
@@ -252,16 +253,7 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
             </div>
           </div>
 
-          <div className="glass-card rounded-[3rem] p-12 flex flex-col sm:flex-row items-center gap-10 border-none shadow-md">
-            <div className="w-24 h-24 bg-blue-500/10 rounded-[2rem] flex items-center justify-center text-blue-500 shrink-0">
-              <Book size={40} />
-            </div>
-            <div>
-              <h3 className="text-3xl font-black mb-3 tracking-tight">Need Help?</h3>
-              <p className="text-slate-500 dark:text-slate-400 text-lg">Use the AI Helper to get step-by-step solutions or explanations for any part of this paper.</p>
-              <button onClick={() => (document.querySelector('button[aria-label="Ask Trag AI"]') as HTMLElement)?.click()} className="mt-6 px-10 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all">Ask Assistant</button>
-            </div>
-          </div>
+          <CommentSection paperId={paper.id} />
         </div>
 
         <div className="lg:col-span-4 space-y-8">

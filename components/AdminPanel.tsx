@@ -4,7 +4,7 @@ import {
     AlertCircle, Database, Trash2, Globe, Layout,
     FileText, ShieldAlert, Info, Activity, List,
     Search, Filter, BarChart3, PieChart, TrendingUp,
-    UserPlus, Users, Key, Terminal, Pencil, X
+    UserPlus, Users, Key, Terminal, Pencil, X, Shield
 } from 'lucide-react';
 import { GRADES, SUBJECTS, SUBJECTS_6_TO_9, SUBJECTS_10_TO_11, SUBJECTS_AL } from '../constants';
 import { supabase } from '../supabase';
@@ -22,8 +22,9 @@ const AdminPanel = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [errorStatus, setErrorStatus] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'upload' | 'fleet' | 'dev' | 'settings'>('upload');
+    const [activeTab, setActiveTab] = useState<'upload' | 'fleet' | 'dev' | 'settings' | 'help'>('upload');
     const [fleet, setFleet] = useState<Resource[]>([]);
+    const [helpRequests, setHelpRequests] = useState<any[]>([]);
 
     // Dev Portal State
     const [adminUsers, setAdminUsers] = useState<any[]>([]);
@@ -70,6 +71,7 @@ const AdminPanel = () => {
     useEffect(() => {
         if (isAuthenticated) {
             fetchFleet();
+            fetchHelpRequests();
             if (isDeveloper) {
                 fetchAdmins();
             }
@@ -89,6 +91,27 @@ const AdminPanel = () => {
             term: r.term,
             file_url: r.file_url
         })));
+    };
+
+    const fetchHelpRequests = async () => {
+        const { data, error } = await supabase
+            .from('comments')
+            .select('*')
+            .eq('is_help_request', true)
+            .order('created_at', { ascending: false });
+        if (!error) setHelpRequests(data);
+    };
+
+    const handleResolveRequest = async (id: string, currentStatus: string) => {
+        const nextStatus = currentStatus === 'resolved' ? 'pending' : 'resolved';
+        const { error } = await supabase
+            .from('comments')
+            .update({ status: nextStatus })
+            .eq('id', id);
+
+        if (!error) {
+            fetchHelpRequests();
+        }
     };
 
     const fetchAdmins = async () => {
@@ -386,6 +409,18 @@ const AdminPanel = () => {
                                 Dev Portal
                             </button>
                         )}
+                        <button
+                            onClick={() => setActiveTab('help')}
+                            className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'help' ? 'bg-amber-500 text-white shadow-xl' : 'text-slate-400'}`}
+                        >
+                            <Shield size={16} />
+                            Help Requests
+                            {helpRequests.filter(r => r.status === 'pending').length > 0 && (
+                                <span className="w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-[8px] animate-pulse">
+                                    {helpRequests.filter(r => r.status === 'pending').length}
+                                </span>
+                            )}
+                        </button>
                     </div>
                 </div>
 
@@ -445,6 +480,63 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                             <h3 className="font-bold text-sm">Error Occurred</h3>
                         </div>
                         <p className="text-slate-700 dark:text-slate-300 font-medium">{errorStatus}</p>
+                    </div>
+                )}
+
+                {activeTab === 'help' && (
+                    <div className="space-y-8 animate-in fade-in">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">Student Help Requests (@admin)</h2>
+                            <button onClick={fetchHelpRequests} className="px-6 py-2 bg-slate-100 dark:bg-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-500 transition-colors">Refresh Feed</button>
+                        </div>
+
+                        {helpRequests.length === 0 ? (
+                            <div className="text-center py-20 bg-slate-50 dark:bg-white/10 rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-white/5">
+                                <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">No help requests found</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {helpRequests.map(req => (
+                                    <div key={req.id} className={`p-8 rounded-[2.5rem] glass-card border-none shadow-sm transition-all ${req.status === 'resolved' ? 'opacity-60 grayscale' : 'border-l-4 border-l-red-500'}`}>
+                                        <div className="flex justify-between items-start mb-6">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 bg-slate-100 dark:bg-white/10 rounded-2xl flex items-center justify-center text-slate-400 font-black">
+                                                    {req.author_name ? req.author_name.charAt(0).toUpperCase() : '?'}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-slate-900 dark:text-white">{req.author_name || 'Anonymous Student'}</h4>
+                                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                                                        {new Date(req.created_at).toLocaleString()} • Paper ID: {req.paper_id}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => handleResolveRequest(req.id, req.status)}
+                                                    className={`px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${req.status === 'resolved' ? 'bg-emerald-500 text-white' : 'bg-slate-900 dark:bg-white/10 text-white hover:bg-emerald-600'}`}
+                                                >
+                                                    {req.status === 'resolved' ? 'Resolved' : 'Mark as Resolved'}
+                                                </button>
+                                                <button
+                                                    onClick={async () => {
+                                                        if (confirm('Delete this request?')) {
+                                                            await supabase.from('comments').delete().eq('id', req.id);
+                                                            fetchHelpRequests();
+                                                        }
+                                                    }}
+                                                    className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="p-6 bg-slate-50 dark:bg-white/5 rounded-2xl">
+                                            <p className="text-slate-700 dark:text-white font-bold leading-relaxed">{req.content}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
 

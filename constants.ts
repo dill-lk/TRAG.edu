@@ -132,6 +132,7 @@ export const NAV_LINKS = [
   { name: 'Home', sinhala: 'ප්‍රධාන පිටුව', href: '#/' },
   { name: 'A/L Archive', sinhala: 'උසස් පෙළ', href: '#/grade/al' },
   { name: 'O/L Archive', sinhala: 'සාමාන්්‍ය පෙළ', href: '#/grade/ol' },
+  { name: 'Notes', sinhala: 'කෙටි සටහන්', href: '#/notes' },
 ];
 
 export const RESOURCES: Resource[] = [];

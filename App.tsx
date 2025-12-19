@@ -6,6 +6,7 @@ import GradePage from './components/GradePage';
 import SubjectPage from './components/SubjectPage';
 import PaperDetail from './components/PaperDetail';
 import AdminPanel from './components/AdminPanel';
+import NotesMarketplace from './components/NotesMarketplace';
 import TragAIWidget from './components/TragAIWidget';
 import { supabase } from './supabase';
 import { Resource } from './types';
@@ -154,6 +155,7 @@ const App: React.FC = () => {
     if (main === 'paper') return `Helping student with paper: ${parts[1]}.`;
     if (main === 'subject') return `Helping with subject module: ${parts[2]} for Grade: ${parts[1]}.`;
     if (main === 'grade') return `Viewing papers for ${parts[1]}.`;
+    if (main === 'notes') return 'Browsing student-shared notes in the marketplace.';
     return 'TRAG.edu Library Hub.';
   };
 
@@ -200,6 +202,7 @@ const App: React.FC = () => {
         {main === 'grade' && <GradePage gradeId={parts[1]} onNavigate={navigate} resources={dbResources} />}
         {main === 'subject' && <SubjectPage gradeId={parts[1]} subjectId={parts[2]} onNavigate={navigate} resources={dbResources} />}
         {main === 'paper' && <PaperDetail paperId={parts[1]} onNavigate={navigate} resources={dbResources} />}
+        {main === 'notes' && <NotesMarketplace />}
         {main === 'admin' && <AdminPanel />}
       </main>
 
