@@ -22,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({ activeRoute, theme, onToggleTheme, onOp
 
   return (
     <>
-      <header className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[95%] lg:max-w-[75%] transition-all duration-700 ease-out ${isScrolled ? 'top-2' : 'top-4 md:top-6'}`}>
+      <header className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[95%] max-w-[75%] transition-all duration-700 ease-out ${isScrolled ? 'top-2' : 'top-4 md:top-6'}`}>
         <div className={`
           flex items-center justify-between px-4 md:px-8 py-1 rounded-2xl md:rounded-[3rem]
           glass-card light-gradient-card border-white/40 dark:border-white/10 shadow-3xl
