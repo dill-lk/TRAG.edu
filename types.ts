@@ -37,6 +37,7 @@ export interface Resource {
   description?: string;
   province?: string;
   file_url?: string;
+  created_at?: string;
 }
 
 export interface ChatMessage {

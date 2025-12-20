@@ -45,8 +45,21 @@ const AdminPanel = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [errorStatus, setErrorStatus] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'upload' | 'fleet' | 'dev' | 'settings' | 'help' | 'analytics' | 'users'>('upload');
-        const [fleet, setFleet] = useState<Resource[]>([]);
-        const [helpRequests, setHelpRequests] = useState<any[]>([]);
+    
+    // Data State
+    const [fleet, setFleet] = useState<Resource[]>([]);
+    const [helpRequests, setHelpRequests] = useState<any[]>([]);
+
+    const fetchFleet = async () => {
+        const { data, error } = await supabase.from('resources').select('*').order('created_at', { ascending: false });
+        if (data) setFleet(data as Resource[]);
+        if (error) console.error('Error fetching fleet:', error);
+    };
+        const fetchHelpRequests = async () => {
+            const { data, error } = await supabase.from('comments').select('*').eq('is_help_request', true).order('created_at', { ascending: false });
+            if (data) setHelpRequests(data);
+            if (error) console.error('Error fetching help requests:', error);
+        };
     
         // User Management State (using adminUsers as a proxy, as no generic 'users' table is available)
         const [allUsers, setAllUsers] = useState<any[]>([]); // This will hold adminUsers
@@ -62,7 +75,7 @@ const AdminPanel = () => {
         const analyticsData = useMemo(() => {
             // Downloads by Month (simulated by uploads by month from fleet created_at)
             const uploadsByMonth = fleet.reduce((acc: { [key: string]: number }, resource) => {
-                const month = new Date(resource.created_at).toLocaleString('default', { month: 'short' });
+                const month = new Date(resource.created_at || '').toLocaleString('default', { month: 'short' });
                 acc[month] = (acc[month] || 0) + 1;
                 return acc;
             }, {});
@@ -120,7 +133,6 @@ const AdminPanel = () => {
         const [newAdminPass, setNewAdminPass] = useState('');
         const [showDbSetup, setShowDbSetup] = useState(false);
         const [maintMode, setMaintMode] = useState(false);
-
     // Search & Filter State
     const [searchTerm, setSearchTerm] = useState('');
     const [filterGrade, setFilterGrade] = useState('');
@@ -329,6 +341,43 @@ const AdminPanel = () => {
             setErrorStatus(err.message);
         } finally {
             setIsUploading(false);
+        }
+    };
+
+    const handleResolveRequest = async (id: string, currentStatus: string) => {
+        const newStatus = currentStatus === 'resolved' ? 'pending' : 'resolved';
+        const { error } = await supabase.from('comments').update({
+            status: newStatus,
+            resolved_at: newStatus === 'resolved' ? new Date().toISOString() : null
+        }).eq('id', id);
+
+        if (!error) {
+            alert(`Request ${newStatus}`);
+            fetchHelpRequests();
+        } else {
+            alert('Error updating request: ' + error.message);
+        }
+    };
+
+    const handleSendReply = async (id: string) => {
+        const reply = replyText[id];
+        if (!reply) {
+            alert('Reply cannot be empty.');
+            return;
+        }
+
+        const { error } = await supabase.from('comments').update({ admin_reply: reply }).eq('id', id);
+
+        if (!error) {
+            alert('Reply sent!');
+            setReplyText(prev => {
+                const newReplyText = { ...prev };
+                delete newReplyText[id];
+                return newReplyText;
+            });
+            fetchHelpRequests();
+        } else {
+            alert('Error sending reply: ' + error.message);
         }
     };
 
