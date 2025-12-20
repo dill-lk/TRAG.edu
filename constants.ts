@@ -10,6 +10,7 @@ export const GRADES: Grade[] = [
   { id: 'gr8', name: 'Grade 8', sinhalaName: '8 ශ්‍රේණිය', colorFrom: 'from-indigo-500', colorTo: 'to-indigo-700' },
   { id: 'gr7', name: 'Grade 7', sinhalaName: '7 ශ්‍රේණිය', colorFrom: 'from-orange-600', colorTo: 'to-red-600' },
   { id: 'gr6', name: 'Grade 6', sinhalaName: '6 ශ්‍රේණිය', colorFrom: 'from-blue-700', colorTo: 'to-blue-900' },
+  { id: 'scout', name: 'Scout Guide', sinhalaName: 'බාලදක්ෂ මගපෙන්වන්නා', colorFrom: 'from-amber-600', colorTo: 'to-orange-700' },
 ];
 
 export const EXAM_CATEGORIES = [
@@ -126,7 +127,21 @@ export const SUBJECTS_AL: Subject[] = [
   mkSub('stat', 'Statistics', 'සංඛ්‍යානය', '', '📈 Commerce', 'al'),
 ];
 
-export const SUBJECTS: Subject[] = [...SUBJECTS_6_TO_9, ...SUBJECTS_10_TO_11, ...SUBJECTS_AL];
+export const SUBJECTS_SCOUT: Subject[] = [
+  // ⚜️ Scout Badges
+  mkSub('citizenship', 'Citizenship Badge', 'පුරවැසි පදක්කම', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('firstaid', 'First Aid Badge', 'ප්‍රථමාධාර පදක්කම', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('woodcraft', 'Woodcraft Badge', 'ලී කැටයම් පදක්කම', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('pioneering', 'Pioneering Badge', 'පූර්වගාමී පදක්කම', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('backwoods', 'Backwoodsman Badge', 'වනගත මිනිසා පදක්කම', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('publichealth', 'Public Health Badge', 'මහජන සෞඛ්‍යය පදක්කම', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('safety', 'Safety Badge', 'ආරක්ෂක පදක්කම', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('communication', 'Communication Badge', 'සන්නිවේදන පදක්කම', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('environment', 'Environment Badge', 'පරිසර පදක්කම', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('leadership', 'Leadership Badge', 'නායකත්ව පදක්කම', '', '⚜️ Scout Badges', 'scout'),
+];
+
+export const SUBJECTS: Subject[] = [...SUBJECTS_6_TO_9, ...SUBJECTS_10_TO_11, ...SUBJECTS_AL, ...SUBJECTS_SCOUT];
 
 export const NAV_LINKS = [
   { name: 'Home', sinhala: 'ප්‍රධාන පිටුව', href: '#/' },

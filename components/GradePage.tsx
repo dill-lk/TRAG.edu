@@ -1,6 +1,6 @@
 
 import React, { useMemo } from 'react';
-import { GRADES, SUBJECTS_6_TO_9, SUBJECTS_10_TO_11, SUBJECTS_AL } from '../constants';
+import { GRADES, SUBJECTS_6_TO_9, SUBJECTS_10_TO_11, SUBJECTS_AL, SUBJECTS_SCOUT } from '../constants';
 import { Home as HomeIcon, GraduationCap, LayoutGrid, BookOpen, ArrowRight } from 'lucide-react';
 import { Subject, Resource } from '../types';
 
@@ -15,6 +15,7 @@ const GradePage: React.FC<GradePageProps> = ({ gradeId, onNavigate, resources })
 
   const targetSubjects: Subject[] = useMemo(() => {
     if (gradeId === 'al') return SUBJECTS_AL;
+    if (gradeId === 'scout') return SUBJECTS_SCOUT;
     if (['gr10', 'gr11', 'ol'].includes(gradeId)) return SUBJECTS_10_TO_11;
     return SUBJECTS_6_TO_9;
   }, [gradeId]);
@@ -29,7 +30,8 @@ const GradePage: React.FC<GradePageProps> = ({ gradeId, onNavigate, resources })
     '🧪 Physical Science',
     '🧬 Biological Science',
     '💻 Technology',
-    '📈 Commerce'
+    '📈 Commerce',
+    '⚜️ Scout Badges'
   ];
 
   const groupedSubjects: Record<string, Subject[]> = {};

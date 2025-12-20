@@ -204,7 +204,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
               <div className={`w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center text-white transition-all duration-700 shadow-2xl relative z-10
                 ${grade.id === 'al' ? 'bg-gradient-to-br from-pink-500 to-rose-600' :
                   grade.id === 'ol' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' :
-                    'bg-gradient-to-br from-cyan-500 to-blue-600'}
+                    grade.id === 'scout' ? 'bg-gradient-to-br from-amber-500 to-orange-600' :
+                      'bg-gradient-to-br from-cyan-500 to-blue-600'}
               `}>
                 <GraduationCap size={32} className="md:w-11 md:h-11" />
               </div>
