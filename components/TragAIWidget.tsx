@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  X, Send, Camera, Maximize2, Minimize2, 
-  Volume2, VolumeX, Sparkles, Trash2, 
+import {
+  X, Send, Camera, Maximize2, Minimize2,
+  Volume2, VolumeX, Sparkles, Trash2,
   AlertCircle, BookOpen, BrainCircuit,
   Paperclip, Mic, ChevronRight, Zap
 } from 'lucide-react';

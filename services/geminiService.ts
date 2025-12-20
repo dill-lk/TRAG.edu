@@ -31,7 +31,7 @@ export const streamChatWithTragAI = async (
   try {
     const genAI = await getGenAIClient();
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       systemInstruction: `You are 'TRAG Study Assistant', a professional educational expert for Sri Lankan students. 
       CONTEXT: ${context || 'General Educational Analysis'}.
       FORMAT: Always use clean Markdown. Use bold for key terms. Use LaTeX for math.
@@ -90,7 +90,7 @@ export const streamChatWithTragAI = async (
 export const fetchExamNews = async (): Promise<{ text: string; sources: any[] }> => {
   try {
     const genAI = await getGenAIClient();
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // 1.5-flash is good for this
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", }); // 1.5-flash is good for this
     
     // Note: 'tools' for googleSearch is supported in some versions/models. 
     // If not available, it will just generate text.
