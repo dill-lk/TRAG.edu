@@ -123,6 +123,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
           <h1 className="font-display text-5xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.8] mb-8 md:mb-12 text-slate-900 dark:text-white">
             Digital <br />
             <span className="text-shimmer">Archives.</span>
+            <span className="sr-only">Sri Lankan Past Papers Library</span>
           </h1>
 
           <div className="flex flex-col items-center gap-3 md:gap-4 mb-12 md:mb-20">
@@ -392,7 +393,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, resources }) => {
         <div className="max-w-6xl mx-auto px-6 mb-12 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden p-1">
-              <img src={logo} className="w-full h-full object-contain" alt="Logo" />
+              <img src={logo} className="w-full h-full object-contain" alt="TRAG.edu - Sri Lankan Past Papers Digital Library Logo" />
             </div>
             <span className="font-display font-black text-2xl tracking-tighter text-slate-900 dark:text-white">TRAG.edu</span>
           </div>

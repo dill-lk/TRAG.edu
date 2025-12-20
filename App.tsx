@@ -138,6 +138,29 @@ const App: React.FC = () => {
 
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
 
+  // SEO: Dynamic Page Titles
+  useEffect(() => {
+    const { main, parts } = getRouteInfo();
+    let title = 'TRAG.edu | Digital Paper Library';
+
+    if (main === 'grade' && parts[1]) {
+      const gradeName = parts[1].toUpperCase();
+      title = `${gradeName} Archive | TRAG.edu`;
+    } else if (main === 'subject' && parts[1] && parts[2]) {
+      const grade = parts[1].toUpperCase();
+      const subject = parts[2].split('-').map((s: string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+      title = `${subject} (${grade}) | TRAG.edu`;
+    } else if (main === 'paper' && parts[1]) {
+      title = `View Paper | TRAG.edu`;
+    } else if (main === 'notes') {
+      title = 'Notes Marketplace | TRAG.edu';
+    } else if (main === 'admin') {
+      title = 'Admin Panel | TRAG.edu';
+    }
+
+    document.title = title;
+  }, [hash]);
+
   const getRouteInfo = () => {
     const parts = hash.replace('#/', '').split('/');
     const main = parts[0] || 'home';
