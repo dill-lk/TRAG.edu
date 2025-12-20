@@ -16,7 +16,9 @@
     "marked": "12.0.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-router-dom": "^7.10.1"
+    "react-router-dom": "^7.10.1",
+    "react-chartjs-2": "^5.2.0",
+    "chart.js": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

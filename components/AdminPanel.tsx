@@ -4,11 +4,20 @@ import {
     AlertCircle, Database, Trash2, Globe, Layout,
     FileText, ShieldAlert, Info, Activity, List,
     Search, Filter, BarChart3, PieChart, TrendingUp,
-    UserPlus, Users, Key, Terminal, Pencil, X, Shield
+    UserPlus, Users, Key, Terminal, Pencil, X, Shield,
+    UsersRound, AreaChart, Settings2
 } from 'lucide-react';
+import {
+    Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement
+} from 'chart.js';
+import { Bar, Pie, Line } from 'react-chartjs-2';
 import { GRADES, SUBJECTS, SUBJECTS_6_TO_9, SUBJECTS_10_TO_11, SUBJECTS_AL, SUBJECTS_SCOUT } from '../constants';
 import { supabase } from '../supabase';
 import { Resource } from '../types';
+
+ChartJS.register(
+    CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement
+);
 
 const AdminPanel = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,19 +28,98 @@ const AdminPanel = () => {
     const [loginPassword, setLoginPassword] = useState('');
     const [loginLoading, setLoginLoading] = useState(false);
 
+    const [geminiApiKey, setGeminiApiKey] = useState('');
+    const [geminiApiKeyInput, setGeminiApiKeyInput] = useState('');
+    const [showApiKey, setShowApiKey] = useState(false);
+
+    // Exam Countdown States
+    const [exam1Title, setExam1Title] = useState('');
+    const [exam1Date, setExam1Date] = useState('');
+    const [exam2Title, setExam2Title] = useState('');
+    const [exam2Date, setExam2Date] = useState('');
+
+    // Admin Notice State
+    const [adminNoticeMessage, setAdminNoticeMessage] = useState('');
+
     const [isUploading, setIsUploading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [errorStatus, setErrorStatus] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'upload' | 'fleet' | 'dev' | 'settings' | 'help'>('upload');
-    const [fleet, setFleet] = useState<Resource[]>([]);
-    const [helpRequests, setHelpRequests] = useState<any[]>([]);
-
-    // Dev Portal State
-    const [adminUsers, setAdminUsers] = useState<any[]>([]);
-    const [newAdminUser, setNewAdminUser] = useState('');
-    const [newAdminPass, setNewAdminPass] = useState('');
-    const [showDbSetup, setShowDbSetup] = useState(false);
-    const [maintMode, setMaintMode] = useState(false);
+    const [activeTab, setActiveTab] = useState<'upload' | 'fleet' | 'dev' | 'settings' | 'help' | 'analytics' | 'users'>('upload');
+        const [fleet, setFleet] = useState<Resource[]>([]);
+        const [helpRequests, setHelpRequests] = useState<any[]>([]);
+    
+        // User Management State (using adminUsers as a proxy, as no generic 'users' table is available)
+        const [allUsers, setAllUsers] = useState<any[]>([]); // This will hold adminUsers
+        const [userSearchTerm, setUserSearchTerm] = useState('');
+        const filteredUsers = useMemo(() => {
+            return allUsers.filter(user =>
+                user.username.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                user.id.toLowerCase().includes(userSearchTerm.toLowerCase())
+            );
+        }, [allUsers, userSearchTerm]);
+    
+        // Analytics Data derived from real data
+        const analyticsData = useMemo(() => {
+            // Downloads by Month (simulated by uploads by month from fleet created_at)
+            const uploadsByMonth = fleet.reduce((acc: { [key: string]: number }, resource) => {
+                const month = new Date(resource.created_at).toLocaleString('default', { month: 'short' });
+                acc[month] = (acc[month] || 0) + 1;
+                return acc;
+            }, {});
+    
+            const allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const downloadsData = allMonths.map(month => uploadsByMonth[month] || 0);
+    
+            // Resource Type Distribution
+            const resourceTypes = fleet.reduce((acc: { [key: string]: number }, resource) => {
+                acc[resource.type] = (acc[resource.type] || 0) + 1;
+                return acc;
+            }, {});
+            const resourceDistributionLabels = Object.keys(resourceTypes);
+            const resourceDistributionData = Object.values(resourceTypes);
+    
+            return {
+                downloadsByMonth: {
+                    labels: allMonths,
+                    datasets: [{
+                        label: 'Uploads',
+                        data: downloadsData,
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                    }],
+                },
+                resourceDistribution: {
+                    labels: resourceDistributionLabels,
+                    datasets: [{
+                        data: resourceDistributionData,
+                        backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#6366f1', '#06b6d4', '#ec4899'], // Added more colors
+                        hoverOffset: 4,
+                    }],
+                },
+                // Daily Active Users (static mock, as no real user activity data is available)
+                dailyActiveUsers: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Active Users',
+                        data: [50, 65, 60, 70, 75, 55, 40],
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }],
+                },
+            };
+        }, [fleet]);
+    
+        // Audit Logs State
+        const [auditLogs, setAuditLogs] = useState<any[]>([]);
+    
+        // Dev Portal State
+        const [adminUsers, setAdminUsers] = useState<any[]>([]);
+        const [newAdminUser, setNewAdminUser] = useState('');
+        const [newAdminPass, setNewAdminPass] = useState('');
+        const [showDbSetup, setShowDbSetup] = useState(false);
+        const [maintMode, setMaintMode] = useState(false);
 
     // Search & Filter State
     const [searchTerm, setSearchTerm] = useState('');
@@ -52,22 +140,28 @@ const AdminPanel = () => {
     const [editingResource, setEditingResource] = useState<any>(null);
     const [replyText, setReplyText] = useState<Record<string, string>>({});
 
-    useEffect(() => {
-        if (editingResource) {
-            setTitle(editingResource.title);
-            setGrade(editingResource.gradeId);
-            setSubject(editingResource.subjectId);
-            setType(editingResource.type);
-            setTerm(editingResource.term || '1st Term');
-            setMedium(editingResource.medium);
-            setYear(editingResource.year);
-        } else {
-            setTitle('');
-            setGrade('');
-            setSubject('');
-            setFile(null);
-        }
-    }, [editingResource]);
+    const fetchSystemSettings = async () => {
+        const { data: geminiKeyData } = await supabase.from('system_settings').select('value').eq('key', 'GEMINI_API_KEY').single();
+        if (geminiKeyData) setGeminiApiKey(geminiKeyData.value);
+
+        const { data: maintModeData } = await supabase.from('system_settings').select('value').eq('key', 'MAINTENANCE_MODE').single();
+        if (maintModeData?.value === 'true') setMaintMode(true);
+        else setMaintMode(false);
+
+        // Fetch Exam Countdown Settings
+        const { data: ex1TitleData } = await supabase.from('system_settings').select('value').eq('key', 'EXAM_1_TITLE').single();
+        if (ex1TitleData) setExam1Title(ex1TitleData.value);
+        const { data: ex1DateData } = await supabase.from('system_settings').select('value').eq('key', 'EXAM_1_DATE').single();
+        if (ex1DateData) setExam1Date(ex1DateData.value);
+        const { data: ex2TitleData } = await supabase.from('system_settings').select('value').eq('key', 'EXAM_2_TITLE').single();
+        if (ex2TitleData) setExam2Title(ex2TitleData.value);
+        const { data: ex2DateData } = await supabase.from('system_settings').select('value').eq('key', 'EXAM_2_DATE').single();
+        if (ex2DateData) setExam2Date(ex2DateData.value);
+
+        // Fetch Admin Notice Message
+        const { data: adminNoticeData } = await supabase.from('system_settings').select('value').eq('key', 'ADMIN_NOTICE_MESSAGE').single();
+        if (adminNoticeData) setAdminNoticeMessage(adminNoticeData.value);
+    };
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -75,72 +169,25 @@ const AdminPanel = () => {
             fetchHelpRequests();
             if (isDeveloper) {
                 fetchAdmins();
+                fetchAuditLogs();
+                fetchSystemSettings(); // Fetch system settings for dev tab
             }
         }
     }, [isAuthenticated, isDeveloper]);
 
-    const fetchFleet = async () => {
-        const { data, error } = await supabase.from('resources').select('*').order('created_at', { ascending: false });
-        if (!error) setFleet(data.map((r: any) => ({
-            id: r.id,
-            title: r.title,
-            type: r.type,
-            gradeId: r.grade_id,
-            subjectId: r.subject_id,
-            year: r.year,
-            medium: r.medium,
-            term: r.term,
-            file_url: r.file_url
-        })));
-    };
-
-    const fetchHelpRequests = async () => {
-        const { data, error } = await supabase
-            .from('comments')
-            .select('*')
-            .eq('is_help_request', true)
-            .order('created_at', { ascending: false });
-        if (!error) setHelpRequests(data);
-    };
-
-    const handleResolveRequest = async (id: string, currentStatus: string) => {
-        const nextStatus = currentStatus === 'resolved' ? 'pending' : 'resolved';
-        const { error } = await supabase
-            .from('comments')
-            .update({ status: nextStatus })
-            .eq('id', id);
-
-        if (!error) {
-            fetchHelpRequests();
-        }
-    };
-
-    const handleSendReply = async (id: string) => {
-        const text = replyText[id];
-        if (!text?.trim()) return;
-
-        const { error } = await supabase
-            .from('comments')
-            .update({
-                admin_reply: text.trim(),
-                status: 'resolved'
-            })
-            .eq('id', id);
-
-        if (!error) {
-            setReplyText(prev => ({ ...prev, [id]: '' }));
-            fetchHelpRequests();
-            alert('Reply sent and request resolved!');
-        }
-    };
-
     const fetchAdmins = async () => {
         const { data: users } = await supabase.from('admin_users').select('*').order('created_at', { ascending: false });
-        if (users) setAdminUsers(users);
+        if (users) {
+            setAdminUsers(users);
+            setAllUsers(users); // Set allUsers for the Users tab
+        }
+        // Maintenance mode is now fetched by fetchSystemSettings, so remove from here.
+    };
 
-        const { data: settings } = await supabase.from('system_settings').select('value').eq('key', 'MAINTENANCE_MODE').single();
-        if (settings?.value === 'true') setMaintMode(true);
-        else setMaintMode(false);
+    const fetchAuditLogs = async () => {
+        const { data, error } = await supabase.from('audit_logs').select('*').order('created_at', { ascending: false });
+        if (!error) setAuditLogs(data);
+        else console.error('Error fetching audit logs:', error);
     };
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -360,14 +407,26 @@ const AdminPanel = () => {
                 </button>
             </div>
 
+            {/* Admin Notice */}
+            <div className="mb-12 p-8 bg-amber-500/10 border border-amber-500/20 rounded-[2.5rem] animate-in slide-in-from-top-4">
+                <div className="flex items-center gap-4 text-amber-500">
+                    <Info size={24} />
+                    <div>
+                        <p className="font-bold text-amber-600 dark:text-amber-400">
+                            {adminNoticeMessage || 'No admin notice set. Developer can set one in the Dev Portal.'}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             {/* Stats Dashboard */}
             {!isDeveloper && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                     <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden group">
                         <div className="relative z-10">
                             <div className="flex items-center gap-4 mb-4 text-slate-400">
-                                <Database size={20} />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Total Resources</span>
+                                <FileUp size={20} />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Total Uploads</span>
                             </div>
                             <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{stats.total}</h3>
                         </div>
@@ -400,6 +459,13 @@ const AdminPanel = () => {
                 <div className="flex justify-center mb-12">
                     <div className="flex gap-2 p-1.5 bg-slate-100 dark:bg-white/5 rounded-2xl shadow-inner">
                         <button
+                            onClick={() => setActiveTab('analytics')}
+                            className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'analytics' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
+                        >
+                            <AreaChart size={16} />
+                            Analytics
+                        </button>
+                        <button
                             onClick={() => setActiveTab('upload')}
                             className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'upload' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
                         >
@@ -414,10 +480,17 @@ const AdminPanel = () => {
                             Files
                         </button>
                         <button
+                            onClick={() => setActiveTab('users')}
+                            className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'users' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
+                        >
+                            <UsersRound size={16} />
+                            Users
+                        </button>
+                        <button
                             onClick={() => setActiveTab('settings')}
                             className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'settings' ? 'bg-white dark:bg-slate-800 shadow-md text-blue-600' : 'text-slate-400'}`}
                         >
-                            <Activity size={16} />
+                            <Settings2 size={16} />
                             Settings
                         </button>
                         {isDeveloper && (
@@ -500,6 +573,59 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                             <h3 className="font-bold text-sm">Error Occurred</h3>
                         </div>
                         <p className="text-slate-700 dark:text-slate-300 font-medium">{errorStatus}</p>
+                    </div>
+                )}
+
+                {activeTab === 'analytics' && (
+                    <div className="space-y-12 animate-in fade-in">
+                        <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">System Analytics</h2>
+
+                        {/* Summary Stats */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden">
+                                <div className="relative z-10">
+                                    <div className="flex items-center gap-4 mb-4 text-slate-400">
+                                        <UsersRound size={20} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Total Users</span>
+                                    </div>
+                                    <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{allUsers.length}</h3>
+                                </div>
+                            </div>
+                            <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden">
+                                <div className="relative z-10">
+                                    <div className="flex items-center gap-4 mb-4 text-slate-400">
+                                        <TrendingUp size={20} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Active Resources</span>
+                                    </div>
+                                    <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{fleet.length}</h3>
+                                </div>
+                            </div>
+                            <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 relative overflow-hidden">
+                                <div className="relative z-10">
+                                    <div className="flex items-center gap-4 mb-4 text-slate-400">
+                                        <Activity size={20} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Pending Help Req.</span>
+                                    </div>
+                                    <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{helpRequests.filter(r => r.status === 'pending').length}</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Charts */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40">
+                                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6">Uploads by Month</h3>
+                                <Line data={analyticsData.downloadsByMonth} options={{ responsive: true, plugins: { legend: { position: 'top' as const } } }} />
+                            </div>
+                            <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40">
+                                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6">Resource Type Distribution</h3>
+                                <Pie data={analyticsData.resourceDistribution} options={{ responsive: true, plugins: { legend: { position: 'top' as const } } }} />
+                            </div>
+                            <div className="glass-card p-8 rounded-[2.5rem] border-white/20 dark:bg-slate-950/40 lg:col-span-2">
+                                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6">Daily Active Users</h3>
+                                <Bar data={analyticsData.dailyActiveUsers} options={{ responsive: true, plugins: { legend: { position: 'top' as const } } }} />
+                            </div>
+                        </div>
                     </div>
                 )}
 
@@ -589,6 +715,48 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                     </div>
                 )}
 
+                {activeTab === 'users' && (
+                    <div className="space-y-8 animate-in fade-in">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">User Management</h2>
+                            <div className="relative group">
+                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} />
+                                <input
+                                    type="text"
+                                    placeholder="Search users..."
+                                    className="w-full pl-14 pr-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none shadow-sm font-bold text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400"
+                                    value={userSearchTerm}
+                                    onChange={e => setUserSearchTerm(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        {filteredUsers.length === 0 ? (
+                            <div className="text-center py-20 bg-slate-50 dark:bg-white/10 rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-white/5">
+                                <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">No users found matching criteria</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4">
+                                {filteredUsers.map(user => (
+                                    <div key={user.id} className="glass-card p-6 rounded-2xl flex items-center justify-between group hover:border-blue-500 transition-all">
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-colors shadow-sm">
+                                                <UsersRound size={24} />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-slate-800 dark:text-white">{user.username}</h4>
+                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">ID: {user.id}</p>
+                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Registered: {new Date(user.created_at).toLocaleDateString()}</p>
+                                            </div>
+                                        </div>
+                                        {/* Removed status toggle and individual delete button for now, as these are admin users */}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {activeTab === 'settings' && (
                     <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in">
                         <div className="bg-slate-50 dark:bg-white/5 p-8 rounded-[2.5rem] border border-slate-100 dark:border-white/5">
@@ -604,34 +772,43 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
 
                             <form onSubmit={async (e) => {
                                 e.preventDefault();
-                                const form = e.target as HTMLFormElement;
-                                const data = new FormData(form);
                                 const updates = [
-                                    { key: 'EXAM_1_TITLE', value: data.get('ex1_title') },
-                                    { key: 'EXAM_1_DATE', value: data.get('ex1_date') },
-                                    { key: 'EXAM_2_TITLE', value: data.get('ex2_title') },
-                                    { key: 'EXAM_2_DATE', value: data.get('ex2_date') },
+                                    { key: 'EXAM_1_TITLE', value: exam1Title },
+                                    { key: 'EXAM_1_DATE', value: exam1Date },
+                                    { key: 'EXAM_2_TITLE', value: exam2Title },
+                                    { key: 'EXAM_2_DATE', value: exam2Date },
                                 ];
 
                                 const { error } = await supabase.from('system_settings').upsert(updates);
                                 if (!error) alert('Settings Saved!');
-                                else alert('Error saving settings');
+                                else alert('Error saving settings: ' + error.message);
                             }} className="space-y-6">
                                 <div className="space-y-4">
-                                    <h4 className="font-bold text-slate-900 dark:text-white">Countdown 1 (Gradient: Indigo/Purple)</h4>
-                                    <input name="ex1_title" defaultValue="G.C.E. O/L Exam - 2024(2025)" placeholder="Title" className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold" />
-                                    <input name="ex1_date" type="date" defaultValue="2025-05-01" className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold" />
+                                    <h4 className="font-bold text-slate-900 dark:text-white">Countdown 1 (Indigo/Purple)</h4>
+                                    <div>
+                                        <label htmlFor="ex1_title" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Title</label>
+                                        <input id="ex1_title" value={exam1Title} onChange={e => setExam1Title(e.target.value)} placeholder="e.g. G.C.E. O/L Exam - 2024(2025)" className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold outline-none" />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="ex1_date" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Date</label>
+                                        <input id="ex1_date" type="date" value={exam1Date} onChange={e => setExam1Date(e.target.value)} className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold outline-none" />
+                                    </div>
                                 </div>
                                 <div className="space-y-4">
-                                    <h4 className="font-bold text-slate-900 dark:text-white">Countdown 2 (Gradient: Pink/Rose)</h4>
-                                    <input name="ex2_title" defaultValue="G.C.E. A/L Exam - 2024(2025)" placeholder="Title" className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold" />
-                                    <input name="ex2_date" type="date" defaultValue="2025-01-28" className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold" />
+                                    <h4 className="font-bold text-slate-900 dark:text-white">Countdown 2 (Pink/Rose)</h4>
+                                    <div>
+                                        <label htmlFor="ex2_title" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Title</label>
+                                        <input id="ex2_title" value={exam2Title} onChange={e => setExam2Title(e.target.value)} placeholder="e.g. G.C.E. A/L Exam - 2024(2025)" className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold outline-none" />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="ex2_date" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Date</label>
+                                        <input id="ex2_date" type="date" value={exam2Date} onChange={e => setExam2Date(e.target.value)} className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none font-bold outline-none" />
+                                    </div>
                                 </div>
                                 <button className="w-full py-4 bg-purple-600 text-white rounded-xl font-black uppercase tracking-widest shadow-lg hover:scale-[1.02] transition-all">
                                     Save Configurations
                                 </button>
-                            </form>
-                        </div>
+                            </form>                        </div>
                     </div>
                 )}
 
@@ -651,53 +828,85 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                     </div>
                                 </div>
                                 <div className="space-y-4">
-                                    <div>
-                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Gemini API Key</label>
-                                        <div className="flex gap-2">
-                                            <input
-                                                type="password"
-                                                placeholder="Enter new API Key..."
-                                                className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white"
-                                                onChange={async (e) => {
-                                                    if (e.target.value.length > 10) {
-                                                        await supabase.from('system_settings').upsert({ key: 'GEMINI_API_KEY', value: e.target.value });
-                                                    }
-                                                }}
-                                            />
-                                        </div>
-                                        <p className="text-[10px] text-slate-400 mt-2 ml-2">Key updates auto-save on entry.</p>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Gemini API Key</label>
+                                    <div className="flex gap-2 mb-2">
+                                        <input
+                                            type={showApiKey ? "text" : "password"}
+                                            readOnly
+                                            value={geminiApiKey ? '•'.repeat(geminiApiKey.length) : 'No key set'}
+                                            className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-800 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white cursor-not-allowed"
+                                        />
+                                        <button type="button" onClick={() => setShowApiKey(!showApiKey)} className="px-6 py-4 bg-slate-100 dark:bg-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-500 transition-colors">
+                                            {showApiKey ? 'Hide' : 'Show'}
+                                        </button>
                                     </div>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Enter new API Key to update..."
+                                            className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white"
+                                            value={geminiApiKeyInput}
+                                            onChange={(e) => setGeminiApiKeyInput(e.target.value)}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                if (geminiApiKeyInput.length > 10) {
+                                                    const { error } = await supabase.from('system_settings').upsert({ key: 'GEMINI_API_KEY', value: geminiApiKeyInput });
+                                                    if (!error) {
+                                                        setGeminiApiKey(geminiApiKeyInput);
+                                                        setGeminiApiKeyInput('');
+                                                        alert('Gemini API Key updated successfully!');
+                                                    } else {
+                                                        alert('Error updating API key: ' + error.message);
+                                                    }
+                                                } else {
+                                                    alert('API Key must be longer than 10 characters.');
+                                                }
+                                            }}
+                                            className="px-8 py-4 bg-blue-600 text-white rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-all shadow-lg"
+                                        >
+                                            Update Key
+                                        </button>
+                                    </div>
+                                    <p className="text-[10px] text-slate-400 mt-2 ml-2">Enter a new key and click update. Key updates auto-save on entry.</p>
                                 </div>
                             </div>
 
                             <div className="bg-slate-50 dark:bg-white/5 p-8 rounded-[2.5rem] border border-slate-100 dark:border-white/5">
                                 <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-12 h-12 bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center">
-                                        <ShieldAlert size={24} />
+                                    <div className="w-12 h-12 bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 rounded-xl flex items-center justify-center">
+                                        <Info size={24} />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-black text-slate-900 dark:text-white">System Status</h3>
-                                        <p className="text-slate-500 text-xs font-bold uppercase tracking-wide">Global Availability Controls</p>
+                                        <h3 className="text-xl font-black text-slate-900 dark:text-white">Admin Notice</h3>
+                                        <p className="text-slate-500 text-xs font-bold uppercase tracking-wide">Update global announcement</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm">
+                                <div className="space-y-4">
                                     <div>
-                                        <h4 className="font-bold text-slate-800 dark:text-white">Maintenance Mode</h4>
-                                        <p className="text-xs text-slate-400">Lock down the site for updates.</p>
+                                        <label htmlFor="admin-notice-input" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Message Content</label>
+                                        <textarea
+                                            id="admin-notice-input"
+                                            rows={3}
+                                            placeholder="Enter the notice message..."
+                                            className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white resize-y"
+                                            value={adminNoticeMessage}
+                                            onChange={e => setAdminNoticeMessage(e.target.value)}
+                                        ></textarea>
                                     </div>
                                     <button
                                         onClick={async () => {
-                                            const newVal = !maintMode;
-                                            if (!confirm(`Switch system to ${newVal ? 'Maintenance' : 'Normal'} Mode?`)) return;
-
-                                            const { error } = await supabase.from('system_settings').upsert({ key: 'MAINTENANCE_MODE', value: String(newVal) });
+                                            const { error } = await supabase.from('system_settings').upsert({ key: 'ADMIN_NOTICE_MESSAGE', value: adminNoticeMessage });
                                             if (!error) {
-                                                setMaintMode(newVal);
-                                                alert(`System is now in ${newVal ? 'Lockdown' : 'Normal'} Mode.`);
+                                                alert('Admin Notice updated successfully!');
+                                            } else {
+                                                alert('Error updating admin notice: ' + error.message);
                                             }
                                         }}
-                                        className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${maintMode ? 'bg-red-500 text-white' : 'bg-emerald-500/10 text-emerald-500'}`}>
-                                        {maintMode ? 'Active (Locked)' : 'Normal'}
+                                        className="w-full py-4 bg-orange-600 text-white rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-all shadow-lg"
+                                    >
+                                        Save Admin Notice
                                     </button>
                                 </div>
                             </div>
@@ -715,18 +924,26 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                 </div>
                             </div>
 
-                            <form onSubmit={handleCreateAdmin} className="flex flex-col md:flex-row gap-4">
-                                <input
-                                    type="text" required placeholder="New Username"
-                                    className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white"
-                                    value={newAdminUser} onChange={e => setNewAdminUser(e.target.value)}
-                                />
-                                <input
-                                    type="text" required placeholder="New Password"
-                                    className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white"
-                                    value={newAdminPass} onChange={e => setNewAdminPass(e.target.value)}
-                                />
-                                <button className="px-8 py-4 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-all shadow-lg whitespace-nowrap">
+                            <form onSubmit={handleCreateAdmin} className="space-y-4">
+                                <div>
+                                    <label htmlFor="new-admin-username" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Username</label>
+                                    <input
+                                        id="new-admin-username"
+                                        type="text" required placeholder="New Username"
+                                        className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white"
+                                        value={newAdminUser} onChange={e => setNewAdminUser(e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="new-admin-password" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Password</label>
+                                    <input
+                                        id="new-admin-password"
+                                        type="password" required placeholder="New Password"
+                                        className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white"
+                                        value={newAdminPass} onChange={e => setNewAdminPass(e.target.value)}
+                                    />
+                                </div>
+                                <button className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-all shadow-lg whitespace-nowrap">
                                     Create Admin
                                 </button>
                             </form>
@@ -744,6 +961,7 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                         <div>
                                             <h4 className="font-bold text-slate-800 dark:text-white">{u.username}</h4>
                                             <p className="text-[10px] text-slate-400 font-mono">ID: {u.id}</p>
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Created: {new Date(u.created_at).toLocaleDateString()}</p>
                                         </div>
                                     </div>
                                     <button onClick={() => handleDeleteAdmin(u.id)} className="w-10 h-10 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
@@ -752,6 +970,31 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                 </div>
                             ))}
                             {adminUsers.length === 0 && <p className="text-center text-slate-400 py-10">No additional admins found.</p>}
+                        </div>
+
+                        {/* Audit Logs */}
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest pl-4">Recent Audit Logs</h3>
+                            {auditLogs.length === 0 ? (
+                                <p className="text-center text-slate-400 py-10">No audit logs found.</p>
+                            ) : (
+                                <div className="grid grid-cols-1 gap-4">
+                                    {auditLogs.map(log => (
+                                        <div key={log.id} className="glass-card p-6 rounded-2xl flex items-start gap-4">
+                                            <div className="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-xl flex items-center justify-center text-slate-400">
+                                                <Info size={20} />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-blue-600 dark:text-blue-400">{log.action} <span className="text-slate-800 dark:text-white font-normal">by {log.performed_by}</span></h4>
+                                                {log.details && <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-1">{log.details}</p>}
+                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">
+                                                    {new Date(log.created_at).toLocaleString()}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                     </div>
