@@ -8,6 +8,7 @@ import PaperDetail from './components/PaperDetail';
 import AdminPanel from './components/AdminPanel';
 import NotesMarketplace from './components/NotesMarketplace';
 import TragAIWidget from './components/TragAIWidget';
+import GameZone from './components/GameZone';
 import { supabase } from './supabase';
 import { Resource } from './types';
 import { RESOURCES as LOCAL_RESOURCES } from './constants';
@@ -156,6 +157,8 @@ const App: React.FC = () => {
       title = 'Notes Marketplace | TRAG.edu';
     } else if (main === 'admin') {
       title = 'Admin Panel | TRAG.edu';
+    } else if (main === 'games') {
+      title = 'Educational Games | TRAG.edu';
     }
 
     document.title = title;
@@ -179,6 +182,7 @@ const App: React.FC = () => {
     if (main === 'subject') return `Helping with subject module: ${parts[2]} for Grade: ${parts[1]}.`;
     if (main === 'grade') return `Viewing papers for ${parts[1]}.`;
     if (main === 'notes') return 'Browsing student-shared notes in the marketplace.';
+    if (main === 'games') return 'Playing educational games to sharpen skills.';
     return 'TRAG.edu Library Hub.';
   };
 
@@ -227,6 +231,7 @@ const App: React.FC = () => {
         {main === 'paper' && <PaperDetail paperId={parts[1]} onNavigate={navigate} resources={dbResources} />}
         {main === 'notes' && <NotesMarketplace />}
         {main === 'admin' && <AdminPanel />}
+        {main === 'games' && <GameZone />}
       </main>
 
       <TragAIWidget currentContext={getContext()} />

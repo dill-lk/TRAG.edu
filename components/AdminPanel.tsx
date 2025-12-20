@@ -6,7 +6,7 @@ import {
     Search, Filter, BarChart3, PieChart, TrendingUp,
     UserPlus, Users, Key, Terminal, Pencil, X, Shield
 } from 'lucide-react';
-import { GRADES, SUBJECTS, SUBJECTS_6_TO_9, SUBJECTS_10_TO_11, SUBJECTS_AL } from '../constants';
+import { GRADES, SUBJECTS, SUBJECTS_6_TO_9, SUBJECTS_10_TO_11, SUBJECTS_AL, SUBJECTS_SCOUT } from '../constants';
 import { supabase } from '../supabase';
 import { Resource } from '../types';
 
@@ -898,6 +898,7 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                             if (['gr6', 'gr7', 'gr8', 'gr9'].includes(grade)) currentSubjects = SUBJECTS_6_TO_9;
                                             else if (['gr10', 'gr11', 'ol'].includes(grade)) currentSubjects = SUBJECTS_10_TO_11;
                                             else if (['al', 'gr12', 'gr13'].includes(grade)) currentSubjects = SUBJECTS_AL;
+                                            else if (grade === 'scout') currentSubjects = SUBJECTS_SCOUT;
 
                                             // Fallback if generic grade
                                             return currentSubjects.reduce((acc, s) => {

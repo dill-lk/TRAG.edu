@@ -151,7 +151,10 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
       >
         <div className="relative w-20 h-20 rounded-[2.5rem] bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center shadow-3xl border-none overflow-hidden">
           <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse"></div>
-          <Book size={32} className="relative z-10 text-white shadow-sm" />
+          {/* Gemini Icon */}
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10 text-white shadow-sm drop-shadow-md">
+            <path d="M12 22C12 16.5 8 12 2.5 12C8 12 12 7.5 12 2C12 7.5 16 12 21.5 12C16 12 12 16.5 12 22Z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
       </button>
 

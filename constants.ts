@@ -125,20 +125,32 @@ export const SUBJECTS_AL: Subject[] = [
   mkSub('acc', 'Accounting', 'ගිණුම්කරණය', '', '📈 Commerce', 'al'),
   mkSub('bs', 'Business Studies', 'ව්‍යාපාර අධ්‍යයනය', '', '📈 Commerce', 'al'),
   mkSub('stat', 'Statistics', 'සංඛ්‍යානය', '', '📈 Commerce', 'al'),
+  
+  // 🎨 Arts
+  mkSub('sinh', 'Sinhala', 'සිංහල', 'சிங்களம்', '🎨 Arts', 'al'),
+  mkSub('pol', 'Political Science', 'දේශපාලන විද්‍යාව', 'அரசியல் அறிவியல்', '🎨 Arts', 'al'),
+  mkSub('logic', 'Logic', 'තර්ක ශාස්ත්‍රය', 'தர்க்கம்', '🎨 Arts', 'al'),
+  mkSub('bc', 'Buddhist Civilization', 'බෞද්ධ ශිෂ්ටාචාරය', '', '🎨 Arts', 'al'),
+  mkSub('geo', 'Geography', 'භූගෝල විද්‍යාව', 'புவியியல்', '🎨 Arts', 'al'),
+  mkSub('hist', 'History', 'ඉතිහාසය', 'வரலாறு', '🎨 Arts', 'al'),
+  mkSub('media', 'Media Studies', 'මාධ්‍ය අධ්‍යයනය', '', '🎨 Arts', 'al'),
+  mkSub('dance', 'Dancing', 'නැටුම්', 'நடனம்', '🎨 Arts', 'al'),
+  mkSub('music', 'Music', 'සංගීතය', 'இசை', '🎨 Arts', 'al'),
+  mkSub('art', 'Art', 'චිත්‍ර', 'கலை', '🎨 Arts', 'al'),
+
+  // 📚 Common
+  mkSub('gen-eng', 'General English', 'සාමාන්‍ය ඉංග්‍රීසි', 'பொது ஆங்கிலம்', '📚 Common', 'al'),
+  mkSub('cgt', 'Common General Test', 'පොදු සාමාන්‍ය පරීක්ෂණය', '', '📚 Common', 'al'),
+  mkSub('git', 'General Information Technology (GIT)', 'GIT', '', '📚 Common', 'al'),
 ];
 
 export const SUBJECTS_SCOUT: Subject[] = [
   // ⚜️ Scout Badges
-  mkSub('citizenship', 'Citizenship Badge', 'පුරවැසි පදක්කම', '', '⚜️ Scout Badges', 'scout'),
-  mkSub('firstaid', 'First Aid Badge', 'ප්‍රථමාධාර පදක්කම', '', '⚜️ Scout Badges', 'scout'),
-  mkSub('woodcraft', 'Woodcraft Badge', 'ලී කැටයම් පදක්කම', '', '⚜️ Scout Badges', 'scout'),
-  mkSub('pioneering', 'Pioneering Badge', 'පූර්වගාමී පදක්කම', '', '⚜️ Scout Badges', 'scout'),
-  mkSub('backwoods', 'Backwoodsman Badge', 'වනගත මිනිසා පදක්කම', '', '⚜️ Scout Badges', 'scout'),
-  mkSub('publichealth', 'Public Health Badge', 'මහජන සෞඛ්‍යය පදක්කම', '', '⚜️ Scout Badges', 'scout'),
-  mkSub('safety', 'Safety Badge', 'ආරක්ෂක පදක්කම', '', '⚜️ Scout Badges', 'scout'),
-  mkSub('communication', 'Communication Badge', 'සන්නිවේදන පදක්කම', '', '⚜️ Scout Badges', 'scout'),
-  mkSub('environment', 'Environment Badge', 'පරිසර පදක්කම', '', '⚜️ Scout Badges', 'scout'),
-  mkSub('leadership', 'Leadership Badge', 'නායකත්ව පදක්කම', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('membership', 'Membership Badge', 'සාමාජික පදක්කම', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('scout-award', 'Scout Award', 'බාලදක්ෂ ප්‍රදානය', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('chief-com', "Chief Commissioner's Award", 'ප්‍රධාන කොමසාරිස් ප්‍රදානය', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('prime-minister', "Minister's Scout Award", 'අගමැති බාලදක්ෂ ප්‍රදානය', '', '⚜️ Scout Badges', 'scout'),
+  mkSub('president', 'President Scout Award', 'ජනාධිපති බාලදක්ෂ ප්‍රදානය', '', '⚜️ Scout Badges', 'scout'),
 ];
 
 export const SUBJECTS: Subject[] = [...SUBJECTS_6_TO_9, ...SUBJECTS_10_TO_11, ...SUBJECTS_AL, ...SUBJECTS_SCOUT];
@@ -148,6 +160,7 @@ export const NAV_LINKS = [
   { name: 'A/L Archive', sinhala: 'උසස් පෙළ', href: '#/grade/al' },
   { name: 'O/L Archive', sinhala: 'සාමාන්්‍ය පෙළ', href: '#/grade/ol' },
   { name: 'Notes', sinhala: 'කෙටි සටහන්', href: '#/notes' },
+  { name: 'Games', sinhala: 'ක්‍රීඩා', href: '#/games' },
 ];
 
 export const RESOURCES: Resource[] = [];
