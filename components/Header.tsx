@@ -56,6 +56,15 @@ const Header: React.FC<HeaderProps> = ({ activeRoute, theme, onToggleTheme, onOp
           </nav>
 
           <div className="flex items-center gap-3">
+            <a
+              href="#/admin"
+              className="hidden sm:flex items-center gap-2 px-5 py-3 light-gradient-card bg-white/40 dark:bg-white/5 hover:bg-blue-600 hover:text-white rounded-2xl text-slate-700 dark:text-slate-300 transition-all border-none shadow-md group"
+              title="Admin Portal"
+            >
+              <Command size={18} className="group-hover:rotate-12 transition-transform" />
+              <span className="text-[9px] font-black uppercase tracking-widest hidden md:block">Portal</span>
+            </a>
+
             <button
               onClick={onOpenSearch}
               className="hidden md:flex items-center gap-4 px-6 py-3 light-gradient-card bg-white/40 dark:bg-white/5 rounded-2xl text-slate-700 hover:text-blue-600 transition-all border-none group shadow-sm"
