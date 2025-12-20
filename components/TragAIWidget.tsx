@@ -149,6 +149,7 @@ const TragAIWidget: React.FC<TragAIWidgetProps> = ({ currentContext }) => {
       {/* Floating Launcher */}
       <button
         onClick={() => setIsOpen(true)}
+        aria-label="Ask AI Helper"
         className={`
           fixed bottom-6 right-6 z-[60] group transition-all duration-500 ease-out
           ${isOpen ? 'translate-y-24 opacity-0 scale-75' : 'translate-y-0 opacity-100 scale-100'}

@@ -40,11 +40,19 @@ export const streamChatWithTragAI = async (
       GOAL: Provide high-quality tutoring aligned with the Sri Lankan Ministry of Education syllabus.`
     });
 
+    // Validate history: The first message in history must be from 'user'
+    let validHistory = history.map(h => ({
+      role: h.role === 'model' ? 'model' : 'user',
+      parts: h.parts
+    }));
+
+    // Remove leading model messages as Google Gen AI requires history to start with 'user'
+    while (validHistory.length > 0 && validHistory[0].role === 'model') {
+      validHistory.shift();
+    }
+
     const chatSession = model.startChat({
-      history: history.map(h => ({
-        role: h.role === 'model' ? 'model' : 'user',
-        parts: h.parts
-      })),
+      history: validHistory,
       generationConfig: {
         maxOutputTokens: 2000,
         temperature: 0.7,
