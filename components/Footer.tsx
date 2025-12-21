@@ -57,6 +57,11 @@ const Footer = () => {
           <div className="text-left">
             <p className="text-xs text-slate-500 font-medium">&copy; {new Date().getFullYear()} TRAG.edu. All rights reserved.</p>
             <p className="text-[10px] text-slate-600 mt-1">Digital Paper Library for Sri Lanka.</p>
+            <div className="mt-4">
+              <span className="text-[10px] font-futuristic font-bold uppercase tracking-[0.2em] text-blue-500/80">
+                Project by TRAG TECH
+              </span>
+            </div>
           </div>
 
           {/* Developer Credit - High Impact Design */}
@@ -72,14 +77,14 @@ const Footer = () => {
                 <div className="absolute -inset-6 bg-blue-600/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 <img 
                   src="/dev-assets/developer-zen-white.svg" 
-                  alt="Zen Technologies" 
+                  alt="ZEN Technologies" 
                   className="h-40 w-auto relative z-10 opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 drop-shadow-[0_0_20px_rgba(59,130,246,0.2)]"
                 />
               </div>
               <div className="flex flex-col items-center gap-2 relative z-10">
                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 group-hover:text-blue-400 transition-colors">Developed By</span>
-                <span className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-slate-400 tracking-tighter group-hover:from-blue-400 group-hover:to-white transition-all duration-500 shadow-sm">
-                  Zen Technologies
+                <span className="text-3xl font-futuristic font-black bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-slate-400 tracking-tighter group-hover:from-blue-400 group-hover:to-white transition-all duration-500 shadow-sm">
+                  ZEN Technologies
                 </span>
               </div>
             </a>

@@ -12,6 +12,7 @@ export default {
             fontFamily: {
                 sans: ['Inter', 'sans-serif'],
                 display: ['Plus Jakarta Sans', 'sans-serif'],
+                futuristic: ['Orbitron', 'sans-serif'],
             },
             animation: {
                 'pulse-slow': 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
