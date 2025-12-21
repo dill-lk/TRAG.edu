@@ -25,7 +25,7 @@ This project stands as a testament to cutting-edge educational technology, desig
 
 ## Live Demo & Creator Information
 
-Experience TRAG.edu live: [https://trag-edu.vercel.app](https://trag-edu.vercel.app)
+Experience TRAG.edu live: [trag.edu](https://trag-edu.vercel.app)
 
 **Creator Portfolio**: [dill.is-a.dev](https://dill.is-a.dev)
 

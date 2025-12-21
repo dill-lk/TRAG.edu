@@ -2,19 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Main Pages -->
   <url>
-    <loc>https://trag-edu.vercel.app/</loc>
+    <loc>https://trag.edu/</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://trag-edu.vercel.app/#/</loc>
+    <loc>https://trag.edu/#/</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://trag-edu.vercel.app/#/notes</loc>
+    <loc>https://trag.edu/#/notes</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -22,49 +22,49 @@
 
   <!-- Grade Archives -->
   <url>
-    <loc>https://trag-edu.vercel.app/#/grade/al</loc>
+    <loc>https://trag.edu/#/grade/al</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://trag-edu.vercel.app/#/grade/ol</loc>
+    <loc>https://trag.edu/#/grade/ol</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://trag-edu.vercel.app/#/grade/gr11</loc>
+    <loc>https://trag.edu/#/grade/gr11</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://trag-edu.vercel.app/#/grade/gr10</loc>
+    <loc>https://trag.edu/#/grade/gr10</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://trag-edu.vercel.app/#/grade/gr9</loc>
+    <loc>https://trag.edu/#/grade/gr9</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://trag-edu.vercel.app/#/grade/gr8</loc>
+    <loc>https://trag.edu/#/grade/gr8</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://trag-edu.vercel.app/#/grade/gr7</loc>
+    <loc>https://trag.edu/#/grade/gr7</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://trag-edu.vercel.app/#/grade/gr6</loc>
+    <loc>https://trag.edu/#/grade/gr6</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
