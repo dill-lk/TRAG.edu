@@ -1,5 +1,7 @@
 Welcome to TRAG.edu, the Sri Lankan Past Paper Library – a cutting-edge educational platform meticulously designed and developed by Jinuk Chanthusa Dill.is-a.dev, powered by the innovative solutions of ZEN Technology Solutions. This project represents a significant leap in digital learning resources, offering a comprehensive and interactive environment for students across Sri Lanka. Built with a vision to empower academic excellence and streamline study processes, TRAG.edu integrates advanced features to cater to the evolving needs of modern education.
 
+<img width="1906" height="974" alt="image" src="https://github.com/user-attachments/assets/a45c0578-affd-48f8-abc3-276949423b0a" />
+
 ---
 
 ## Project Features & Ownership
@@ -32,4 +34,19 @@ Experience TRAG.edu live: [https://trag-edu.vercel.app](https://trag-edu.vercel.
 **ZEN Technologies Website**: Coming Soon!
 
 ### Screenshots
-*(Screenshots to be added here soon to visually showcase the application's features and modern design.)*
+<img width="1909" height="967" alt="image" src="https://github.com/user-attachments/assets/2bf006ee-60b7-4e50-814f-9066a6fcd88b" />
+<img width="1906" height="974" alt="image" src="https://github.com/user-attachments/assets/a45c0578-affd-48f8-abc3-276949423b0a" />
+<img width="1896" height="990" alt="image" src="https://github.com/user-attachments/assets/ed16b85f-348f-40b6-9c1e-c06b85e81220" />
+<img width="1915" height="981" alt="image" src="https://github.com/user-attachments/assets/736d177e-7e6a-465b-b838-dc0f3e76f3cd" />
+<img width="1905" height="980" alt="image" src="https://github.com/user-attachments/assets/e8a1c612-0dc9-46b8-801e-2d3763d802d7" />
+<img width="1915" height="974" alt="image" src="https://github.com/user-attachments/assets/71e31af8-123a-4880-9722-a357f41cc586" />
+<img width="1910" height="963" alt="image" src="https://github.com/user-attachments/assets/b24f53af-8f73-42e0-8aef-39203daa9f00" />
+<img width="1911" height="977" alt="image" src="https://github.com/user-attachments/assets/4340b78a-804c-419a-a655-677a9aec05b1" />
+<img width="1910" height="975" alt="image" src="https://github.com/user-attachments/assets/0158a4dc-e7c4-4db4-8bd8-b8eb48c48f3f" />
+
+
+
+
+
+
+
