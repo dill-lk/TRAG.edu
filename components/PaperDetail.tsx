@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { GRADES, SUBJECTS } from '../constants';
 import { Download, FileText, ChevronRight, ArrowLeft, Timer, Play, Pause, RotateCcw, Monitor, X, Book, Maximize2, Minimize2, Plus, Minus, RotateCw, Zap, Pencil, Share2, Eraser, Calculator as CalculatorIcon, Moon, Sun, RefreshCw, Maximize, Settings, Ruler, Grid3X3, MousePointer2, Highlighter } from 'lucide-react';
 import { Resource } from '../types';
@@ -283,6 +284,9 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
   if (isFocusMode) {
     return (
       <div className="focus-overlay">
+        <Helmet>
+            <title>Study Mode: {paper.title} | TRAG.edu</title>
+        </Helmet>
         <button onClick={() => setIsFocusMode(false)} className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-red-500 text-white rounded-full transition-all"><X size={28} /></button>
         <div className="w-full p-4 md:p-8 text-center space-y-12 md:space-y-16">
           <div className="space-y-4">
@@ -304,6 +308,15 @@ const PaperDetail: React.FC<PaperDetailProps> = ({ paperId, onNavigate, resource
 
   return (
     <div className="w-full max-w-6xl mx-auto pb-20 md:pb-32 pt-4 md:pt-10 animate-in fade-in duration-700 overflow-x-hidden">
+      <Helmet>
+        <title>{paper.title} | {grade.name} | TRAG.edu</title>
+        <meta name="description" content={`Download ${paper.title} (${paper.year}) for ${grade.name} ${subject.name}. Medium: ${paper.medium}. Free Sri Lankan Past Paper Archive.`} />
+        <meta name="keywords" content={`${paper.title}, ${grade.name}, ${subject.name}, ${paper.year}, ${paper.medium}, Sri Lanka Past Papers, Exam Papers`} />
+        {/* Open Graph tags for better sharing */}
+        <meta property="og:title" content={`${paper.title} | TRAG.edu`} />
+        <meta property="og:description" content={`Download ${paper.title} (${paper.year}) for ${grade.name} ${subject.name}.`} />
+        <meta property="og:type" content="article" />
+      </Helmet>
       <div className="flex items-center justify-between mb-8 md:mb-12 px-4">
         <button onClick={() => onNavigate(`#/subject/${grade.id}/${subject.id}`)} className="flex items-center gap-2 text-slate-400 hover:text-blue-500 font-bold text-[10px] uppercase tracking-widest transition-all"><ArrowLeft size={14} /> <span className="hidden md:inline">Back to List</span><span className="md:hidden">Back</span></button>
       </div>

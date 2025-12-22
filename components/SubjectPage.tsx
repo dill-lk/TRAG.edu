@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { GRADES, SUBJECTS } from '../constants';
 import {
     ArrowLeft, FileText, ChevronRight, Layers, Bookmark,
@@ -37,6 +38,11 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ gradeId, subjectId, onNavigat
 
     return (
         <div className="max-w-6xl mx-auto pt-4 md:pt-10 animate-in fade-in duration-700 pb-32 px-0 md:px-6">
+            <Helmet>
+                <title>{subject.name} | {grade.name} Past Papers | TRAG.edu</title>
+                <meta name="description" content={`Free download ${subject.name} (${subject.sinhalaName}) past papers and notes for ${grade.name}.`} />
+                <meta name="keywords" content={`${subject.name}, ${grade.name}, ${subject.sinhalaName}, Past Papers, Notes`} />
+            </Helmet>
 
             {/* Simple Header */}
             <div className="mb-8 md:mb-12 px-4 md:px-0">

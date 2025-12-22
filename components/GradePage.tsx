@@ -1,5 +1,6 @@
 
 import React, { useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { GRADES, SUBJECTS_6_TO_9, SUBJECTS_10_TO_11, SUBJECTS_AL, SUBJECTS_SCOUT } from '../constants';
 import { Home as HomeIcon, GraduationCap, LayoutGrid, BookOpen, ArrowRight } from 'lucide-react';
 import { Subject, Resource } from '../types';
@@ -44,6 +45,11 @@ const GradePage: React.FC<GradePageProps> = ({ gradeId, onNavigate, resources })
 
   return (
     <div className="max-w-7xl mx-auto space-y-16 md:space-y-32 animate-in fade-in slide-in-from-bottom-12 duration-1000 pb-32 px-0 md:px-6 overflow-x-hidden">
+      <Helmet>
+        <title>{grade.name} Past Papers ({grade.sinhalaName}) | TRAG.edu</title>
+        <meta name="description" content={`Download ${grade.name} past papers, model papers, and notes for all subjects. Available in Sinhala, Tamil, and English mediums.`} />
+        <meta name="keywords" content={`${grade.name}, ${grade.sinhalaName}, Sri Lanka, Past Papers, Exam`} />
+      </Helmet>
 
       {/* Premium Header */}
       <div className="text-center pt-8 md:pt-24 relative px-4">

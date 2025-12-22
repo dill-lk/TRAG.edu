@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './components/Home';
@@ -139,31 +140,6 @@ const App: React.FC = () => {
 
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
 
-  // SEO: Dynamic Page Titles
-  useEffect(() => {
-    const { main, parts } = getRouteInfo();
-    let title = 'TRAG.edu | Digital Paper Library';
-
-    if (main === 'grade' && parts[1]) {
-      const gradeName = parts[1].toUpperCase();
-      title = `${gradeName} Archive | TRAG.edu`;
-    } else if (main === 'subject' && parts[1] && parts[2]) {
-      const grade = parts[1].toUpperCase();
-      const subject = parts[2].split('-').map((s: string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-      title = `${subject} (${grade}) | TRAG.edu`;
-    } else if (main === 'paper' && parts[1]) {
-      title = `View Paper | TRAG.edu`;
-    } else if (main === 'notes') {
-      title = 'Notes Marketplace | TRAG.edu';
-    } else if (main === 'admin') {
-      title = 'Admin Panel | TRAG.edu';
-    } else if (main === 'games') {
-      title = 'Educational Games | TRAG.edu';
-    }
-
-    document.title = title;
-  }, [hash]);
-
   const getRouteInfo = () => {
     const parts = hash.replace('#/', '').split('/');
     const main = parts[0] || 'home';
@@ -215,6 +191,10 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col font-sans transition-colors duration-300 bg-[#fdfcf0] dark:bg-[#020617]">
+      <Helmet>
+        <title>TRAG.edu | Digital Paper Library</title>
+        <meta name="description" content="TRAG.edu: The ultimate digital library for Sri Lankan G.C.E. A/L, O/L, and Grade 6-11 past papers. Features AI-powered study assistance, marketplace for notes, and structured archives." />
+      </Helmet>
       <Header activeRoute={main} theme={theme} onToggleTheme={toggleTheme} onOpenSearch={() => setIsPaletteOpen(true)} />
 
       <main className="flex-grow pt-24 md:pt-28 pb-16 px-0 md:px-6 max-w-full lg:max-w-[75%] mx-auto w-full relative z-10 transition-all">
