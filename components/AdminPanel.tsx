@@ -5,7 +5,7 @@ import {
     FileText, ShieldAlert, Info, Activity, List,
     Search, Filter, BarChart3, PieChart, TrendingUp,
     UserPlus, Users, Key, Terminal, Pencil, X, Shield,
-    UsersRound, AreaChart, Settings2
+    UsersRound, AreaChart, Settings2, Youtube
 } from 'lucide-react';
 import {
     Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement
@@ -44,10 +44,11 @@ const AdminPanel = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [errorStatus, setErrorStatus] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'upload' | 'fleet' | 'dev' | 'settings' | 'help' | 'analytics' | 'users'>('upload');
-    
+    const [activeTab, setActiveTab] = useState<'upload' | 'fleet' | 'dev' | 'settings' | 'help' | 'analytics' | 'users' | 'videos'>('upload');
+
     // Data State
     const [fleet, setFleet] = useState<Resource[]>([]);
+    const [allVideos, setAllVideos] = useState<any[]>([]);
     const [helpRequests, setHelpRequests] = useState<any[]>([]);
 
     const fetchFleet = async () => {
@@ -55,84 +56,89 @@ const AdminPanel = () => {
         if (data) setFleet(data as Resource[]);
         if (error) console.error('Error fetching fleet:', error);
     };
-        const fetchHelpRequests = async () => {
-            const { data, error } = await supabase.from('comments').select('*').eq('is_help_request', true).order('created_at', { ascending: false });
-            if (data) setHelpRequests(data);
-            if (error) console.error('Error fetching help requests:', error);
+    const fetchVideos = async () => {
+        const { data, error } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
+        if (data) setAllVideos(data);
+        if (error) console.error('Error fetching videos:', error);
+    };
+    const fetchHelpRequests = async () => {
+        const { data, error } = await supabase.from('comments').select('*').eq('is_help_request', true).order('created_at', { ascending: false });
+        if (data) setHelpRequests(data);
+        if (error) console.error('Error fetching help requests:', error);
+    };
+
+    // User Management State (using adminUsers as a proxy, as no generic 'users' table is available)
+    const [allUsers, setAllUsers] = useState<any[]>([]); // This will hold adminUsers
+    const [userSearchTerm, setUserSearchTerm] = useState('');
+    const filteredUsers = useMemo(() => {
+        return allUsers.filter(user =>
+            user.username.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+            user.id.toLowerCase().includes(userSearchTerm.toLowerCase())
+        );
+    }, [allUsers, userSearchTerm]);
+
+    // Analytics Data derived from real data
+    const analyticsData = useMemo(() => {
+        // Downloads by Month (simulated by uploads by month from fleet created_at)
+        const uploadsByMonth = fleet.reduce((acc: { [key: string]: number }, resource) => {
+            const month = new Date(resource.created_at || '').toLocaleString('default', { month: 'short' });
+            acc[month] = (acc[month] || 0) + 1;
+            return acc;
+        }, {});
+
+        const allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const downloadsData = allMonths.map(month => uploadsByMonth[month] || 0);
+
+        // Resource Type Distribution
+        const resourceTypes = fleet.reduce((acc: { [key: string]: number }, resource) => {
+            acc[resource.type] = (acc[resource.type] || 0) + 1;
+            return acc;
+        }, {});
+        const resourceDistributionLabels = Object.keys(resourceTypes);
+        const resourceDistributionData = Object.values(resourceTypes);
+
+        return {
+            downloadsByMonth: {
+                labels: allMonths,
+                datasets: [{
+                    label: 'Uploads',
+                    data: downloadsData,
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1,
+                }],
+            },
+            resourceDistribution: {
+                labels: resourceDistributionLabels,
+                datasets: [{
+                    data: resourceDistributionData,
+                    backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#6366f1', '#06b6d4', '#ec4899'], // Added more colors
+                    hoverOffset: 4,
+                }],
+            },
+            // Daily Active Users (static mock, as no real user activity data is available)
+            dailyActiveUsers: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Active Users',
+                    data: [50, 65, 60, 70, 75, 55, 40],
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }],
+            },
         };
-    
-        // User Management State (using adminUsers as a proxy, as no generic 'users' table is available)
-        const [allUsers, setAllUsers] = useState<any[]>([]); // This will hold adminUsers
-        const [userSearchTerm, setUserSearchTerm] = useState('');
-        const filteredUsers = useMemo(() => {
-            return allUsers.filter(user =>
-                user.username.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
-                user.id.toLowerCase().includes(userSearchTerm.toLowerCase())
-            );
-        }, [allUsers, userSearchTerm]);
-    
-        // Analytics Data derived from real data
-        const analyticsData = useMemo(() => {
-            // Downloads by Month (simulated by uploads by month from fleet created_at)
-            const uploadsByMonth = fleet.reduce((acc: { [key: string]: number }, resource) => {
-                const month = new Date(resource.created_at || '').toLocaleString('default', { month: 'short' });
-                acc[month] = (acc[month] || 0) + 1;
-                return acc;
-            }, {});
-    
-            const allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const downloadsData = allMonths.map(month => uploadsByMonth[month] || 0);
-    
-            // Resource Type Distribution
-            const resourceTypes = fleet.reduce((acc: { [key: string]: number }, resource) => {
-                acc[resource.type] = (acc[resource.type] || 0) + 1;
-                return acc;
-            }, {});
-            const resourceDistributionLabels = Object.keys(resourceTypes);
-            const resourceDistributionData = Object.values(resourceTypes);
-    
-            return {
-                downloadsByMonth: {
-                    labels: allMonths,
-                    datasets: [{
-                        label: 'Uploads',
-                        data: downloadsData,
-                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                        borderColor: 'rgba(59, 130, 246, 1)',
-                        borderWidth: 1,
-                    }],
-                },
-                resourceDistribution: {
-                    labels: resourceDistributionLabels,
-                    datasets: [{
-                        data: resourceDistributionData,
-                        backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#6366f1', '#06b6d4', '#ec4899'], // Added more colors
-                        hoverOffset: 4,
-                    }],
-                },
-                // Daily Active Users (static mock, as no real user activity data is available)
-                dailyActiveUsers: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [{
-                        label: 'Active Users',
-                        data: [50, 65, 60, 70, 75, 55, 40],
-                        fill: false,
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
-                    }],
-                },
-            };
-        }, [fleet]);
-    
-        // Audit Logs State
-        const [auditLogs, setAuditLogs] = useState<any[]>([]);
-    
-        // Dev Portal State
-        const [adminUsers, setAdminUsers] = useState<any[]>([]);
-        const [newAdminUser, setNewAdminUser] = useState('');
-        const [newAdminPass, setNewAdminPass] = useState('');
-        const [showDbSetup, setShowDbSetup] = useState(false);
-        const [maintMode, setMaintMode] = useState(false);
+    }, [fleet]);
+
+    // Audit Logs State
+    const [auditLogs, setAuditLogs] = useState<any[]>([]);
+
+    // Dev Portal State
+    const [adminUsers, setAdminUsers] = useState<any[]>([]);
+    const [newAdminUser, setNewAdminUser] = useState('');
+    const [newAdminPass, setNewAdminPass] = useState('');
+    const [showDbSetup, setShowDbSetup] = useState(false);
+    const [maintMode, setMaintMode] = useState(false);
     // Search & Filter State
     const [searchTerm, setSearchTerm] = useState('');
     const [filterGrade, setFilterGrade] = useState('');
@@ -147,6 +153,18 @@ const AdminPanel = () => {
     const [medium, setMedium] = useState('English');
     const [year, setYear] = useState(new Date().getFullYear().toString());
     const [file, setFile] = useState<File | null>(null);
+
+    // Video Form State
+    const [videoTitle, setVideoTitle] = useState('');
+    const [videoUrl, setVideoUrl] = useState('');
+    const [videoGrade, setVideoGrade] = useState('');
+    const [videoSubject, setVideoSubject] = useState('');
+    const [videoDesc, setVideoDesc] = useState('');
+    const [videoAuthor, setVideoAuthor] = useState('Admin');
+
+    // Upload Type State
+    const [uploadType, setUploadType] = useState<'resource' | 'note'>('resource');
+    const [noteAuthor, setNoteAuthor] = useState('Admin');
 
     // Edit State
     const [editingResource, setEditingResource] = useState<any>(null);
@@ -182,7 +200,10 @@ const AdminPanel = () => {
             if (isDeveloper) {
                 fetchAdmins();
                 fetchAuditLogs();
+                fetchVideos();
                 fetchSystemSettings(); // Fetch system settings for dev tab
+            } else {
+                fetchVideos();
             }
         }
     }, [isAuthenticated, isDeveloper]);
@@ -298,6 +319,45 @@ const AdminPanel = () => {
         }
     };
 
+    const handleVideoUpload = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!videoTitle || !videoUrl || !videoGrade || !videoSubject) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        setIsUploading(true);
+        try {
+            const { error } = await supabase.from('videos').insert([{
+                title: videoTitle,
+                youtube_url: videoUrl,
+                grade_id: videoGrade,
+                subject_id: videoSubject,
+                description: videoDesc,
+                author: videoAuthor
+            }]);
+
+            if (error) throw error;
+
+            alert('Video added successfully!');
+            setVideoTitle('');
+            setVideoUrl('');
+            setVideoDesc('');
+            fetchVideos();
+        } catch (err: any) {
+            alert('Error adding video: ' + err.message);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleDeleteVideo = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this video?')) return;
+        const { error } = await supabase.from('videos').delete().eq('id', id);
+        if (!error) fetchVideos();
+        else alert('Error deleting video: ' + error.message);
+    };
+
     const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault();
         setErrorStatus(null);
@@ -308,25 +368,48 @@ const AdminPanel = () => {
 
         setIsUploading(true);
         try {
-            const fileName = `${grade}/${subject}/${Date.now()}-${file.name.replace(/\s/g, '_')}`;
-            const { data: uploadData, error: uploadError } = await supabase.storage
-                .from('papers')
-                .upload(fileName, file, { cacheControl: '3600', upsert: false });
+            if (uploadType === 'resource') {
+                const fileName = `${grade}/${subject}/${Date.now()}-${file.name.replace(/\s/g, '_')}`;
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('papers')
+                    .upload(fileName, file, { cacheControl: '3600', upsert: false });
 
-            if (uploadError) {
-                if (uploadError.message.includes('bucket not found')) {
-                    throw new Error("Storage Error: The 'papers' folder was not found in Supabase.");
+                if (uploadError) {
+                    if (uploadError.message.includes('bucket not found')) {
+                        throw new Error("Storage Error: The 'papers' folder was not found in Supabase.");
+                    }
+                    throw uploadError;
                 }
-                throw uploadError;
+
+                const { data: { publicUrl } } = supabase.storage.from('papers').getPublicUrl(fileName);
+
+                const { error: dbError } = await supabase.from('resources').insert([{
+                    title, grade_id: grade, subject_id: subject, type, term: term || null, medium, year: parseInt(year), file_url: publicUrl
+                }]);
+
+                if (dbError) throw dbError;
+            } else {
+                // Peer Note Upload Logic
+                const fileName = `peer_notes/${Date.now()}-${file.name.replace(/\s/g, '_')}`;
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('peer_notes')
+                    .upload(fileName, file);
+
+                if (uploadError) throw uploadError;
+
+                const { data: { publicUrl } } = supabase.storage.from('peer_notes').getPublicUrl(fileName);
+
+                const { error: dbError } = await supabase.from('peer_notes').insert([{
+                    title,
+                    author: noteAuthor,
+                    grade_id: grade,
+                    subject_id: subject,
+                    file_url: publicUrl,
+                    is_verified: true // Admin uploads are automatically verified
+                }]);
+
+                if (dbError) throw dbError;
             }
-
-            const { data: { publicUrl } } = supabase.storage.from('papers').getPublicUrl(fileName);
-
-            const { error: dbError } = await supabase.from('resources').insert([{
-                title, grade_id: grade, subject_id: subject, type, term: term || null, medium, year: parseInt(year), file_url: publicUrl
-            }]);
-
-            if (dbError) throw dbError;
 
             setShowSuccess(true);
             fetchFleet(); // Refresh stats immediately
@@ -334,6 +417,7 @@ const AdminPanel = () => {
                 setShowSuccess(false);
                 setTitle('');
                 setFile(null);
+                setNoteAuthor('Admin');
             }, 3000);
 
         } catch (err: any) {
@@ -552,6 +636,13 @@ const AdminPanel = () => {
                             </button>
                         )}
                         <button
+                            onClick={() => setActiveTab('videos')}
+                            className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'videos' ? 'bg-indigo-600 text-white shadow-xl' : 'text-slate-400 font-bold'}`}
+                        >
+                            <Youtube size={16} />
+                            Videos
+                        </button>
+                        <button
                             onClick={() => setActiveTab('help')}
                             className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'help' ? 'bg-amber-500 text-white shadow-xl' : 'text-slate-400'}`}
                         >
@@ -761,6 +852,86 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                 ))}
                             </div>
                         )}
+                    </div>
+                )}
+
+                {activeTab === 'videos' && (
+                    <div className="space-y-12 animate-in fade-in">
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">Video Management</h2>
+                            <div className="flex gap-4">
+                                <span className="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest">Total: {allVideos.length}</span>
+                            </div>
+                        </div>
+
+                        {/* Add Video Form */}
+                        <div className="p-8 bg-slate-50 dark:bg-white/5 rounded-[2.5rem] border border-slate-200 dark:border-white/10">
+                            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-8">Add New YouTube Video</h3>
+                            <form onSubmit={handleVideoUpload} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Video Title</label>
+                                    <input required className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white" placeholder="e.g. O/L Science Revision - Biology" value={videoTitle} onChange={e => setVideoTitle(e.target.value)} />
+                                </div>
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">YouTube URL</label>
+                                    <input required className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white" placeholder="https://www.youtube.com/watch?v=..." value={videoUrl} onChange={e => setVideoUrl(e.target.value)} />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Grade</label>
+                                        <select required className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white" value={videoGrade} onChange={e => setVideoGrade(e.target.value)}>
+                                            <option value="">Select Grade</option>
+                                            {GRADES.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Subject</label>
+                                        <select required className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white" value={videoSubject} onChange={e => setVideoSubject(e.target.value)}>
+                                            <option value="">Select Subject</option>
+                                            {SUBJECTS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Author / Teacher</label>
+                                    <input className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white" placeholder="e.g. Mr. Sunil Perera" value={videoAuthor} onChange={e => setVideoAuthor(e.target.value)} />
+                                </div>
+                                <div className="md:col-span-2 space-y-4">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Description</label>
+                                    <textarea rows={3} className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white resize-none" placeholder="Brief explanation of the video content..." value={videoDesc} onChange={e => setVideoDesc(e.target.value)} />
+                                </div>
+                                <div className="md:col-span-2 pt-4">
+                                    <button disabled={isUploading} className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-all shadow-lg flex items-center justify-center gap-2">
+                                        {isUploading ? <Loader2 size={16} className="animate-spin" /> : <Youtube size={16} />}
+                                        {isUploading ? 'Adding Video...' : 'Publish Video'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        {/* Video List */}
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest pl-4">Existing Videos</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {allVideos.map(vid => (
+                                    <div key={vid.id} className="glass-card p-6 rounded-2xl flex items-center justify-between group">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-16 h-10 bg-slate-100 dark:bg-white/5 rounded-lg flex items-center justify-center text-rose-500">
+                                                <Youtube size={24} />
+                                            </div>
+                                            <div className="max-w-[150px] md:max-w-xs">
+                                                <h4 className="font-bold text-slate-800 dark:text-white truncate">{vid.title}</h4>
+                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">{vid.grade_id} • {vid.subject_id}</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => handleDeleteVideo(vid.id)} className="w-10 h-10 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                ))}
+                                {allVideos.length === 0 && <p className="text-center text-slate-400 py-10 col-span-2">No videos in the library yet.</p>}
+                            </div>
+                        </div>
                     </div>
                 )}
 
@@ -1159,216 +1330,199 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                         <p className="text-slate-500 mt-4 text-lg font-medium">The paper is now available for students.</p>
                     </div>
                 ) : (
-                    <form onSubmit={handleUpload} className="space-y-10 animate-in fade-in">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                            <div className="space-y-6 md:col-span-2">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-blue-500 ml-2">Document Title</label>
-                                <input
-                                    type="text" required placeholder="e.g. GCE O/L Science 2024 Past Paper"
-                                    className="w-full px-8 py-5 rounded-2xl bg-slate-100 dark:bg-white/5 dark:text-white border-none shadow-inner focus:ring-4 focus:ring-blue-500/10 font-bold text-lg"
-                                    value={title} onChange={e => setTitle(e.target.value)}
-                                />
-                            </div>
+                    <form onSubmit={handleUpload} className="space-y-8">
 
+                        {/* Upload Type Switch */}
+                        <div className="flex gap-4 p-1 bg-slate-100 dark:bg-slate-900 rounded-xl w-fit mx-auto md:mx-0">
+                            <button
+                                type="button"
+                                onClick={() => setUploadType('resource')}
+                                className={`px-6 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${uploadType === 'resource' ? 'bg-white text-blue-600 shadow-md' : 'text-slate-400'}`}
+                            >
+                                Official Resource
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setUploadType('note')}
+                                className={`px-6 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${uploadType === 'note' ? 'bg-white text-emerald-600 shadow-md' : 'text-slate-400'}`}
+                            >
+                                Peer Note
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-8">
-                                <div className="space-y-6">
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Select Grade</label>
-                                    <select
-                                        className="w-full px-8 py-5 rounded-2xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 shadow-sm font-bold outline-none cursor-pointer"
-                                        value={grade} onChange={e => setGrade(e.target.value)}>
-                                        <option value="" className="text-slate-900 dark:text-white">Choose Grade</option>
-                                        {GRADES.map(g => <option key={g.id} value={g.id} className="text-slate-900 dark:text-white">{g.name}</option>)}
-                                    </select>
-
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Select Subject</label>
-                                    <select
-                                        className="w-full px-8 py-5 rounded-2xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 shadow-sm font-bold outline-none cursor-pointer"
-                                        value={subject} onChange={e => setSubject(e.target.value)}>
-                                        <option value="" className="text-slate-900 dark:text-white">Choose Subject</option>
-                                        {Object.entries((() => {
-                                            let currentSubjects = SUBJECTS;
-                                            if (['gr6', 'gr7', 'gr8', 'gr9'].includes(grade)) currentSubjects = SUBJECTS_6_TO_9;
-                                            else if (['gr10', 'gr11', 'ol'].includes(grade)) currentSubjects = SUBJECTS_10_TO_11;
-                                            else if (['al', 'gr12', 'gr13'].includes(grade)) currentSubjects = SUBJECTS_AL;
-                                            else if (grade === 'scout') currentSubjects = SUBJECTS_SCOUT;
-
-                                            // Fallback if generic grade
-                                            return currentSubjects.reduce((acc, s) => {
-                                                if (!acc[s.group]) acc[s.group] = [];
-                                                acc[s.group].push(s);
-                                                return acc;
-                                            }, {} as Record<string, typeof SUBJECTS>);
-                                        })()).map(([group, subs]) => (
-                                            <optgroup key={group} label={group} className="text-slate-900 dark:text-white font-bold bg-slate-100 dark:bg-slate-900">
-                                                {subs.map(s => (
-                                                    <option key={s.id} value={s.id} className="text-slate-900 dark:text-white pl-4">
-                                                        {s.name}
-                                                    </option>
-                                                ))}
-                                            </optgroup>
-                                        ))}
-                                    </select>
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Title</label>
+                                    <input required className="w-full px-8 py-5 rounded-2xl bg-slate-50 dark:bg-white/5 dark:text-white border-none shadow-inner font-bold focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" placeholder={uploadType === 'resource' ? "e.g. 2023 1st Term Paper" : "e.g. Science Short Notes"} value={title} onChange={e => setTitle(e.target.value)} />
                                 </div>
-                            </div>
 
-                            <div className="space-y-8">
-                                <div className="space-y-6">
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Extra Details</label>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <select
-                                            className="w-full px-6 py-5 rounded-2xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 shadow-sm font-bold outline-none cursor-pointer"
-                                            value={medium} onChange={e => setMedium(e.target.value)}>
-                                            <option value="English">English</option>
-                                            <option value="Sinhala">Sinhala</option>
-                                            <option value="Tamil">Tamil</option>
-                                        </select>
-                                        <input
-                                            type="number" placeholder="Year"
-                                            className="w-full px-6 py-5 rounded-2xl bg-slate-100 dark:bg-white/5 dark:text-white border-none shadow-inner font-bold text-center"
-                                            value={year} onChange={e => setYear(e.target.value)}
-                                        />
+                                {uploadType === 'note' && (
+                                    <div className="space-y-4 animate-in fade-in">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Author Name</label>
+                                        <input required className="w-full px-8 py-5 rounded-2xl bg-slate-50 dark:bg-white/5 dark:text-white border-none shadow-inner font-bold focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all" placeholder="e.g. Admin or Student Name" value={noteAuthor} onChange={e => setNoteAuthor(e.target.value)} />
                                     </div>
+                                )}
 
-                                    {/* Resource Type & Term Selector */}
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="relative">
-                                            <select
-                                                className="w-full px-6 py-5 rounded-2xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 shadow-sm font-bold outline-none cursor-pointer"
-                                                value={type} onChange={e => setType(e.target.value)}>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Grade</label>
+                                        <select required className="w-full px-8 py-5 rounded-2xl bg-slate-50 dark:bg-white/5 dark:text-white border-none shadow-inner font-bold outline-none cursor-pointer" value={grade} onChange={e => setGrade(e.target.value)}>
+                                            <option value="">Select Grade</option>
+                                            {GRADES.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Subject</label>
+                                        <select required className="w-full px-8 py-5 rounded-2xl bg-slate-50 dark:bg-white/5 dark:text-white border-none shadow-inner font-bold outline-none cursor-pointer" value={subject} onChange={e => setSubject(e.target.value)}>
+                                            <option value="">Select Subject</option>
+                                            {/* Combine all subject lists for admin ease */}
+                                            {[...SUBJECTS, ...SUBJECTS_AL, ...SUBJECTS_6_TO_9, ...SUBJECTS_10_TO_11, ...SUBJECTS_SCOUT].map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {uploadType === 'resource' && (
+                                    <div className="grid grid-cols-2 gap-4 animate-in fade-in">
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Type</label>
+                                            <select className="w-full px-8 py-5 rounded-2xl bg-slate-50 dark:bg-white/5 dark:text-white border-none shadow-inner font-bold outline-none cursor-pointer" value={type} onChange={e => setType(e.target.value)}>
                                                 <option value="Past Paper">Past Paper</option>
+                                                <option value="Marking Scheme">Marking Scheme</option>
                                                 <option value="Model Paper">Model Paper</option>
-                                                <option value="Term Test">Term Test</option>
-                                                <option value="Short Note">Short Note</option>
+                                                <option value="Notes">Short Notes</option>
                                                 <option value="Syllabus">Syllabus</option>
-                                                <option value="Teachers Guide">Teachers Guide</option>
-                                                {(grade === 'gr11' || grade === 'ol') && <option value="G.C.E. O/L Exam">G.C.E. O/L Exam</option>}
-                                                {(grade === 'gr12' || grade === 'gr13' || grade === 'al') && <option value="G.C.E. A/L Exam">G.C.E. A/L Exam</option>}
+                                                <option value="Guide">Teacher Guide</option>
                                             </select>
                                         </div>
-
-                                        <div className="relative">
-                                            <select
-                                                className="w-full px-6 py-5 rounded-2xl bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-500/30 shadow-sm font-bold outline-none cursor-pointer"
-                                                value={term} onChange={e => setTerm(e.target.value)}>
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Term</label>
+                                            <select className="w-full px-8 py-5 rounded-2xl bg-slate-50 dark:bg-white/5 dark:text-white border-none shadow-inner font-bold outline-none cursor-pointer" value={term} onChange={e => setTerm(e.target.value)}>
                                                 <option value="1st Term">1st Term</option>
                                                 <option value="2nd Term">2nd Term</option>
                                                 <option value="3rd Term">3rd Term</option>
-                                                <option value="">No Term</option>
+                                                <option value="N/A">Not Applicable</option>
                                             </select>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
-                        </div>
 
-                        <div className="space-y-6">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Select PDF File</label>
-                            <div className="relative group overflow-hidden bg-slate-100 dark:bg-white/5 border-2 border-dashed border-slate-300 dark:border-white/10 hover:border-blue-600 rounded-[2rem] p-16 text-center transition-all cursor-pointer">
-                                <input type="file" accept=".pdf" onChange={e => e.target.files && setFile(e.target.files[0])} className="absolute inset-0 opacity-0 cursor-pointer z-20" />
-                                <div className="relative z-10 pointer-events-none">
-                                    <FileUp size={40} className="mx-auto mb-4 text-slate-300 group-hover:text-blue-500 transition-colors" />
-                                    <p className="text-xl font-bold text-slate-600 dark:text-slate-300">
-                                        {file ? file.name : 'Click to select PDF'}
-                                    </p>
+                            <div className="space-y-8">
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Release Year</label>
+                                    <input type="number" className="w-full px-8 py-5 rounded-2xl bg-slate-50 dark:bg-white/5 dark:text-white border-none shadow-inner font-bold focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" value={year} onChange={e => setYear(e.target.value)} />
                                 </div>
-                            </div>
-                        </div>
 
-                        <div className="pt-6">
-                            <button
-                                disabled={isUploading}
-                                className={`w-full py-6 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-4 transition-all ${isUploading ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-900 dark:bg-blue-600 text-white shadow-xl hover:scale-[1.01]'}`}>
-                                {isUploading ? <Loader2 size={24} className="animate-spin" /> : <Upload size={24} />}
-                                {isUploading ? 'Uploading...' : 'Save and Publish'}
-                            </button>
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Select Document</label>
+                                    <div className={`relative group overflow-hidden bg-slate-50 dark:bg-white/5 border-2 border-dashed ${uploadType === 'note' ? 'hover:border-emerald-500' : 'hover:border-blue-500'} border-slate-200 dark:border-white/10 rounded-[2.5rem] h-48 flex flex-col items-center justify-center text-center transition-all cursor-pointer`}>
+                                        <input type="file" required onChange={e => e.target.files && setFile(e.target.files[0])} className="absolute inset-0 opacity-0 cursor-pointer z-20" />
+                                        <div className="relative z-10 pointer-events-none transition-transform group-hover:scale-110 duration-500">
+                                            <div className={`w-16 h-16 ${uploadType === 'note' ? 'bg-emerald-100 text-emerald-500' : 'bg-blue-100 text-blue-500'} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm`}>
+                                                <Upload size={24} />
+                                            </div>
+                                            <p className="font-bold text-slate-600 dark:text-slate-300">{file ? file.name : 'Click to Browse'}</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-2">PDF Document Only</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button disabled={isUploading} className={`w-full py-5 ${uploadType === 'note' ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500'} text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-95 shadow-xl transition-all flex items-center justify-center gap-3`}>
+                                    {isUploading ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
+                                    {isUploading ? 'Uploading...' : `Publish ${uploadType === 'note' ? 'Note' : 'Resource'}`}
+                                </button>
+                            </div>
                         </div>
                     </form>
                 )}
             </div>
 
             {/* Edit Modal */}
-            {editingResource && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md animate-in fade-in">
-                    <div onClick={() => setEditingResource(null)} className="absolute inset-0" />
-                    <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-[3rem] p-8 shadow-3xl relative z-10 animate-in zoom-in-50 max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-6">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-500 rounded-xl flex items-center justify-center"><Pencil size={20} /></div>
-                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">Edit Details</h3>
+            {
+                editingResource && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md animate-in fade-in">
+                        <div onClick={() => setEditingResource(null)} className="absolute inset-0" />
+                        <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-[3rem] p-8 shadow-3xl relative z-10 animate-in zoom-in-50 max-h-[90vh] overflow-y-auto">
+                            <div className="flex justify-between items-center mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-500 rounded-xl flex items-center justify-center"><Pencil size={20} /></div>
+                                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">Edit Details</h3>
+                                </div>
+                                <button onClick={() => setEditingResource(null)} className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
+                                    <X size={20} />
+                                </button>
                             </div>
-                            <button onClick={() => setEditingResource(null)} className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
-                                <X size={20} />
-                            </button>
+
+                            <form onSubmit={handleUpdate} className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Title</label>
+                                    <input value={title} onChange={e => setTitle(e.target.value)} className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold text-slate-900 dark:text-white" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Grade</label>
+                                        <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={grade} onChange={e => setGrade(e.target.value)}>
+                                            {GRADES.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Subject</label>
+                                        <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={subject} onChange={e => setSubject(e.target.value)}>
+                                            {SUBJECTS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Type</label>
+                                        <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={type} onChange={e => setType(e.target.value)}>
+                                            <option value="Past Paper">Past Paper</option>
+                                            <option value="Model Paper">Model Paper</option>
+                                            <option value="Term Test">Term Test</option>
+                                            <option value="Short Note">Short Note</option>
+                                            <option value="Syllabus">Syllabus</option>
+                                            <option value="Teachers Guide">Teachers Guide</option>
+                                            <option value="G.C.E. O/L Exam">G.C.E. O/L Exam</option>
+                                            <option value="G.C.E. A/L Exam">G.C.E. A/L Exam</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Term</label>
+                                        <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={term} onChange={e => setTerm(e.target.value)}>
+                                            <option value="1st Term">1st Term</option>
+                                            <option value="2nd Term">2nd Term</option>
+                                            <option value="3rd Term">3rd Term</option>
+                                            <option value="">No Term</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Medium</label>
+                                        <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={medium} onChange={e => setMedium(e.target.value)}>
+                                            <option value="English">English</option>
+                                            <option value="Sinhala">Sinhala</option>
+                                            <option value="Tamil">Tamil</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Year</label>
+                                        <input type="number" value={year} onChange={e => setYear(e.target.value)} className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold text-slate-900 dark:text-white" />
+                                    </div>
+                                </div>
+
+                                <button className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black uppercase tracking-widest hover:scale-[1.02] transition-all">
+                                    Update Resource
+                                </button>
+                            </form>
                         </div>
-
-                        <form onSubmit={handleUpdate} className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Title</label>
-                                <input value={title} onChange={e => setTitle(e.target.value)} className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold text-slate-900 dark:text-white" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Grade</label>
-                                    <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={grade} onChange={e => setGrade(e.target.value)}>
-                                        {GRADES.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-                                    </select>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Subject</label>
-                                    <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={subject} onChange={e => setSubject(e.target.value)}>
-                                        {SUBJECTS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Type</label>
-                                    <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={type} onChange={e => setType(e.target.value)}>
-                                        <option value="Past Paper">Past Paper</option>
-                                        <option value="Model Paper">Model Paper</option>
-                                        <option value="Term Test">Term Test</option>
-                                        <option value="Short Note">Short Note</option>
-                                        <option value="Syllabus">Syllabus</option>
-                                        <option value="Teachers Guide">Teachers Guide</option>
-                                        <option value="G.C.E. O/L Exam">G.C.E. O/L Exam</option>
-                                        <option value="G.C.E. A/L Exam">G.C.E. A/L Exam</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Term</label>
-                                    <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={term} onChange={e => setTerm(e.target.value)}>
-                                        <option value="1st Term">1st Term</option>
-                                        <option value="2nd Term">2nd Term</option>
-                                        <option value="3rd Term">3rd Term</option>
-                                        <option value="">No Term</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Medium</label>
-                                    <select className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold outline-none text-slate-900 dark:text-white" value={medium} onChange={e => setMedium(e.target.value)}>
-                                        <option value="English">English</option>
-                                        <option value="Sinhala">Sinhala</option>
-                                        <option value="Tamil">Tamil</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase text-slate-400 pl-2">Year</label>
-                                    <input type="number" value={year} onChange={e => setYear(e.target.value)} className="w-full px-6 py-4 rounded-xl bg-slate-50 dark:bg-white/5 font-bold text-slate-900 dark:text-white" />
-                                </div>
-                            </div>
-
-                            <button className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black uppercase tracking-widest hover:scale-[1.02] transition-all">
-                                Update Resource
-                            </button>
-                        </form>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 

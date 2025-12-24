@@ -125,7 +125,7 @@ export const SUBJECTS_AL: Subject[] = [
   mkSub('acc', 'Accounting', 'ගිණුම්කරණය', '', '📈 Commerce', 'al'),
   mkSub('bs', 'Business Studies', 'ව්‍යාපාර අධ්‍යයනය', '', '📈 Commerce', 'al'),
   mkSub('stat', 'Statistics', 'සංඛ්‍යානය', '', '📈 Commerce', 'al'),
-  
+
   // 🎨 Arts
   mkSub('sinh', 'Sinhala', 'සිංහල', 'சிங்களம்', '🎨 Arts', 'al'),
   mkSub('pol', 'Political Science', 'දේශපාලන විද්‍යාව', 'அரசியல் அறிவியல்', '🎨 Arts', 'al'),
@@ -160,6 +160,7 @@ export const NAV_LINKS = [
   { name: 'A/L Archive', sinhala: 'උසස් පෙළ', href: '#/grade/al' },
   { name: 'O/L Archive', sinhala: 'සාමාන්්‍ය පෙළ', href: '#/grade/ol' },
   { name: 'Notes', sinhala: 'කෙටි සටහන්', href: '#/notes' },
+  { name: 'Videos', sinhala: 'වීඩියෝ', href: '#/videos' },
   { name: 'Games', sinhala: 'ක්‍රීඩා', href: '#/games' },
 ];
 

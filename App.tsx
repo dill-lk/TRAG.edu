@@ -10,6 +10,7 @@ import AdminPanel from './components/AdminPanel';
 import NotesMarketplace from './components/NotesMarketplace';
 import TragAIWidget from './components/TragAIWidget';
 import GameZone from './components/GameZone';
+import VideoLibrary from './components/VideoLibrary';
 import { supabase } from './supabase';
 import { Resource } from './types';
 import { RESOURCES as LOCAL_RESOURCES } from './constants';
@@ -158,6 +159,7 @@ const App: React.FC = () => {
     if (main === 'subject') return `Helping with subject module: ${parts[2]} for Grade: ${parts[1]}.`;
     if (main === 'grade') return `Viewing papers for ${parts[1]}.`;
     if (main === 'notes') return 'Browsing student-shared notes in the marketplace.';
+    if (main === 'videos') return 'Watching educational videos in the library.';
     if (main === 'games') return 'Playing educational games to sharpen skills.';
     return 'TRAG.edu Library Hub.';
   };
@@ -210,6 +212,7 @@ const App: React.FC = () => {
         {main === 'subject' && <SubjectPage gradeId={parts[1]} subjectId={parts[2]} onNavigate={navigate} resources={dbResources} />}
         {main === 'paper' && <PaperDetail paperId={parts[1]} onNavigate={navigate} resources={dbResources} />}
         {main === 'notes' && <NotesMarketplace />}
+        {main === 'videos' && <VideoLibrary />}
         {main === 'admin' && <AdminPanel />}
         {main === 'games' && <GameZone />}
       </main>

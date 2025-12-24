@@ -61,14 +61,14 @@ const NotesMarketplace: React.FC = () => {
 
         setIsUploading(true);
         try {
-            const fileName = `peer-notes/${Date.now()}-${newFile.name.replace(/\s/g, '_')}`;
+            const fileName = `peer_notes/${Date.now()}-${newFile.name.replace(/\s/g, '_')}`;
             const { data: uploadData, error: uploadError } = await supabase.storage
-                .from('peer-notes')
+                .from('peer_notes')
                 .upload(fileName, newFile);
 
             if (uploadError) throw uploadError;
 
-            const { data: { publicUrl } } = supabase.storage.from('peer-notes').getPublicUrl(fileName);
+            const { data: { publicUrl } } = supabase.storage.from('peer_notes').getPublicUrl(fileName);
 
             const { error: dbError } = await supabase.from('peer_notes').insert([{
                 title: newTitle,
