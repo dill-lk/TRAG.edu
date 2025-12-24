@@ -45,6 +45,7 @@ Experience TRAG.edu live: [trag.edu](https://trag-edu.vercel.app)
 <img width="1910" height="963" alt="image" src="https://github.com/user-attachments/assets/b24f53af-8f73-42e0-8aef-39203daa9f00" />
 <img width="1911" height="977" alt="image" src="https://github.com/user-attachments/assets/4340b78a-804c-419a-a655-677a9aec05b1" />
 <img width="1910" height="975" alt="image" src="https://github.com/user-attachments/assets/0158a4dc-e7c4-4db4-8bd8-b8eb48c48f3f" />
+<img width="1903" height="957" alt="image" src="https://github.com/user-attachments/assets/0d1b318a-8503-45f8-80c6-3c0ca5acf627" />
 
 
 
