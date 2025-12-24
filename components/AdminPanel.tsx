@@ -49,6 +49,7 @@ const AdminPanel = () => {
     // Data State
     const [fleet, setFleet] = useState<Resource[]>([]);
     const [allVideos, setAllVideos] = useState<any[]>([]);
+    const [allPlaylists, setAllPlaylists] = useState<any[]>([]);
     const [helpRequests, setHelpRequests] = useState<any[]>([]);
 
     const fetchFleet = async () => {
@@ -57,14 +58,24 @@ const AdminPanel = () => {
         if (error) console.error('Error fetching fleet:', error);
     };
     const fetchVideos = async () => {
-        const { data, error } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
-        if (data) setAllVideos(data);
-        if (error) console.error('Error fetching videos:', error);
+        const { data: videos, error: vError } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
+        if (videos) setAllVideos(videos);
+        if (vError) console.error('Error fetching videos:', vError);
+
+        const { data: playlists, error: pError } = await supabase.from('video_playlists').select('*').order('created_at', { ascending: false });
+        if (playlists) setAllPlaylists(playlists);
+        if (pError) console.error('Error fetching playlists:', pError);
     };
     const fetchHelpRequests = async () => {
         const { data, error } = await supabase.from('comments').select('*').eq('is_help_request', true).order('created_at', { ascending: false });
         if (data) setHelpRequests(data);
         if (error) console.error('Error fetching help requests:', error);
+    };
+
+    const fetchPlaylists = async () => {
+        const { data, error } = await supabase.from('video_playlists').select('*').order('created_at', { ascending: false });
+        if (data) setAllPlaylists(data);
+        if (error) console.error('Error fetching playlists:', error);
     };
 
     // User Management State (using adminUsers as a proxy, as no generic 'users' table is available)
@@ -161,6 +172,13 @@ const AdminPanel = () => {
     const [videoSubject, setVideoSubject] = useState('');
     const [videoDesc, setVideoDesc] = useState('');
     const [videoAuthor, setVideoAuthor] = useState('Admin');
+    const [videoPlaylistId, setVideoPlaylistId] = useState('');
+
+    // Playlist Form State
+    const [playlistTitle, setPlaylistTitle] = useState('');
+    const [playlistDesc, setPlaylistDesc] = useState('');
+    const [playlistGrade, setPlaylistGrade] = useState('');
+    const [playlistSubject, setPlaylistSubject] = useState('');
 
     // Upload Type State
     const [uploadType, setUploadType] = useState<'resource' | 'note'>('resource');
@@ -334,7 +352,8 @@ const AdminPanel = () => {
                 grade_id: videoGrade,
                 subject_id: videoSubject,
                 description: videoDesc,
-                author: videoAuthor
+                author: videoAuthor,
+                playlist_id: videoPlaylistId || null
             }]);
 
             if (error) throw error;
@@ -356,6 +375,42 @@ const AdminPanel = () => {
         const { error } = await supabase.from('videos').delete().eq('id', id);
         if (!error) fetchVideos();
         else alert('Error deleting video: ' + error.message);
+    };
+
+    const handlePlaylistUpload = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!playlistTitle || !playlistGrade || !playlistSubject) {
+            alert('Please fill in required fields for the playlist.');
+            return;
+        }
+
+        setIsUploading(true);
+        try {
+            const { error } = await supabase.from('video_playlists').insert([{
+                title: playlistTitle,
+                description: playlistDesc,
+                grade_id: playlistGrade,
+                subject_id: playlistSubject
+            }]);
+
+            if (error) throw error;
+
+            alert('Playlist created successfully!');
+            setPlaylistTitle('');
+            setPlaylistDesc('');
+            fetchVideos(); // Refetches both videos and playlists
+        } catch (err: any) {
+            alert('Error creating playlist: ' + err.message);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleDeletePlaylist = async (id: string) => {
+        if (!confirm('Are you sure? Videos in this playlist will NOT be deleted, but will be unassigned.')) return;
+        const { error } = await supabase.from('video_playlists').delete().eq('id', id);
+        if (!error) fetchVideos();
+        else alert('Error deleting playlist: ' + error.message);
     };
 
     const handleUpload = async (e: React.FormEvent) => {
@@ -892,9 +947,18 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                         </select>
                                     </div>
                                 </div>
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Author / Teacher</label>
-                                    <input className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white" placeholder="e.g. Mr. Sunil Perera" value={videoAuthor} onChange={e => setVideoAuthor(e.target.value)} />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Author / Teacher</label>
+                                        <input className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white" placeholder="e.g. Mr. Sunil Perera" value={videoAuthor} onChange={e => setVideoAuthor(e.target.value)} />
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Playlist (Optional)</label>
+                                        <select className="w-full px-6 py-4 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white" value={videoPlaylistId} onChange={e => setVideoPlaylistId(e.target.value)}>
+                                            <option value="">Independent Video</option>
+                                            {allPlaylists.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
+                                        </select>
+                                    </div>
                                 </div>
                                 <div className="md:col-span-2 space-y-4">
                                     <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Description</label>
@@ -921,7 +985,12 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                             </div>
                                             <div className="max-w-[150px] md:max-w-xs">
                                                 <h4 className="font-bold text-slate-800 dark:text-white truncate">{vid.title}</h4>
-                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">{vid.grade_id} • {vid.subject_id}</p>
+                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">
+                                                    {vid.grade_id} • {vid.subject_id}
+                                                    {vid.playlist_id && (
+                                                        <span className="ml-2 text-indigo-500">• In Playlist</span>
+                                                    )}
+                                                </p>
                                             </div>
                                         </div>
                                         <button onClick={() => handleDeleteVideo(vid.id)} className="w-10 h-10 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
@@ -930,6 +999,74 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
                                     </div>
                                 ))}
                                 {allVideos.length === 0 && <p className="text-center text-slate-400 py-10 col-span-2">No videos in the library yet.</p>}
+                            </div>
+                        </div>
+
+                        {/* Playlist Management Section */}
+                        <div className="pt-12 border-t border-slate-200 dark:border-white/10">
+                            <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tighter mb-8">Playlist Management</h3>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                {/* Create Playlist Form */}
+                                <div className="lg:col-span-1 p-8 bg-slate-50 dark:bg-white/5 rounded-[2rem] border border-slate-200 dark:border-white/10 h-fit">
+                                    <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6">Create New Playlist</h4>
+                                    <form onSubmit={handlePlaylistUpload} className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Playlist Title</label>
+                                            <input required className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white" placeholder="e.g. Unit 1: Thermodynamics" value={playlistTitle} onChange={e => setPlaylistTitle(e.target.value)} />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Grade</label>
+                                                <select required className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white" value={playlistGrade} onChange={e => setPlaylistGrade(e.target.value)}>
+                                                    <option value="">Grade</option>
+                                                    {GRADES.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                                                </select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Subject</label>
+                                                <select required className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white" value={playlistSubject} onChange={e => setPlaylistSubject(e.target.value)}>
+                                                    <option value="">Subject</option>
+                                                    {SUBJECTS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-2">Description</label>
+                                            <textarea rows={2} className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border-none shadow-sm font-bold outline-none text-slate-900 dark:text-white resize-none" placeholder="What's this playlist about?" value={playlistDesc} onChange={e => setPlaylistDesc(e.target.value)} />
+                                        </div>
+                                        <button disabled={isUploading} className="w-full py-3 bg-indigo-600 text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all shadow-lg">
+                                            {isUploading ? 'Saving...' : 'Create Playlist'}
+                                        </button>
+                                    </form>
+                                </div>
+
+                                {/* Playlist List */}
+                                <div className="lg:col-span-2 space-y-4">
+                                    <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest pl-4">Active Playlists</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {allPlaylists.map(pl => {
+                                            const videoCount = allVideos.filter(v => v.playlist_id === pl.id).length;
+                                            return (
+                                                <div key={pl.id} className="glass-card p-6 rounded-2xl flex items-center justify-between group">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 bg-indigo-500/10 text-indigo-500 rounded-xl flex items-center justify-center">
+                                                            <List size={24} />
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="font-bold text-slate-800 dark:text-white">{pl.title}</h4>
+                                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">{pl.grade_id} • {pl.subject_id} • {videoCount} Videos</p>
+                                                        </div>
+                                                    </div>
+                                                    <button onClick={() => handleDeletePlaylist(pl.id)} className="w-10 h-10 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
+                                        {allPlaylists.length === 0 && <p className="text-center text-slate-400 py-10 col-span-2">No playlists created yet.</p>}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
